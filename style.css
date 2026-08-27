@@ -6,25 +6,25 @@
   --md-sys-color-on-primary: #ffffff;
   --md-sys-color-primary-container: #d6e4ff;
   --md-sys-color-on-primary-container: #001b3d;
-  --md-sys-color-secondary: #535f70;
-  --md-sys-color-secondary-container: #e2e8f4;
-  --md-sys-color-on-secondary-container: #101c2b;
-  --md-sys-color-tertiary: #0b6b52;
-  --md-sys-color-tertiary-container: #bbf2dc;
-  --md-sys-color-on-tertiary-container: #002117;
-  --md-sys-color-error: #ba1a1a;
-  --md-sys-color-error-container: #ffdad6;
+  --md-sys-color-secondary: #475569;
+  --md-sys-color-secondary-container: #e2e8f0;
+  --md-sys-color-on-secondary-container: #0f172a;
+  --md-sys-color-tertiary: #047857;
+  --md-sys-color-tertiary-container: #a7f3d0;
+  --md-sys-color-on-tertiary-container: #022c22;
+  --md-sys-color-error: #b91c1c;
+  --md-sys-color-error-container: #fee2e2;
   --md-sys-color-background: #f8fafc;
-  --md-sys-color-on-background: #0f172a;
+  --md-sys-color-on-background: #020617;
   --md-sys-color-surface: #ffffff;
-  --md-sys-color-on-surface: #0f172a;
+  --md-sys-color-on-surface: #020617;
   --md-sys-color-surface-container: #ffffff;
-  --md-sys-color-surface-container-high: #edf2f7;
+  --md-sys-color-surface-container-high: #f1f5f9;
 
-  --md-sys-color-outline: #64748b;
+  --md-sys-color-outline: #475569;
   --md-sys-color-outline-variant: #cbd5e1;
   --card-border-color: #cbd5e1;
-  --cal-cell-border: #e2e8f0;
+  --cal-cell-border: #cbd5e1;
 
   --md-shape-corner-small: 8px;
   --md-shape-corner-medium: 12px;
@@ -43,25 +43,25 @@
   --md-sys-color-on-primary: #003258;
   --md-sys-color-primary-container: #00497d;
   --md-sys-color-on-primary-container: #d1e4ff;
-  --md-sys-color-secondary: #bbc7db;
-  --md-sys-color-secondary-container: #334155;
-  --md-sys-color-on-secondary-container: #d7e3f7;
-  --md-sys-color-tertiary: #87d6ba;
-  --md-sys-color-tertiary-container: #00513d;
-  --md-sys-color-on-tertiary-container: #a3f2d6;
-  --md-sys-color-error: #ffb4ab;
-  --md-sys-color-error-container: #93000a;
+  --md-sys-color-secondary: #cbd5e1;
+  --md-sys-color-secondary-container: #1e293b;
+  --md-sys-color-on-secondary-container: #f8fafc;
+  --md-sys-color-tertiary: #6ee7b7;
+  --md-sys-color-tertiary-container: #064e3b;
+  --md-sys-color-on-tertiary-container: #ecfdf5;
+  --md-sys-color-error: #fca5a5;
+  --md-sys-color-error-container: #7f1d1d;
   --md-sys-color-background: #090d16;
-  --md-sys-color-on-background: #f8fafc;
-  --md-sys-color-surface: #131924;
-  --md-sys-color-on-surface: #f8fafc;
-  --md-sys-color-surface-container: #131924;
-  --md-sys-color-surface-container-high: #1e2636;
+  --md-sys-color-on-background: #ffffff;
+  --md-sys-color-surface: #111722;
+  --md-sys-color-on-surface: #ffffff;
+  --md-sys-color-surface-container: #111722;
+  --md-sys-color-surface-container-high: #1c2433;
 
   --md-sys-color-outline: #94a3b8;
   --md-sys-color-outline-variant: #334155;
-  --card-border-color: #263346;
-  --cal-cell-border: #1f2b3d;
+  --card-border-color: #2a374a;
+  --cal-cell-border: #2a374a;
 
   --md-elevation-1: 0 1px 3px 0 rgba(0, 0, 0, 0.4);
   --md-elevation-2: 0 4px 8px 0 rgba(0, 0, 0, 0.5);
@@ -74,25 +74,25 @@
     --md-sys-color-on-primary: #003258;
     --md-sys-color-primary-container: #00497d;
     --md-sys-color-on-primary-container: #d1e4ff;
-    --md-sys-color-secondary: #bbc7db;
-    --md-sys-color-secondary-container: #334155;
-    --md-sys-color-on-secondary-container: #d7e3f7;
-    --md-sys-color-tertiary: #87d6ba;
-    --md-sys-color-tertiary-container: #00513d;
-    --md-sys-color-on-tertiary-container: #a3f2d6;
+    --md-sys-color-secondary: #cbd5e1;
+    --md-sys-color-secondary-container: #1e293b;
+    --md-sys-color-on-secondary-container: #f8fafc;
+    --md-sys-color-tertiary: #6ee7b7;
+    --md-sys-color-tertiary-container: #064e3b;
+    --md-sys-color-on-tertiary-container: #ecfdf5;
     --md-sys-color-error: #ffb4ab;
-    --md-sys-color-error-container: #93000a;
+    --md-sys-color-error-container: #7f1d1d;
     --md-sys-color-background: #090d16;
-    --md-sys-color-on-background: #f8fafc;
-    --md-sys-color-surface: #131924;
-    --md-sys-color-on-surface: #f8fafc;
-    --md-sys-color-surface-container: #131924;
-    --md-sys-color-surface-container-high: #1e2636;
+    --md-sys-color-on-background: #ffffff;
+    --md-sys-color-surface: #111722;
+    --md-sys-color-on-surface: #ffffff;
+    --md-sys-color-surface-container: #111722;
+    --md-sys-color-surface-container-high: #1c2433;
 
     --md-sys-color-outline: #94a3b8;
     --md-sys-color-outline-variant: #334155;
-    --card-border-color: #263346;
-    --cal-cell-border: #1f2b3d;
+    --card-border-color: #2a374a;
+    --cal-cell-border: #2a374a;
 
     --md-elevation-1: 0 1px 3px 0 rgba(0, 0, 0, 0.4);
     --md-elevation-2: 0 4px 8px 0 rgba(0, 0, 0, 0.5);
@@ -101,7 +101,7 @@
 }
 
 /* ==========================================
-   2. 전역 스타일 & 앱 바
+   2. 전역 스타일 & 고정 상단 앱 바
    ========================================== */
 * {
   box-sizing: border-box;
@@ -119,20 +119,30 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0 16px 80px;
+  padding: 84px 16px 80px;
   line-height: 1.5;
   overflow-x: hidden;
 }
 
 .app-top-bar {
-  width: 100%;
-  max-width: 1160px;
-  padding: 20px 0 12px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1100;
+  background-color: var(--md-sys-color-surface);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border-bottom: 1.5px solid var(--card-border-color);
-  margin-bottom: 24px;
+  box-shadow: var(--md-elevation-1);
+  display: flex;
+  justify-content: center;
+  padding: 12px 16px;
 }
 
 .top-bar-inner {
+  width: 100%;
+  max-width: 1160px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -145,22 +155,16 @@ body {
 }
 
 .brand-title {
-  font-size: 1.75rem;
+  font-size: 1.25rem;
   font-weight: 900;
   letter-spacing: -0.03em;
   color: var(--md-sys-color-primary);
 }
 
 .brand-subtitle {
-  font-size: 0.8125rem;
+  font-size: 0.75rem;
+  font-weight: 600;
   color: var(--md-sys-color-outline);
-}
-
-.btn-planner-quick {
-  background-color: var(--md-sys-color-primary-container);
-  color: var(--md-sys-color-on-primary-container);
-  font-weight: 700;
-  border: 1px solid rgba(0, 95, 176, 0.2);
 }
 
 .app-layout {
@@ -189,25 +193,15 @@ body {
 /* ==========================================
    3. 타이포그래피 & 카드
    ========================================== */
-.title-large { font-size: 1.375rem; font-weight: 700; letter-spacing: -0.01em; }
-.title-medium { font-size: 1.125rem; font-weight: 700; letter-spacing: -0.01em; }
-.label-medium { font-size: 0.875rem; font-weight: 600; }
-.label-small { font-size: 0.75rem; font-weight: 500; }
-.label-unit { font-size: 0.875rem; font-weight: 700; color: var(--md-sys-color-outline); margin-top: 6px; }
-.body-small { font-size: 0.8125rem; color: var(--md-sys-color-outline); margin-top: 2px; }
-
-.badge-locked {
-  font-size: 0.6875rem;
-  font-weight: 700;
-  padding: 2px 8px;
-  border-radius: var(--md-shape-corner-full);
-  background-color: var(--md-sys-color-surface-container-high);
-  color: var(--md-sys-color-outline);
-  border: 1px solid var(--card-border-color);
-}
+.title-large { font-size: 1.375rem; font-weight: 800; letter-spacing: -0.01em; }
+.title-medium { font-size: 1.125rem; font-weight: 800; letter-spacing: -0.01em; }
+.label-medium { font-size: 0.875rem; font-weight: 700; }
+.label-small { font-size: 0.75rem; font-weight: 600; }
+.label-unit { font-size: 0.875rem; font-weight: 800; color: var(--md-sys-color-on-background); margin-top: 6px; }
+.body-small { font-size: 0.8125rem; font-weight: 500; color: var(--md-sys-color-outline); margin-top: 2px; }
 
 .material-symbols-outlined { font-size: 20px; vertical-align: middle; }
-.icon-small { font-size: 18px; }
+.icon-small { font-size: 16px; }
 
 .md-card {
   background-color: var(--md-sys-color-surface-container);
@@ -226,7 +220,7 @@ body {
 
 .card-overline {
   font-size: 0.6875rem;
-  font-weight: 800;
+  font-weight: 900;
   letter-spacing: 0.08em;
   color: var(--md-sys-color-primary);
   display: block;
@@ -234,30 +228,43 @@ body {
   text-transform: uppercase;
 }
 
-.target-time-chip {
+/* 🌟 컴팩트해진 퇴근 시간 설정 칩 */
+.target-time-chip.compact-chip {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
-  border-radius: var(--md-shape-corner-medium);
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: var(--md-shape-corner-small);
   background-color: var(--md-sys-color-surface-container-high);
   color: var(--md-sys-color-on-surface);
   border: 1px solid var(--card-border-color);
   cursor: pointer;
 }
 
-.target-time-chip:hover {
+.target-time-chip.compact-chip:hover {
   border-color: var(--md-sys-color-primary);
+}
+
+.chip-icon {
+  font-size: 15px;
+  color: var(--md-sys-color-outline);
+}
+
+.chip-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--md-sys-color-outline);
 }
 
 .time-input-inline {
   background: transparent;
   border: none;
   color: var(--md-sys-color-primary);
-  font-size: 0.8125rem;
-  font-weight: 700;
+  font-size: 0.75rem;
+  font-weight: 800;
   outline: none;
   cursor: pointer;
+  padding: 0;
 }
 
 .time-input-inline::-webkit-calendar-picker-indicator {
@@ -277,7 +284,7 @@ body {
   padding: 8px 14px;
   border-radius: var(--md-shape-corner-full);
   font-size: 0.8125rem;
-  font-weight: 600;
+  font-weight: 700;
   border: none;
   cursor: pointer;
   white-space: nowrap;
@@ -287,6 +294,19 @@ body {
   background: transparent;
   color: var(--md-sys-color-primary);
   padding: 4px 8px;
+}
+
+.sim-today-btn {
+  font-size: 0.8125rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: var(--md-shape-corner-small);
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+}
+
+.sim-today-btn.is-hidden {
+  display: none !important;
 }
 
 .md-icon-button {
@@ -308,7 +328,7 @@ body {
 }
 
 /* ==========================================
-   4. 클린 텍스트 플립다운 애니메이션
+   4. 클린 텍스트 플립다운 시계
    ========================================== */
 .countdown-display {
   display: flex;
@@ -421,7 +441,7 @@ body {
 }
 
 /* ==========================================
-   5. 캘린더 스타일
+   5. 캘린더 (7분할 균등 그리드)
    ========================================== */
 .cal-nav-bar {
   display: flex;
@@ -449,17 +469,18 @@ body {
 
 .calendar-grid-header {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  width: 100%;
   text-align: center;
   font-size: 0.875rem;
-  font-weight: 800;
+  font-weight: 900;
   color: var(--md-sys-color-outline);
   padding: 4px 0 10px;
   border-bottom: 2px solid var(--card-border-color);
 }
 
-.calendar-grid-header .sun { color: #dc2626; }
-.calendar-grid-header .sat { color: #0284c7; }
+.calendar-grid-header .sun { color: #b91c1c; }
+.calendar-grid-header .sat { color: #0369a1; }
 
 .calendar-viewport {
   position: relative;
@@ -471,7 +492,7 @@ body {
 
 .calendar-grid-layer {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 6px;
   width: 100%;
   position: absolute;
@@ -524,55 +545,65 @@ body {
 
 .cal-cell {
   min-height: 58px;
+  width: 100%;
+  min-width: 0;
   background-color: var(--md-sys-color-surface);
   border: 1.5px solid var(--cal-cell-border);
   border-radius: var(--md-shape-corner-medium);
-  padding: 6px 4px;
+  padding: 6px 3px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  cursor: pointer;
   user-select: none;
+  overflow: hidden;
+  transition: transform 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.cal-cell:hover {
+  border-color: var(--md-sys-color-primary);
+  transform: translateY(-2px);
 }
 
 .cal-cell.other-month {
-  opacity: 0.32;
+  opacity: 0.35;
   background-color: transparent;
   border-style: dashed;
 }
 
 .cal-date-num {
   font-size: 0.9375rem;
-  font-weight: 700;
+  font-weight: 800;
   line-height: 1;
+  color: var(--md-sys-color-on-background);
 }
 
-.cal-cell.sunday .cal-date-num { color: #dc2626; }
-.cal-cell.saturday .cal-date-num { color: #0284c7; }
+.cal-cell.sunday .cal-date-num { color: #b91c1c; }
+.cal-cell.saturday .cal-date-num { color: #0369a1; }
 
 .cal-cell.holiday {
-  background-color: rgba(239, 68, 68, 0.12);
-  border-color: rgba(239, 68, 68, 0.45);
+  background-color: #fee2e2;
+  border-color: #f87171;
 }
 .cal-cell.holiday .cal-date-num {
-  color: #dc2626;
+  color: #991b1b;
   font-weight: 900;
 }
 
 .cal-cell.leave-rec {
-  background-color: rgba(16, 185, 129, 0.14);
+  background-color: #d1fae5;
   border: 1.5px dashed #059669;
 }
 .cal-cell.leave-rec .cal-date-num {
-  color: #047857;
+  color: #065f46;
   font-weight: 900;
 }
 
 .cal-cell.today {
   outline: 2.5px solid var(--md-sys-color-primary);
   border-color: var(--md-sys-color-primary);
-  background-color: rgba(0, 95, 176, 0.08);
+  background-color: #e0f2fe;
 }
-
 .cal-cell.today .cal-date-num {
   color: var(--md-sys-color-primary);
   font-weight: 900;
@@ -584,33 +615,57 @@ body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-weight: 700;
-  padding: 1px 3px;
+  font-weight: 800;
+  padding: 2px 3px;
   border-radius: 4px;
   text-align: center;
   display: block;
+  width: 100%;
 }
 
 .cal-cell.holiday .cal-sub-label {
-  color: #b91c1c;
-  background: rgba(239, 68, 68, 0.15);
-}
-
-.cal-cell.leave-rec .cal-sub-label {
-  color: #047857;
-  background: rgba(16, 185, 129, 0.2);
-}
-
-[data-theme="dark"] .cal-cell.holiday .cal-sub-label,
-[data-theme="auto"] .cal-cell.holiday .cal-sub-label {
-  color: #fca5a5;
+  color: #991b1b;
   background: rgba(239, 68, 68, 0.25);
 }
 
+.cal-cell.leave-rec .cal-sub-label {
+  color: #065f46;
+  background: rgba(16, 185, 129, 0.28);
+}
+
+[data-theme="dark"] .cal-cell.holiday,
+[data-theme="auto"] .cal-cell.holiday {
+  background-color: #450a0a;
+  border-color: #991b1b;
+}
+[data-theme="dark"] .cal-cell.holiday .cal-date-num,
+[data-theme="auto"] .cal-cell.holiday .cal-date-num {
+  color: #fca5a5;
+}
+[data-theme="dark"] .cal-cell.holiday .cal-sub-label,
+[data-theme="auto"] .cal-cell.holiday .cal-sub-label {
+  color: #fecaca;
+  background: rgba(239, 68, 68, 0.4);
+}
+
+[data-theme="dark"] .cal-cell.leave-rec,
+[data-theme="auto"] .cal-cell.leave-rec {
+  background-color: #064e3b;
+  border-color: #059669;
+}
+[data-theme="dark"] .cal-cell.leave-rec .cal-date-num,
+[data-theme="auto"] .cal-cell.leave-rec .cal-date-num {
+  color: #6ee7b7;
+}
 [data-theme="dark"] .cal-cell.leave-rec .cal-sub-label,
 [data-theme="auto"] .cal-cell.leave-rec .cal-sub-label {
-  color: #6ee7b7;
-  background: rgba(16, 185, 129, 0.25);
+  color: #a7f3d0;
+  background: rgba(16, 185, 129, 0.4);
+}
+
+[data-theme="dark"] .cal-cell.today,
+[data-theme="auto"] .cal-cell.today {
+  background-color: #0c2a4a;
 }
 
 .calendar-legend {
@@ -621,8 +676,8 @@ body {
   padding-top: 10px;
   border-top: 1.5px solid var(--card-border-color);
   font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--md-sys-color-outline);
+  font-weight: 700;
+  color: var(--md-sys-color-on-background);
 }
 
 .legend-item {
@@ -637,8 +692,8 @@ body {
   border-radius: var(--md-shape-corner-full);
 }
 
-.dot-holiday { background-color: #dc2626; }
-.dot-leave { background-color: #059669; }
+.dot-holiday { background-color: #b91c1c; }
+.dot-leave { background-color: #047857; }
 .dot-today { background-color: var(--md-sys-color-primary); }
 
 /* ==========================================
@@ -797,7 +852,164 @@ body {
 }
 
 /* ==========================================
-   7. 🌟 미래 연차 시뮬레이터 (아래에서 위로 올라오는 바텀 시트)
+   7. 🌟 사이드 햄버거 메뉴 네비게이션 드로어
+   ========================================== */
+.nav-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 1250;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.nav-drawer-backdrop.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.nav-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  max-width: 380px;
+  background-color: var(--md-sys-color-surface);
+  z-index: 1350;
+  box-shadow: -5px 0 25px rgba(0, 0, 0, 0.25);
+  border-left: 1.5px solid var(--card-border-color);
+  transform: translateX(100%);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+.nav-drawer.is-open {
+  transform: translateX(0);
+}
+
+.nav-drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1.5px solid var(--card-border-color);
+}
+
+.nav-drawer-title-wrap {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.nav-title {
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: var(--md-sys-color-on-surface);
+}
+
+.nav-version {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--md-sys-color-outline);
+}
+
+.nav-menu-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.nav-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background-color: var(--md-sys-color-surface-container);
+  border: 1.5px solid var(--card-border-color);
+  border-radius: var(--md-shape-corner-medium);
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.2s, border-color 0.2s, transform 0.15s;
+}
+
+.nav-menu-item:hover:not(.is-disabled) {
+  background-color: var(--md-sys-color-surface-container-high);
+  border-color: var(--md-sys-color-primary);
+  transform: translateX(-2px);
+}
+
+.nav-menu-item.primary-action {
+  background-color: var(--md-sys-color-primary-container);
+  border-color: rgba(0, 95, 176, 0.3);
+}
+
+.nav-menu-item.primary-action .nav-item-icon,
+.nav-menu-item.primary-action .nav-item-arrow {
+  color: var(--md-sys-color-primary);
+}
+
+.nav-item-icon {
+  font-size: 24px;
+  color: var(--md-sys-color-outline);
+}
+
+.nav-item-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.nav-item-title {
+  font-size: 0.9375rem;
+  font-weight: 800;
+  color: var(--md-sys-color-on-surface);
+}
+
+.nav-item-desc {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--md-sys-color-outline);
+}
+
+.nav-item-arrow {
+  font-size: 20px;
+  color: var(--md-sys-color-outline);
+}
+
+.nav-section-label {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--md-sys-color-outline);
+  padding: 12px 6px 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.nav-menu-item.is-disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  border-style: dashed;
+}
+
+.nav-badge-temp {
+  font-size: 0.625rem;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background-color: var(--md-sys-color-surface-container-high);
+  color: var(--md-sys-color-outline);
+}
+
+/* ==========================================
+   8. 미래 연차 시뮬레이터 풀스크린 뷰
    ========================================== */
 .drawer-backdrop {
   position: fixed;
@@ -805,7 +1017,7 @@ body {
   background-color: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
-  z-index: 1200;
+  z-index: 1390;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.35s cubic-bezier(0.32, 0.72, 0, 1);
@@ -816,69 +1028,53 @@ body {
   pointer-events: auto;
 }
 
-/* 바텀 시트 구조: 하단 고정 & 위로 슬라이드 */
-.simulation-drawer {
+.simulation-drawer.full-screen-view {
   position: fixed;
-  bottom: 0;
-  left: 50%;
-  width: 100%;
-  max-width: 780px;
-  height: 88vh;
-  max-height: 920px;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  max-width: 100vw;
+  max-height: 100vh;
   background-color: var(--md-sys-color-background);
-  z-index: 1300;
-  border-radius: var(--md-shape-corner-sheet) var(--md-shape-corner-sheet) 0 0;
-  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.28);
-  border: 1.5px solid var(--card-border-color);
-  border-bottom: none;
-  
-  /* 🌟 아래에서 위로 나타나는 트랜스폼 애니메이션 */
-  transform: translate(-50%, 100%);
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 1400;
+  border-radius: 0;
+  border: none;
+  box-shadow: none;
+  transform: translateY(100%);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   flex-direction: column;
   overflow: hidden;
   will-change: transform;
 }
 
-.simulation-drawer.is-open {
-  transform: translate(-50%, 0%);
+.simulation-drawer.full-screen-view.is-open {
+  transform: translateY(0);
 }
 
-/* 모바일 상단 터치 핸들 바 */
-.drawer-handle-bar {
+.fullscreen-drawer-header {
   width: 100%;
-  display: flex;
-  justify-content: center;
-  padding: 10px 0 4px;
-  cursor: grab;
-}
-
-.drawer-handle {
-  width: 44px;
-  height: 4px;
-  background-color: var(--md-sys-color-outline-variant);
-  border-radius: 9999px;
-}
-
-.drawer-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 24px 16px;
   background-color: var(--md-sys-color-surface);
   border-bottom: 1.5px solid var(--card-border-color);
+  box-shadow: var(--md-elevation-1);
+  display: flex;
+  justify-content: center;
+  padding: 12px 16px;
+  z-index: 10;
 }
 
-.drawer-title-group {
+.fullscreen-header-inner {
+  width: 100%;
+  max-width: 1160px;
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: space-between;
+  gap: 16px;
 }
 
-.drawer-header-icon {
-  font-size: 28px;
-  color: var(--md-sys-color-primary);
+.fullscreen-title-wrap {
+  flex: 1;
+  text-align: left;
 }
 
 .drawer-title {
@@ -889,39 +1085,186 @@ body {
 
 .drawer-subtitle {
   font-size: 0.75rem;
+  font-weight: 600;
   color: var(--md-sys-color-outline);
 }
 
-.drawer-content {
+.btn-close-sim {
+  background-color: var(--md-sys-color-surface-container-high);
+}
+
+.fullscreen-drawer-scroll {
   flex: 1;
   overflow-y: auto;
-  padding: 20px 24px 60px;
+  display: flex;
+  justify-content: center;
+  padding: 24px 16px 80px;
+}
+
+.fullscreen-content-container {
+  width: 100%;
+  max-width: 780px;
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
 /* ==========================================
-   8. FAB 테마 컨트롤러
+   9. 달력 상세 모달
    ========================================== */
-.theme-switcher-fab {
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 1500;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.modal-backdrop.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.cal-detail-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.95);
+  width: 90%;
+  max-width: 420px;
+  background-color: var(--md-sys-color-surface);
+  border: 1.5px solid var(--card-border-color);
+  border-radius: var(--md-shape-corner-large);
+  box-shadow: var(--md-elevation-3);
+  z-index: 1550;
+  padding: 24px;
+  display: none;
+  flex-direction: column;
+  gap: 18px;
+  opacity: 0;
+  transition: transform 0.25s cubic-bezier(0.2, 0, 0, 1), opacity 0.25s ease;
+}
+
+.cal-detail-modal[open] {
+  display: flex;
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1.5px solid var(--card-border-color);
+  padding-bottom: 12px;
+}
+
+.modal-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.modal-icon {
+  font-size: 28px;
+  color: var(--md-sys-color-primary);
+}
+
+.modal-date {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--md-sys-color-on-surface);
+}
+
+.modal-status-badge {
+  font-size: 0.6875rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: var(--md-shape-corner-full);
+  display: inline-block;
+  margin-top: 3px;
+}
+
+.modal-status-badge.holiday {
+  background-color: var(--md-sys-color-error-container);
+  color: var(--md-sys-color-error);
+}
+
+.modal-status-badge.leave {
+  background-color: var(--md-sys-color-tertiary-container);
+  color: var(--md-sys-color-on-tertiary-container);
+}
+
+.modal-status-badge.normal {
+  background-color: var(--md-sys-color-surface-container-high);
+  color: var(--md-sys-color-outline);
+}
+
+.modal-close-btn {
+  width: 32px;
+  height: 32px;
+}
+
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modal-info-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.info-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--md-sys-color-outline);
+}
+
+.info-value-highlight {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--md-sys-color-primary);
+}
+
+.info-value-desc {
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--md-sys-color-on-surface);
+}
+
+/* ==========================================
+   10. 🌟 좌측 하단 고정 테마 모드 컨트롤러
+   ========================================== */
+.theme-switcher-fab.left-fab {
   position: fixed;
   bottom: 24px;
-  right: 24px;
+  left: 24px; /* 좌측 하단 배치 */
+  right: auto;
   z-index: 1000;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-start;
   gap: 8px;
   transform: translateZ(0);
   transition: transform 0.3s cubic-bezier(0.2, 0, 0, 1), opacity 0.25s ease;
   will-change: transform, opacity;
 }
 
-.theme-switcher-fab.is-hidden {
-  transform: translateY(90px) scale(0.85);
-  opacity: 0;
-  pointer-events: none;
+/* 모바일 전용 스크롤 숨김 */
+@media (max-width: 1023px) {
+  .theme-switcher-fab.left-fab.is-hidden {
+    transform: translateY(90px) scale(0.85);
+    opacity: 0;
+    pointer-events: none;
+  }
 }
 
 .md-fab {
@@ -983,20 +1326,19 @@ body {
 }
 
 /* ==========================================
-   9. 반응형 미디어 쿼리 (모바일 & PC)
+   11. 반응형 미디어 쿼리
    ========================================== */
 @media (max-width: 767px) {
   body {
-    padding: 0 12px 72px;
+    padding: 76px 12px 72px;
   }
   .app-top-bar {
-    padding: 14px 0 10px;
-    margin-bottom: 16px;
+    padding: 10px 12px;
   }
   .brand-title {
-    font-size: 1.35rem;
+    font-size: 1.15rem;
   }
-  .btn-planner-quick .btn-text {
+  .brand-subtitle {
     display: none;
   }
   .md-card {
@@ -1039,29 +1381,34 @@ body {
     align-items: flex-start;
     gap: 8px;
   }
-  .theme-switcher-fab {
+  .theme-switcher-fab.left-fab {
     bottom: 16px;
-    right: 16px;
+    left: 16px;
   }
-  .simulation-drawer {
-    height: 92vh;
-    border-radius: 20px 20px 0 0;
+  .fullscreen-drawer-header {
+    padding: 10px 12px;
   }
-  .drawer-content {
-    padding: 16px 16px 60px;
+  .drawer-title {
+    font-size: 1.1rem;
+  }
+  .drawer-subtitle {
+    display: none;
+  }
+  .fullscreen-drawer-scroll {
+    padding: 16px 12px 60px;
   }
 }
 
 @media (min-width: 1024px) {
   body {
-    padding: 0 24px 80px;
+    padding: 92px 24px 80px;
   }
   .app-layout {
     max-width: 1160px;
     gap: 28px;
   }
   .brand-title {
-    font-size: 2rem;
+    font-size: 1.5rem;
   }
   .responsive-dashboard-grid {
     display: grid;
@@ -1087,6 +1434,6 @@ body {
   }
   .secondary-col {
     position: sticky;
-    top: 24px;
+    top: 104px;
   }
 }
