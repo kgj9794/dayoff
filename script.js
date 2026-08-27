@@ -4,11 +4,9 @@
 const holidayMap = new Map();
 const fetchedYears = new Set();
 
-// 실시간 메인 화면 (현재 월)
 const currentRealYear = new Date().getFullYear();
 const currentRealMonth = new Date().getMonth();
 
-// 미래 연차 시뮬레이터 전용 상태
 let simViewYear = currentRealYear;
 let simViewMonth = currentRealMonth;
 let isSimCalendarSliding = false;
@@ -58,42 +56,149 @@ function setupOffWorkTimeInput() {
 }
 
 // ==========================================
-// 3. 햄버거 메뉴 & 바텀 시트 시뮬레이터 열기/닫기
+// 3. 🌟 네비게이션 드로어 & 풀스크린 시뮬레이터 연동
 // ==========================================
-function initDrawer() {
-  const drawer = document.getElementById("simulation-drawer");
-  const backdrop = document.getElementById("drawer-backdrop");
-  const openBtn = document.getElementById("btn-open-drawer");
-  const quickBtn = document.getElementById("btn-open-planner-quick");
-  const closeBtn = document.getElementById("btn-close-drawer");
+function initNavigationAndDrawers() {
+  const navDrawer = document.getElementById("nav-drawer");
+  const navBackdrop = document.getElementById("nav-drawer-backdrop");
+  const openNavBtn = document.getElementById("btn-open-nav-menu");
+  const closeNavBtn = document.getElementById("btn-close-nav-menu");
 
-  const openDrawer = () => {
-    drawer.classList.add("is-open");
-    backdrop.classList.add("is-open");
-    document.body.style.overflow = "hidden"; // 배경 스크롤 방지
+  const simDrawer = document.getElementById("simulation-drawer");
+  const simBackdrop = document.getElementById("drawer-backdrop");
+  const openSimBtn = document.getElementById("menu-open-simulator");
+  const closeSimBtn = document.getElementById("btn-close-drawer");
+
+  // 1. 네비게이션 드로어 제어
+  const openNavDrawer = () => {
+    navDrawer.classList.add("is-open");
+    navBackdrop.classList.add("is-open");
+    document.body.style.overflow = "hidden";
+  };
+
+  const closeNavDrawer = () => {
+    navDrawer.classList.remove("is-open");
+    navBackdrop.classList.remove("is-open");
+    if (!simDrawer.classList.contains("is-open")) {
+      document.body.style.overflow = "";
+    }
+  };
+
+  openNavBtn.addEventListener("click", openNavDrawer);
+  closeNavBtn.addEventListener("click", closeNavDrawer);
+  navBackdrop.addEventListener("click", closeNavDrawer);
+
+  // 2. 풀스크린 시뮬레이터 제어
+  const openSimulator = (pushHistory = true) => {
+    closeNavDrawer(); // 사이드 메뉴 닫고 시뮬레이터 열기
+    if (pushHistory) {
+      history.pushState({ modal: 'simulator' }, '', '#simulator');
+    }
+    simDrawer.classList.add("is-open");
+    simBackdrop.classList.add("is-open");
+    document.body.style.overflow = "hidden";
     renderSimulatedSpace("none");
   };
 
-  const closeDrawer = () => {
-    drawer.classList.remove("is-open");
-    backdrop.classList.remove("is-open");
+  const closeSimulator = (triggerHistoryBack = false) => {
+    simDrawer.classList.remove("is-open");
+    simBackdrop.classList.remove("is-open");
     document.body.style.overflow = "";
+
+    if (triggerHistoryBack && window.location.hash === '#simulator') {
+      history.back();
+    }
   };
 
-  openBtn.addEventListener("click", openDrawer);
-  quickBtn.addEventListener("click", openDrawer);
-  closeBtn.addEventListener("click", closeDrawer);
-  backdrop.addEventListener("click", closeDrawer);
+  openSimBtn.addEventListener("click", () => openSimulator(true));
+  closeSimBtn.addEventListener("click", () => closeSimulator(true));
+  simBackdrop.addEventListener("click", () => closeSimulator(true));
+
+  // 3. 브라우저 뒤로가기 연동
+  window.addEventListener("popstate", () => {
+    if (simDrawer.classList.contains("is-open")) {
+      closeSimulator(false);
+    }
+  });
 
   window.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && drawer.classList.contains("is-open")) {
-      closeDrawer();
+    if (e.key === "Escape") {
+      if (simDrawer.classList.contains("is-open")) {
+        closeSimulator(true);
+      } else if (navDrawer.classList.contains("is-open")) {
+        closeNavDrawer();
+      }
     }
   });
 }
 
 // ==========================================
-// 4. 스크롤 FAB 버튼 & 테마 관리
+// 4. 날짜 상세 모달
+// ==========================================
+function initCalendarDetailModal() {
+  const modal = document.getElementById("cal-detail-modal");
+  const backdrop = document.getElementById("cal-modal-backdrop");
+  const closeBtn = document.getElementById("btn-close-modal");
+
+  const closeModal = () => {
+    modal.removeAttribute("open");
+    backdrop.classList.remove("is-open");
+  };
+
+  closeBtn.addEventListener("click", closeModal);
+  backdrop.addEventListener("click", closeModal);
+
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && modal.hasAttribute("open")) {
+      closeModal();
+    }
+  });
+}
+
+function openCalendarDetailModal(cellDate, dateKey, isHoliday, isLeave, isToday, subText) {
+  const modal = document.getElementById("cal-detail-modal");
+  const backdrop = document.getElementById("cal-modal-backdrop");
+  const dateTextEl = document.getElementById("modal-date-text");
+  const badgeEl = document.getElementById("modal-badge-text");
+  const nameEl = document.getElementById("modal-info-name");
+  const descEl = document.getElementById("modal-info-desc");
+  const iconEl = document.getElementById("modal-type-icon");
+
+  const dayName = ['일', '월', '화', '수', '목', '금', '토'][cellDate.getDay()];
+  dateTextEl.innerText = `${cellDate.getFullYear()}년 ${cellDate.getMonth() + 1}월 ${cellDate.getDate()}일 (${dayName})`;
+
+  if (isHoliday) {
+    iconEl.innerText = "celebration";
+    badgeEl.innerText = "공휴일";
+    badgeEl.className = "modal-status-badge holiday";
+    nameEl.innerText = holidayMap.get(dateKey) || "공식 공휴일";
+    descEl.innerText = "국가에서 지정한 공식 법정 공휴일(빨간 날)입니다.";
+  } else if (isLeave) {
+    iconEl.innerText = "flight_takeoff";
+    badgeEl.innerText = "연차 추천";
+    badgeEl.className = "modal-status-badge leave";
+    nameEl.innerText = "징검다리 꿀연차 추천일";
+    descEl.innerText = "앞뒤 공휴일 및 주말과 연계하여 1일 연차 사용 시 가장 길게 쉴 수 있는 가성비 황금 구간입니다.";
+  } else if (cellDate.getDay() === 0 || cellDate.getDay() === 6) {
+    iconEl.innerText = "weekend";
+    badgeEl.innerText = "주말";
+    badgeEl.className = "modal-status-badge normal";
+    nameEl.innerText = cellDate.getDay() === 6 ? "토요일 주말" : "일요일 주말";
+    descEl.innerText = "정기 휴일인 주말입니다.";
+  } else {
+    iconEl.innerText = "work";
+    badgeEl.innerText = isToday ? "오늘 (근무일)" : "평일 근무일";
+    badgeEl.className = "modal-status-badge normal";
+    nameEl.innerText = isToday ? "오늘 (출근 및 근무)" : "일반 근무일";
+    descEl.innerText = "정상적인 업무가 진행되는 평일입니다.";
+  }
+
+  modal.setAttribute("open", "");
+  backdrop.classList.add("is-open");
+}
+
+// ==========================================
+// 5. 스크롤 FAB 버튼 & 테마 관리 (모바일 스크롤 감지)
 // ==========================================
 function initThemeManager() {
   const root = document.documentElement;
@@ -139,8 +244,11 @@ function initThemeManager() {
     }
   }
 
+  // 모바일 전용 스크롤 숨김 로직
   let isScrolled = false;
   window.addEventListener("scroll", () => {
+    if (window.innerWidth >= 1024) return; // PC 모드에선 숨기지 않음
+
     const scrollY = window.scrollY;
     if (!isScrolled && scrollY > 60) {
       isScrolled = true;
@@ -154,7 +262,7 @@ function initThemeManager() {
 }
 
 // ==========================================
-// 5. 동적 공휴일 수집 (Nager.Date API)
+// 6. 동적 공휴일 수집 (Nager.Date API)
 // ==========================================
 async function ensureHolidaysForYear(year) {
   const yearsToFetch = [year - 1, year, year + 1];
@@ -202,7 +310,7 @@ function getDayOffName(dateObj) {
 }
 
 // ==========================================
-// 6. 클린 플립 카운트다운
+// 7. 클린 플립 카운트다운
 // ==========================================
 function updateTextFlip(containerId, nextValue) {
   const container = document.getElementById(containerId);
@@ -371,7 +479,7 @@ function updateDynamicProgressBar(now, targetTime) {
 }
 
 // ==========================================
-// 7. 분석 및 연차 추천 연산 코어
+// 8. 분석 및 연차 추천 연산 코어
 // ==========================================
 function countContiguousOffDays(startDate) {
   let count = 0;
@@ -524,7 +632,7 @@ function calculateVacationsForBase(baseDay) {
 
         const dayAfter = new Date(blockEnd);
         dayAfter.setDate(blockEnd.getDate() + 1);
-        if (!isOffDay(dayAfter) && dayAfter >= baseDay) {
+        if (!isOffDay(dayAfter)) {
           rawCandidates.push({
             leaveDate: dayAfter,
             title: `${holidayName} 연장 연차`,
@@ -552,9 +660,9 @@ function calculateVacationsForBase(baseDay) {
 }
 
 // ==========================================
-// 8. 캘린더 그리드 HTML 빌더
+// 9. 캘린더 그리드 DOM 생성 (클릭 모달 연동)
 // ==========================================
-function generateCalendarGridHTML(year, month) {
+function createCalendarGridFragment(year, month) {
   const firstDayIndex = new Date(year, month, 1).getDay();
   const lastDate = new Date(year, month + 1, 0).getDate();
   const prevMonthLastDate = new Date(year, month, 0).getDate();
@@ -562,24 +670,25 @@ function generateCalendarGridHTML(year, month) {
   const todayKey = formatDateKey(new Date());
   const { leaveSet } = getMonthLeaveAnalysis(year, month);
 
-  let html = "";
+  const fragment = document.createDocumentFragment();
 
-  const createCellString = (cellDate, isOtherMonth) => {
+  const createCell = (cellDate, isOtherMonth) => {
     const dateKey = formatDateKey(cellDate);
     const dayOfWeek = cellDate.getDay();
 
-    const classes = ["cal-cell"];
-    if (isOtherMonth) classes.push("other-month");
-    if (dayOfWeek === 0) classes.push("sunday");
-    if (dayOfWeek === 6) classes.push("saturday");
+    const cell = document.createElement("div");
+    cell.className = "cal-cell";
+    if (isOtherMonth) cell.classList.add("other-month");
+    if (dayOfWeek === 0) cell.classList.add("sunday");
+    if (dayOfWeek === 6) cell.classList.add("saturday");
 
     const isHoliday = holidayMap.has(dateKey);
     const isLeave = leaveSet.has(dateKey);
     const isToday = dateKey === todayKey;
 
-    if (isHoliday) classes.push("holiday");
-    if (isLeave) classes.push("leave-rec");
-    if (isToday) classes.push("today");
+    if (isHoliday) cell.classList.add("holiday");
+    if (isLeave) cell.classList.add("leave-rec");
+    if (isToday) cell.classList.add("today");
 
     let subText = "";
     if (isHoliday) {
@@ -588,23 +697,27 @@ function generateCalendarGridHTML(year, month) {
       subText = "연차 추천";
     }
 
-    return `
-      <div class="${classes.join(' ')}">
-        <span class="cal-date-num">${cellDate.getDate()}</span>
-        <span class="cal-sub-label">${subText}</span>
-      </div>
+    cell.innerHTML = `
+      <span class="cal-date-num">${cellDate.getDate()}</span>
+      <span class="cal-sub-label">${subText}</span>
     `;
+
+    cell.addEventListener("click", () => {
+      openCalendarDetailModal(cellDate, dateKey, isHoliday, isLeave, isToday, subText);
+    });
+
+    return cell;
   };
 
   for (let i = firstDayIndex - 1; i >= 0; i--) {
     const prevDateNum = prevMonthLastDate - i;
     const prevCellDate = new Date(year, month - 1, prevDateNum);
-    html += createCellString(prevCellDate, true);
+    fragment.appendChild(createCell(prevCellDate, true));
   }
 
   for (let d = 1; d <= lastDate; d++) {
     const cellDate = new Date(year, month, d);
-    html += createCellString(cellDate, false);
+    fragment.appendChild(createCell(cellDate, false));
   }
 
   const totalRendered = firstDayIndex + lastDate;
@@ -612,22 +725,23 @@ function generateCalendarGridHTML(year, month) {
 
   for (let d = 1; d <= nextDaysNeeded; d++) {
     const nextCellDate = new Date(year, month + 1, d);
-    html += createCellString(nextCellDate, true);
+    fragment.appendChild(createCell(nextCellDate, true));
   }
 
-  return html;
+  return fragment;
 }
 
 // ==========================================
-// 9. 메인 화면 렌더링 (실시간 고정 월)
+// 10. 메인 화면 렌더링 (실시간 고정 월)
 // ==========================================
 async function renderMainRealtimeSpace() {
   await ensureHolidaysForYear(currentRealYear);
 
   document.getElementById("main-cal-month-year").innerText = `${currentRealYear}년 ${currentRealMonth + 1}월`;
-  document.getElementById("main-calendar-days").innerHTML = generateCalendarGridHTML(currentRealYear, currentRealMonth);
+  const container = document.getElementById("main-calendar-days");
+  container.innerHTML = "";
+  container.appendChild(createCalendarGridFragment(currentRealYear, currentRealMonth));
 
-  // 1. 통계
   const lastDate = new Date(currentRealYear, currentRealMonth + 1, 0).getDate();
   let saturdays = 0, sundays = 0, weekdayHolidays = 0;
 
@@ -654,7 +768,6 @@ async function renderMainRealtimeSpace() {
   document.getElementById("main-stat-work-days").innerText = `${workDays}일`;
   document.getElementById("main-stat-work-percent").innerText = `근무 비율 ${workPercent}%`;
 
-  // 2. 브리핑
   const { maxConsecutiveRest, candidates } = getMonthLeaveAnalysis(currentRealYear, currentRealMonth);
   const headlineEl = document.getElementById("main-insight-headline");
   const descEl = document.getElementById("main-insight-desc");
@@ -681,13 +794,12 @@ async function renderMainRealtimeSpace() {
     iconEl.innerText = "battery_alert";
   }
 
-  // 3. 가성비 연차 추천
   const today = new Date();
   const mainRecs = calculateVacationsForBase(today);
   const vacListEl = document.getElementById("main-vacation-recommendations");
 
   if (mainRecs.length === 0) {
-    vacListEl.innerHTML = `<div class="recommendation-item"><div class="item-content"><h3>추천 가능한 연차 일정이 없습니다.</h3><p>상단 '미래 연차 구성' 메뉴에서 다른 시즌을 탐색해보세요.</p></div></div>`;
+    vacListEl.innerHTML = `<div class="recommendation-item"><div class="item-content"><h3>추천 가능한 연차 일정이 없습니다.</h3><p>상단 메뉴에서 미래 연차를 탐색해보세요.</p></div></div>`;
   } else {
     vacListEl.innerHTML = mainRecs.map(rec => `
       <div class="recommendation-item">
@@ -701,7 +813,6 @@ async function renderMainRealtimeSpace() {
     `).join("");
   }
 
-  // 4. 다가오는 공휴일
   const holListEl = document.getElementById("main-holiday-list");
   const baseDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
   const holidays = Array.from(holidayMap.entries()).map(([dateStr, name]) => {
@@ -733,27 +844,32 @@ async function renderMainRealtimeSpace() {
 }
 
 // ==========================================
-// 10. 미래 연차 시뮬레이터 공간 렌더링 (동적 월 변경)
+// 11. 미래 연차 시뮬레이터 렌더링 (오늘로 이동하기 동적 토글)
 // ==========================================
 async function renderSimulatedSpace(direction = "none") {
   await ensureHolidaysForYear(simViewYear);
 
   document.getElementById("sim-cal-month-year").innerText = `${simViewYear}년 ${simViewMonth + 1}월`;
 
+  // 🌟 오늘이 속한 달인 경우 '오늘로 이동하기' 버튼 숨김 처리
+  const todayBtn = document.getElementById("sim-cal-btn-today");
+  const isCurrentMonthView = (simViewYear === currentRealYear && simViewMonth === currentRealMonth);
+  todayBtn.classList.toggle("is-hidden", isCurrentMonthView);
+
   const viewport = document.getElementById("sim-calendar-viewport");
   const activeLayer = viewport.querySelector(".calendar-grid-layer.active-layer") || 
                       document.getElementById("sim-calendar-days-active");
 
-  const newGridHTML = generateCalendarGridHTML(simViewYear, simViewMonth);
+  const newFragment = createCalendarGridFragment(simViewYear, simViewMonth);
 
-  // 1. 슬라이드 애니메이션 처리
   if (direction === "none" || !activeLayer) {
-    activeLayer.innerHTML = newGridHTML;
+    activeLayer.innerHTML = "";
+    activeLayer.appendChild(newFragment);
   } else if (!isSimCalendarSliding) {
     isSimCalendarSliding = true;
     const newLayer = document.createElement("div");
     newLayer.className = "calendar-grid-layer";
-    newLayer.innerHTML = newGridHTML;
+    newLayer.appendChild(newFragment);
     viewport.appendChild(newLayer);
 
     if (direction === "next") {
@@ -771,7 +887,6 @@ async function renderSimulatedSpace(direction = "none") {
     }, 330);
   }
 
-  // 2. 시뮬레이션 통계 갱신
   const lastDate = new Date(simViewYear, simViewMonth + 1, 0).getDate();
   let saturdays = 0, sundays = 0, weekdayHolidays = 0;
 
@@ -798,7 +913,6 @@ async function renderSimulatedSpace(direction = "none") {
   document.getElementById("sim-stat-work-days").innerText = `${workDays}일`;
   document.getElementById("sim-stat-work-percent").innerText = `근무 비율 ${workPercent}%`;
 
-  // 3. 시뮬레이션 브리핑 갱신
   const { maxConsecutiveRest, candidates } = getMonthLeaveAnalysis(simViewYear, simViewMonth);
   const headlineEl = document.getElementById("sim-insight-headline");
   const descEl = document.getElementById("sim-insight-desc");
@@ -825,7 +939,6 @@ async function renderSimulatedSpace(direction = "none") {
     iconEl.innerText = "battery_alert";
   }
 
-  // 4. 시뮬레이션 시점 기준 연차 추천 갱신
   const simBaseDate = new Date(simViewYear, simViewMonth, 1);
   const simRecs = calculateVacationsForBase(simBaseDate);
   const simVacListEl = document.getElementById("sim-vacation-recommendations");
@@ -846,7 +959,6 @@ async function renderSimulatedSpace(direction = "none") {
     `).join("");
   }
 
-  // 5. 시뮬레이션 시점 기준 공휴일 일정 갱신
   const simHolListEl = document.getElementById("sim-holiday-list");
   document.getElementById("sim-holiday-desc").innerText = `${simViewYear}년 ${simViewMonth + 1}월 이후 예정된 휴일`;
   
@@ -878,7 +990,7 @@ async function renderSimulatedSpace(direction = "none") {
 }
 
 // ==========================================
-// 11. 시뮬레이터 캘린더 컨트롤
+// 12. 시뮬레이터 캘린더 컨트롤
 // ==========================================
 function setupSimCalendarControls() {
   document.getElementById("sim-cal-prev").addEventListener("click", async () => {
@@ -901,6 +1013,7 @@ function setupSimCalendarControls() {
     await renderSimulatedSpace("next");
   });
 
+  // '오늘로 이동하기' 클릭 시 현재 월로 복귀 및 버튼 자동 숨김
   document.getElementById("sim-cal-btn-today").addEventListener("click", async () => {
     if (isSimCalendarSliding) return;
     const isMovingForward = (currentRealYear > simViewYear) || 
@@ -913,11 +1026,12 @@ function setupSimCalendarControls() {
 }
 
 // ==========================================
-// 12. 초기화
+// 13. 초기화
 // ==========================================
 async function init() {
   initThemeManager();
-  initDrawer();
+  initNavigationAndDrawers();
+  initCalendarDetailModal();
   setupOffWorkTimeInput();
   setupSimCalendarControls();
 
