@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="icon" type="image/png" href="/day-off.png">
   <title>주말 언제와? | 휴일 및 연차 계산기</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -11,25 +10,22 @@
   <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800;900&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
 </head>
 <body>
-  <!-- 상단 앱 바 -->
-  <header class="app-top-bar">
+  <!-- 상단 앱 바 (스크롤 시 고정) -->
+  <header class="app-top-bar" id="app-top-bar">
     <div class="top-bar-inner">
-      <button style="display: none;" class="md-icon-button" id="btn-open-drawer" aria-label="미래 연차 플래너 열기" title="미래 연차 시뮬레이터">
-        <span class="material-symbols-outlined">menu</span>
-      </button>
       <div class="top-bar-title-wrap">
         <h1 class="brand-title">주말 언제와?</h1>
         <p class="brand-subtitle">실시간 다음 휴일 카운트다운 및 현황</p>
       </div>
-      <button class="md-button md-button-tonal btn-planner-quick" id="btn-open-planner-quick">
-        <span class="material-symbols-outlined icon-small">edit_calendar</span>
-        <span class="btn-text">미래 연차 구성</span>
+      <!-- 우측 상단 햄버거 메뉴 버튼 -->
+      <button class="md-icon-button" id="btn-open-nav-menu" aria-label="메뉴 열기" title="전체 메뉴">
+        <span class="material-symbols-outlined">menu</span>
       </button>
     </div>
   </header>
 
   <!-- ==========================================
-       1. 메인 화면 (실시간 현재 월 전용 - 달력 수정 불가)
+       1. 메인 화면 (실시간 현재 월 전용)
        ========================================== -->
   <div class="app-layout">
     <main class="responsive-dashboard-grid">
@@ -43,10 +39,10 @@
               <h2 id="timer-title" class="title-large">다음 쉬는 날까지</h2>
             </div>
             
-            <!-- 퇴근 시간 설정 칩 -->
-            <div class="target-time-chip" title="퇴근 시간 변경 (브라우저에 자동 저장)">
-              <span class="material-symbols-outlined icon-small">schedule</span>
-              <label for="off-work-time" class="label-small">퇴근</label>
+            <!-- 퇴근 시간 설정 칩 (더 작고 컴팩트하게 조정) -->
+            <div class="target-time-chip compact-chip" title="퇴근 시간 변경 (브라우저에 자동 저장)">
+              <span class="material-symbols-outlined chip-icon">schedule</span>
+              <label for="off-work-time" class="chip-label">퇴근</label>
               <input type="time" id="off-work-time" class="time-input-inline" />
             </div>
           </div>
@@ -100,14 +96,13 @@
           </div>
         </section>
 
-        <!-- 현재 월 고정 달력 (이동 불가 / 뷰 전용) -->
+        <!-- 현재 월 고정 달력 (실시간 고정 뱃지 제거) -->
         <section class="md-card">
           <div class="cal-nav-bar">
             <div class="cal-title-area">
               <span class="card-overline">CURRENT MONTH CALENDAR</span>
               <div class="cal-title-row">
                 <h2 id="main-cal-month-year" class="title-medium">이번 달 달력</h2>
-                <span class="badge-locked">오늘 기준</span>
               </div>
             </div>
           </div>
@@ -227,168 +222,253 @@
     </main>
 
     <footer class="app-footer">
-      <p>Powered by kgj 😊</p>
+      <p>Powered by kgj</p>
     </footer>
   </div>
 
   <!-- ==========================================
-       2. 미래 연차 시뮬레이터 (아래에서 위로 올라오는 바텀 시트)
+       2. 사이드 햄버거 메뉴 네비게이션 드로어
        ========================================== -->
-  <div class="drawer-backdrop" id="drawer-backdrop"></div>
-  
-  <aside class="simulation-drawer" id="simulation-drawer" aria-label="미래 연차 시뮬레이터">
-    <!-- 모바일 드래그 핸들 바 -->
-    <div class="drawer-handle-bar">
-      <span class="drawer-handle"></span>
-    </div>
-
-    <div class="drawer-header">
-      <div class="drawer-title-group">
-        <span class="material-symbols-outlined drawer-header-icon">calendar_month</span>
-        <div>
-          <h2 class="drawer-title">미래 연차 시뮬레이터</h2>
-          <p class="drawer-subtitle">달력을 탐색하며 미래 시점의 연차 및 휴일을 분석합니다.</p>
-        </div>
+  <div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+  <aside class="nav-drawer" id="nav-drawer" aria-label="사이드 메뉴">
+    <div class="nav-drawer-header">
+      <div class="nav-drawer-title-wrap">
+        <h2 class="nav-title">메뉴</h2>
+        <span class="nav-version">v1.2.0</span>
       </div>
-      <button class="md-icon-button" id="btn-close-drawer" aria-label="닫기">
+      <button class="md-icon-button" id="btn-close-nav-menu" aria-label="메뉴 닫기">
         <span class="material-symbols-outlined">close</span>
       </button>
     </div>
+    
+    <nav class="nav-menu-list">
+      <!-- 🌟 미래 연차 시뮬레이터 진입 버튼 -->
+      <button class="nav-menu-item primary-action" id="menu-open-simulator">
+        <span class="material-symbols-outlined nav-item-icon">edit_calendar</span>
+        <div class="nav-item-text">
+          <span class="nav-item-title">미래 연차 시뮬레이터</span>
+          <span class="nav-item-desc">미래 달력을 넘기며 연차 황금루트 탐색</span>
+        </div>
+        <span class="material-symbols-outlined nav-item-arrow">chevron_right</span>
+      </button>
 
-    <div class="drawer-content">
-      <!-- 1. 시뮬레이터 인터랙티브 캘린더 -->
-      <section class="md-card">
-        <div class="cal-nav-bar">
-          <div class="cal-title-area">
-            <span class="card-overline">SIMULATION CALENDAR</span>
-            <div class="cal-title-row">
-              <h2 id="sim-cal-month-year" class="title-medium">2026년 9월</h2>
-              <button id="sim-cal-btn-today" class="md-button md-button-text">이번 달로 복귀</button>
+      <!-- 임시 기능 메뉴 목록 -->
+      <div class="nav-section-label">준비 중인 기능</div>
+
+      <button class="nav-menu-item is-disabled" title="준비 중입니다">
+        <span class="material-symbols-outlined nav-item-icon">notifications_active</span>
+        <div class="nav-item-text">
+          <span class="nav-item-title">퇴근 및 연휴 알림 설정</span>
+          <span class="nav-item-desc">D-Day 푸시 알림 (준비 중)</span>
+        </div>
+        <span class="nav-badge-temp">준비중</span>
+      </button>
+
+      <button class="nav-menu-item is-disabled" title="준비 중입니다">
+        <span class="material-symbols-outlined nav-item-icon">flight</span>
+        <div class="nav-item-text">
+          <span class="nav-item-title">휴가 여행지 추천</span>
+          <span class="nav-item-desc">연차 일수에 맞춤 여행 코스 (준비 중)</span>
+        </div>
+        <span class="nav-badge-temp">준비중</span>
+      </button>
+
+      <button class="nav-menu-item is-disabled" title="준비 중입니다">
+        <span class="material-symbols-outlined nav-item-icon">share</span>
+        <div class="nav-item-text">
+          <span class="nav-item-title">연차 일정 캘린더 내보내기</span>
+          <span class="nav-item-desc">Google / Outlook 연동 (준비 중)</span>
+        </div>
+        <span class="nav-badge-temp">준비중</span>
+      </button>
+    </nav>
+  </aside>
+
+  <!-- ==========================================
+       3. 미래 연차 시뮬레이터 (풀스크린 모달)
+       ========================================== -->
+  <div class="drawer-backdrop" id="drawer-backdrop"></div>
+  
+  <aside class="simulation-drawer full-screen-view" id="simulation-drawer" aria-label="미래 연차 시뮬레이터">
+    <!-- 풀스크린 상단 헤더 바 (좌측 뒤로가기 제거, 우측 닫기 X 버튼 배치) -->
+    <header class="fullscreen-drawer-header">
+      <div class="fullscreen-header-inner">
+        <div class="fullscreen-title-wrap">
+          <h2 class="drawer-title">미래 연차 시뮬레이터</h2>
+          <p class="drawer-subtitle">원하는 달을 탐색하며 미래 시점의 연차와 휴일을 분석합니다.</p>
+        </div>
+        <!-- 우측 닫기(X) 버튼 -->
+        <button class="md-icon-button btn-close-sim" id="btn-close-drawer" aria-label="시뮬레이터 닫기" title="닫기">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- 풀스크린 내부 스크롤 컨텐츠 -->
+    <div class="fullscreen-drawer-scroll">
+      <div class="fullscreen-content-container">
+        <!-- 1. 시뮬레이터 캘린더 -->
+        <section class="md-card">
+          <div class="cal-nav-bar">
+            <div class="cal-title-area">
+              <span class="card-overline">SIMULATION CALENDAR</span>
+              <div class="cal-title-row">
+                <h2 id="sim-cal-month-year" class="title-medium">2026년 9월</h2>
+                <!-- 🌟 오늘로 이동하기 (현재 달일 경우 자동 숨김) -->
+                <button id="sim-cal-btn-today" class="md-button md-button-text sim-today-btn">오늘로 이동하기</button>
+              </div>
+            </div>
+            <div class="cal-nav-buttons">
+              <button id="sim-cal-prev" class="md-icon-button" aria-label="이전 달">
+                <span class="material-symbols-outlined">chevron_left</span>
+              </button>
+              <button id="sim-cal-next" class="md-icon-button" aria-label="다음 달">
+                <span class="material-symbols-outlined">chevron_right</span>
+              </button>
             </div>
           </div>
-          <div class="cal-nav-buttons">
-            <button id="sim-cal-prev" class="md-icon-button" aria-label="이전 달">
-              <span class="material-symbols-outlined">chevron_left</span>
-            </button>
-            <button id="sim-cal-next" class="md-icon-button" aria-label="다음 달">
-              <span class="material-symbols-outlined">chevron_right</span>
-            </button>
+
+          <div class="calendar-grid-header">
+            <span class="sun">일</span>
+            <span>월</span>
+            <span>화</span>
+            <span>수</span>
+            <span>목</span>
+            <span>금</span>
+            <span class="sat">토</span>
           </div>
-        </div>
 
-        <div class="calendar-grid-header">
-          <span class="sun">일</span>
-          <span>월</span>
-          <span>화</span>
-          <span>수</span>
-          <span>목</span>
-          <span>금</span>
-          <span class="sat">토</span>
-        </div>
-
-        <div class="calendar-viewport" id="sim-calendar-viewport">
-          <div class="calendar-grid-layer active-layer" id="sim-calendar-days-active"></div>
-        </div>
-
-        <div class="calendar-legend">
-          <span class="legend-item"><span class="legend-dot dot-holiday"></span>공휴일</span>
-          <span class="legend-item"><span class="legend-dot dot-leave"></span>연차 추천</span>
-          <span class="legend-item"><span class="legend-dot dot-today"></span>실제 오늘</span>
-        </div>
-      </section>
-
-      <!-- 2. 시뮬레이션 월별 브리핑 요약 -->
-      <section class="md-card insight-card">
-        <div class="card-headline">
-          <div>
-            <span class="card-overline">MONTHLY INSIGHT (SIMULATED)</span>
-            <h2 class="title-medium" id="sim-insight-title">2026년 9월 휴일 브리핑</h2>
+          <div class="calendar-viewport" id="sim-calendar-viewport">
+            <div class="calendar-grid-layer active-layer" id="sim-calendar-days-active"></div>
           </div>
-        </div>
-        <div class="insight-content-box">
-          <div class="insight-header">
-            <span class="material-symbols-outlined insight-badge-icon" id="sim-insight-icon">insights</span>
-            <h3 class="insight-headline" id="sim-insight-headline">분석 중...</h3>
-          </div>
-          <p class="insight-description" id="sim-insight-desc">데이터를 불러오고 있습니다.</p>
-        </div>
-      </section>
 
-      <!-- 3. 시뮬레이션 월별 통계 위젯 -->
-      <section class="md-card">
-        <div class="card-headline">
-          <div>
-            <span class="card-overline">MONTHLY SUMMARY (SIMULATED)</span>
-            <h2 class="title-medium" id="sim-stats-title">2026년 9월 휴일 현황</h2>
+          <div class="calendar-legend">
+            <span class="legend-item"><span class="legend-dot dot-holiday"></span>공휴일</span>
+            <span class="legend-item"><span class="legend-dot dot-leave"></span>연차 추천</span>
+            <span class="legend-item"><span class="legend-dot dot-today"></span>실제 오늘</span>
           </div>
-        </div>
+        </section>
 
-        <div class="stats-grid">
-          <div class="stat-box total">
-            <div class="stat-content">
-              <span class="stat-label">총 쉬는 날</span>
-              <span class="stat-value" id="sim-stat-total-days">0일</span>
+        <!-- 2. 시뮬레이션 브리핑 요약 -->
+        <section class="md-card insight-card">
+          <div class="card-headline">
+            <div>
+              <span class="card-overline">MONTHLY INSIGHT (SIMULATED)</span>
+              <h2 class="title-medium" id="sim-insight-title">2026년 9월 휴일 브리핑</h2>
             </div>
-            <span class="material-symbols-outlined stat-icon">event_available</span>
           </div>
-
-          <div class="stat-box">
-            <div class="stat-content">
-              <span class="stat-label">주말 (토/일)</span>
-              <span class="stat-value" id="sim-stat-weekend-days">0일</span>
-              <span class="stat-sub" id="sim-stat-weekend-detail">토 0일 / 일 0일</span>
+          <div class="insight-content-box">
+            <div class="insight-header">
+              <span class="material-symbols-outlined insight-badge-icon" id="sim-insight-icon">insights</span>
+              <h3 class="insight-headline" id="sim-insight-headline">분석 중...</h3>
             </div>
-            <span class="material-symbols-outlined stat-icon">weekend</span>
+            <p class="insight-description" id="sim-insight-desc">데이터를 불러오고 있습니다.</p>
           </div>
+        </section>
 
-          <div class="stat-box">
-            <div class="stat-content">
-              <span class="stat-label">평일 공휴일</span>
-              <span class="stat-value" id="sim-stat-holiday-days">0일</span>
-              <span class="stat-sub">공식 빨간 날</span>
+        <!-- 3. 시뮬레이션 통계 위젯 -->
+        <section class="md-card">
+          <div class="card-headline">
+            <div>
+              <span class="card-overline">MONTHLY SUMMARY (SIMULATED)</span>
+              <h2 class="title-medium" id="sim-stats-title">2026년 9월 휴일 현황</h2>
             </div>
-            <span class="material-symbols-outlined stat-icon">flag</span>
           </div>
 
-          <div class="stat-box">
-            <div class="stat-content">
-              <span class="stat-label">실제 출근일</span>
-              <span class="stat-value" id="sim-stat-work-days">0일</span>
-              <span class="stat-sub" id="sim-stat-work-percent">근무 비율 0%</span>
+          <div class="stats-grid">
+            <div class="stat-box total">
+              <div class="stat-content">
+                <span class="stat-label">총 쉬는 날</span>
+                <span class="stat-value" id="sim-stat-total-days">0일</span>
+              </div>
+              <span class="material-symbols-outlined stat-icon">event_available</span>
             </div>
-            <span class="material-symbols-outlined stat-icon">work</span>
-          </div>
-        </div>
-      </section>
 
-      <!-- 4. 시뮬레이션 시점 기준 연차 추천 -->
-      <section class="md-card">
-        <div class="card-headline">
-          <div>
-            <span class="card-overline">VACATION PLANNER (SIMULATED)</span>
-            <h2 class="title-medium">가성비 연차 추천</h2>
-            <p class="body-small" id="sim-vacation-desc">선택된 달 이후 6개월간의 황금 루트</p>
-          </div>
-        </div>
-        <div class="recommendation-list" id="sim-vacation-recommendations"></div>
-      </section>
+            <div class="stat-box">
+              <div class="stat-content">
+                <span class="stat-label">주말 (토/일)</span>
+                <span class="stat-value" id="sim-stat-weekend-days">0일</span>
+                <span class="stat-sub" id="sim-stat-weekend-detail">토 0일 / 일 0일</span>
+              </div>
+              <span class="material-symbols-outlined stat-icon">weekend</span>
+            </div>
 
-      <!-- 5. 시뮬레이션 시점 기준 공휴일 일정 -->
-      <section class="md-card">
-        <div class="card-headline">
-          <div>
-            <span class="card-overline">UPCOMING HOLIDAYS (SIMULATED)</span>
-            <h2 class="title-medium">예정된 공휴일 일정</h2>
-            <p class="body-small" id="sim-holiday-desc">선택된 달 이후 예정된 휴일</p>
+            <div class="stat-box">
+              <div class="stat-content">
+                <span class="stat-label">평일 공휴일</span>
+                <span class="stat-value" id="sim-stat-holiday-days">0일</span>
+                <span class="stat-sub">공식 빨간 날</span>
+              </div>
+              <span class="material-symbols-outlined stat-icon">flag</span>
+            </div>
+
+            <div class="stat-box">
+              <div class="stat-content">
+                <span class="stat-label">실제 출근일</span>
+                <span class="stat-value" id="sim-stat-work-days">0일</span>
+                <span class="stat-sub" id="sim-stat-work-percent">근무 비율 0%</span>
+              </div>
+              <span class="material-symbols-outlined stat-icon">work</span>
+            </div>
           </div>
-        </div>
-        <ul class="md-list" id="sim-holiday-list"></ul>
-      </section>
+        </section>
+
+        <!-- 4. 시뮬레이션 연차 추천 -->
+        <section class="md-card">
+          <div class="card-headline">
+            <div>
+              <span class="card-overline">VACATION PLANNER (SIMULATED)</span>
+              <h2 class="title-medium">가성비 연차 추천</h2>
+              <p class="body-small" id="sim-vacation-desc">선택된 달 이후 6개월간의 황금 루트</p>
+            </div>
+          </div>
+          <div class="recommendation-list" id="sim-vacation-recommendations"></div>
+        </section>
+
+        <!-- 5. 시뮬레이션 공휴일 일정 -->
+        <section class="md-card">
+          <div class="card-headline">
+            <div>
+              <span class="card-overline">UPCOMING HOLIDAYS (SIMULATED)</span>
+              <h2 class="title-medium">예정된 공휴일 일정</h2>
+              <p class="body-small" id="sim-holiday-desc">선택된 달 이후 예정된 휴일</p>
+            </div>
+          </div>
+          <ul class="md-list" id="sim-holiday-list"></ul>
+        </section>
+      </div>
     </div>
   </aside>
 
-  <!-- 테마 모드 전환 컨트롤러 -->
-  <aside class="theme-switcher-fab" id="theme-switcher-fab">
+  <!-- 달력 날짜 상세 모달 -->
+  <div class="modal-backdrop" id="cal-modal-backdrop"></div>
+  <dialog class="cal-detail-modal" id="cal-detail-modal">
+    <div class="modal-header">
+      <div class="modal-title-wrap">
+        <span class="material-symbols-outlined modal-icon" id="modal-type-icon">event</span>
+        <div>
+          <h3 class="modal-date" id="modal-date-text">2026년 8월 15일 (토)</h3>
+          <span class="modal-status-badge" id="modal-badge-text">공휴일</span>
+        </div>
+      </div>
+      <button class="md-icon-button modal-close-btn" id="btn-close-modal" aria-label="닫기">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-info-row">
+        <span class="info-label">명칭 / 사유</span>
+        <p class="info-value-highlight" id="modal-info-name">광복절</p>
+      </div>
+      <div class="modal-info-row" id="modal-extra-box">
+        <span class="info-label">상세 안내</span>
+        <p class="info-value-desc" id="modal-info-desc">대한민국 공식 공휴일입니다.</p>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- 🌟 좌측 하단 테마 모드 전환 컨트롤러 -->
+  <aside class="theme-switcher-fab left-fab" id="theme-switcher-fab">
     <div class="theme-menu" id="theme-menu">
       <button class="theme-option" data-theme-value="light">
         <span class="material-symbols-outlined">light_mode</span>
