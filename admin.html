@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>피드백 관리자 대시보드 - 주말 언제와?</title>
+  <link rel="icon" type="image/png" href="/day-off.png">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800;900&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', -apple-system, sans-serif; }
+    body { background-color: #f1f5f9; color: #0f172a; min-height: 100vh; padding: 32px 16px 60px; line-height: 1.5; }
+    .container { max-width: 1120px; margin: 0 auto; }
+
+    /* 로그인 인증 카드 */
+    .auth-card {
+      max-width: 380px;
+      margin: 100px auto;
+      background: #ffffff;
+      padding: 36px 28px;
+      border-radius: 16px;
+      border: 1.5px solid #cbd5e1;
+      box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08);
+      text-align: center;
+    }
+    .auth-title { font-size: 1.25rem; font-weight: 900; margin-bottom: 8px; color: #005fb0; }
+    .auth-desc { font-size: 0.8125rem; color: #64748b; margin-bottom: 24px; }
+    .auth-input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 0.9375rem;
+      outline: none;
+      margin-bottom: 14px;
+    }
+    .auth-input:focus { border-color: #005fb0; }
+    .auth-btn {
+      width: 100%;
+      padding: 12px;
+      background-color: #005fb0;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.9375rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .auth-btn:hover { background-color: #00497d; }
+
+    /* 대시보드 화면 */
+    #dashboard-view { display: none; }
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .header-title-wrap h2 { font-size: 1.4rem; font-weight: 900; color: #0f172a; }
+    .header-title-wrap p { font-size: 0.85rem; color: #64748b; margin-top: 2px; }
+    
+    .header-actions { display: flex; align-items: center; gap: 10px; }
+    .refresh-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 1.5px solid #cbd5e1;
+      background-color: #ffffff;
+      color: #0f172a;
+      font-weight: 700;
+      font-size: 0.8125rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .refresh-btn:hover { background-color: #f8fafc; border-color: #005fb0; color: #005fb0; }
+    .refresh-btn .material-symbols-outlined { font-size: 18px; }
+
+    /* 테이블 카드 영역 */
+    .table-card {
+      background: #ffffff;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+    }
+    table { width: 100%; border-collapse: collapse; text-align: left; }
+    th, td { padding: 16px 18px; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
+    th { background: #f8fafc; font-weight: 800; color: #475569; border-bottom: 1.5px solid #cbd5e1; font-size: 0.8125rem; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background-color: #f8fafc; }
+
+    /* 열별 가로 너비 및 서식 */
+    .col-no { width: 64px; text-align: center; font-weight: 800; color: #64748b; font-size: 0.875rem; }
+    .col-date { width: 175px; color: #475569; font-size: 0.8125rem; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .col-category { width: 140px; }
+    .col-content {
+      font-size: 0.9375rem;
+      color: #1e293b;
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.6;
+    }
+
+    /* 카테고리 배지 */
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .badge-오류신고 { background-color: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
+    .badge-개선사항-요청 { background-color: #fef3c7; color: #d97706; border: 1px solid #fcd34d; }
+    .badge-신기능-아이디어 { background-color: #e0e7ff; color: #4338ca; border: 1px solid #c7d2fe; }
+
+    @media (max-width: 768px) {
+      .table-card { overflow-x: auto; }
+      table { min-width: 680px; }
+      body { padding: 24px 12px 40px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- 1. 비밀번호 인증 폼 -->
+    <div class="auth-card" id="auth-view">
+      <h1 class="auth-title">🔒 관리자 인증</h1>
+      <p class="auth-desc">피드백 데이터를 조회하려면 비밀번호를 입력하세요.</p>
+      <form onsubmit="handleLogin(event)">
+        <input type="password" id="admin-pw" class="auth-input" placeholder="비밀번호 입력" required autofocus />
+        <button type="submit" id="login-btn" class="auth-btn">인증 및 내역 조회</button>
+      </form>
+    </div>
+
+    <!-- 2. 피드백 목록 대시보드 -->
+    <div id="dashboard-view">
+      <div class="dashboard-header">
+        <div class="header-title-wrap">
+          <h2>📬 피드백 접수 현황 (<span id="total-count">0</span>건)</h2>
+          <p>구글 스프레드시트 FEED 시트와 실시간 연동된 피드백 목록입니다.</p>
+        </div>
+        <div class="header-actions">
+          <button type="button" class="refresh-btn" onclick="fetchFeedbacks()">
+            <span class="material-symbols-outlined">refresh</span>
+            <span>새로고침</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <table>
+          <thead>
+            <tr>
+              <th class="col-no">No.</th>
+              <th class="col-date">추가한 시간</th>
+              <th class="col-category">카테고리</th>
+              <th>피드백 내용</th>
+            </tr>
+          </thead>
+          <tbody id="feedback-table-body">
+            <!-- 자바스크립트로 렌더링 -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxyLX-M_XVv8_9TiIEZ9mmHaKyGz4XHE_bcwyMGWnms5fs6G-gfW6nwghUoxpFB1cL58g/exec';
+    let currentPassword = '';
+
+    function handleLogin(e) {
+      e.preventDefault();
+      currentPassword = document.getElementById('admin-pw').value;
+      fetchFeedbacks();
+    }
+
+    // 🌟 ISO 8601 및 다양한 날짜 형식을 'YYYY-MM-DD HH:mm:ss'로 깔끔하게 변환하는 포맷터
+    function formatDateTime(val) {
+      if (!val) return '-';
+      const d = new Date(val);
+      if (isNaN(d.getTime())) {
+        return String(val);
+      }
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const dd = String(d.getDate()).padStart(2, '0');
+      const hh = String(d.getHours()).padStart(2, '0');
+      const min = String(d.getMinutes()).padStart(2, '0');
+      const ss = String(d.getSeconds()).padStart(2, '0');
+      return `${yyyy}-${mm}-${dd} ${hh}:${min}:${ss}`;
+    }
+
+    async function fetchFeedbacks() {
+      const btn = document.getElementById('login-btn');
+      if (btn) btn.innerText = '인증 확인 중...';
+
+      try {
+        const response = await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify({
+            action: 'getAdminFeedbacks',
+            password: currentPassword
+          })
+        });
+
+        const result = await response.json();
+
+        if (result.status === 'success') {
+          document.getElementById('auth-view').style.display = 'none';
+          document.getElementById('dashboard-view').style.display = 'block';
+          renderTable(result.data);
+        } else {
+          alert(result.message || '인증에 실패했습니다. 비밀번호를 다시 확인하세요.');
+        }
+      } catch (err) {
+        console.error('관리자 조회 오류:', err);
+        alert('데이터를 가져오는 중 네트워크 오류가 발생했습니다.');
+      } finally {
+        if (btn) btn.innerText = '인증 및 내역 조회';
+      }
+    }
+
+    function renderTable(data) {
+      const tbody = document.getElementById('feedback-table-body');
+      document.getElementById('total-count').innerText = data.length;
+      tbody.innerHTML = '';
+
+      if (data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 48px; color: #94a3b8; font-weight:600;">접수된 피드백 내역이 없습니다.</td></tr>';
+        return;
+      }
+
+      data.forEach((item, index) => {
+        const badgeClass = 'badge-' + String(item.category || '').replace(/\s+/g, '-');
+        const formattedDate = formatDateTime(item.createdAt);
+        const rowNumber = index + 1; // 🌟 1, 2, 3... 순번 번호 부여
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td class="col-no">${rowNumber}</td>
+          <td class="col-date">${formattedDate}</td>
+          <td class="col-category"><span class="badge ${badgeClass}">${escapeHtml(item.category || '기타')}</span></td>
+          <td class="col-content">${escapeHtml(item.content || '')}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.innerText = text;
+      return div.innerHTML;
+    }
+  </script>
+</body>
+</html>
