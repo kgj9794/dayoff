@@ -1,6 +1,8 @@
 // ==========================================
 // 1. 상태 관리 & 유틸
 // ==========================================
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxyLX-M_XVv8_9TiIEZ9mmHaKyGz4XHE_bcwyMGWnms5fs6G-gfW6nwghUoxpFB1cL58g/exec';
+
 const holidayMap = new Map();
 const fetchedYears = new Set();
 const weatherMap = new Map(); // 날씨 캐시 맵
@@ -160,7 +162,6 @@ async function ensureWeatherForecast() {
         const maxT = data.daily.temperature_2m_max ? data.daily.temperature_2m_max[idx] : null;
         const minT = data.daily.temperature_2m_min ? data.daily.temperature_2m_min[idx] : null;
 
-        // 🌟 null, undefined 또는 NaN인 경우 유효하지 않은 데이터로 간주하고 제외 (0도 표기 방지)
         if (maxT === null || minT === null || code === null || isNaN(maxT) || isNaN(minT)) {
           return;
         }
@@ -581,7 +582,80 @@ function openCalendarDetailModal(cellDate, dateKey, isHoliday, isLeave, isToday,
 }
 
 // ==========================================
-// 8. 테마 관리
+// 8. 🌟 피드백 제출 & 스크롤 숨김/노출 매니저
+// ==========================================
+function initFeedbackSystem() {
+  const fabBtn = document.getElementById("btn-feedback-fab");
+  const closeBtn = document.getElementById("btn-close-feedback");
+  const backdrop = document.getElementById("feedback-modal-backdrop");
+  const form = document.getElementById("feedback-form");
+  const submitBtn = document.getElementById("fb-submit-btn");
+  const btnText = document.getElementById("fb-btn-text");
+
+  if (fabBtn) {
+    fabBtn.addEventListener("click", () => {
+      openModalView("feedback-modal", "feedback-modal-backdrop");
+    });
+  }
+
+  if (closeBtn) closeBtn.addEventListener("click", () => closeModalView("feedback-modal"));
+  if (backdrop) backdrop.addEventListener("click", () => closeModalView("feedback-modal"));
+
+  // 🌟 스크롤 최상위일 때 노출, 아래로 스크롤 시 자동 숨김
+  window.addEventListener("scroll", () => {
+    if (!fabBtn) return;
+    const scrollY = window.scrollY;
+    if (scrollY <= 20) {
+      fabBtn.classList.remove("is-hidden");
+    } else {
+      fabBtn.classList.add("is-hidden");
+    }
+  }, { passive: true });
+
+  // 피드백 전송 처리
+  if (form) {
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const category = document.getElementById("fb-category").value;
+      const content = document.getElementById("fb-content").value.trim();
+
+      if (!category || !content) return;
+
+      submitBtn.disabled = true;
+      btnText.innerText = "전송 중...";
+
+      try {
+        const response = await fetch(APPS_SCRIPT_URL, {
+          method: "POST",
+          body: JSON.stringify({
+            action: "submitFeedback",
+            category: category,
+            content: content
+          })
+        });
+
+        const result = await response.json();
+
+        if (result.status === "success") {
+          alert("소중한 의견이 등록되었습니다. 감사합니다!");
+          form.reset();
+          closeModalView("feedback-modal");
+        } else {
+          alert("등록 중 오류가 발생했습니다: " + (result.message || "다시 시도해주세요."));
+        }
+      } catch (err) {
+        console.error("피드백 전송 오류:", err);
+        alert("네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+      } finally {
+        submitBtn.disabled = false;
+        btnText.innerText = "피드백 보내기";
+      }
+    });
+  }
+}
+
+// ==========================================
+// 9. 테마 관리
 // ==========================================
 function initThemeManager() {
   const root = document.documentElement;
@@ -644,7 +718,7 @@ function initThemeManager() {
 }
 
 // ==========================================
-// 9. 동적 공휴일 수집 (Nager.Date API)
+// 10. 동적 공휴일 수집 (Nager.Date API)
 // ==========================================
 async function ensureHolidaysForYear(year) {
   const yearsToFetch = [year - 1, year, year + 1];
@@ -692,7 +766,7 @@ function getDayOffName(dateObj) {
 }
 
 // ==========================================
-// 10. 클린 플립 카운트다운
+// 11. 클린 플립 카운트다운
 // ==========================================
 function updateTextFlip(containerId, nextValue) {
   const container = document.getElementById(containerId);
@@ -861,7 +935,7 @@ function updateDynamicProgressBar(now, targetTime) {
 }
 
 // ==========================================
-// 11. 연차 추천 및 해외여행 추천 연산 코어
+// 12. 연차 추천 및 해외여행 추천 연산 코어
 // ==========================================
 function countContiguousOffDays(startDate) {
   let count = 0;
@@ -1118,7 +1192,7 @@ function renderTravelWidget(baseDate, containerId = "main-travel-recommendations
 }
 
 // ==========================================
-// 12. 캘린더 그리드 DOM 생성 (오늘 이후만 날씨 표기 & 컴팩트 배지)
+// 13. 캘린더 그리드 DOM 생성 (오늘 이후만 날씨 표기 & 컴팩트 배지)
 // ==========================================
 function createCalendarGridFragment(year, month) {
   const firstDayIndex = new Date(year, month, 1).getDay();
@@ -1155,7 +1229,7 @@ function createCalendarGridFragment(year, month) {
       subText = "연차 추천";
     }
 
-    // 🌟 오늘(todayKey) 및 이후 미래 날짜에만 날씨 미니 배지 표시 (과거 날씨 제외)
+    // 오늘(todayKey) 및 이후 미래 날짜에만 날씨 미니 배지 표시 (과거 날씨 제외)
     let weatherHtml = "";
     if (dateKey >= todayKey && weatherMap.has(dateKey)) {
       const w = weatherMap.get(dateKey);
@@ -1207,7 +1281,7 @@ function createCalendarGridFragment(year, month) {
 }
 
 // ==========================================
-// 13. 메인 화면 렌더링
+// 14. 메인 화면 렌더링
 // ==========================================
 async function renderMainRealtimeSpace() {
   await Promise.all([
@@ -1326,7 +1400,7 @@ async function renderMainRealtimeSpace() {
 }
 
 // ==========================================
-// 14. 미래 연차 시뮬레이터 렌더링
+// 15. 미래 연차 시뮬레이터 렌더링
 // ==========================================
 async function renderSimulatedSpace(direction = "none") {
   await ensureHolidaysForYear(simViewYear);
@@ -1526,7 +1600,7 @@ function setupSimCalendarControls() {
 }
 
 // ==========================================
-// 15. 점심 메뉴 추천 엔진
+// 16. 점심 메뉴 추천 엔진
 // ==========================================
 const lunchDatabase = [
   // 한식
@@ -1633,7 +1707,7 @@ function setupLunchEngine() {
 }
 
 // ==========================================
-// 16. 루팡 급여 계산기 & 시간때우기 모듈
+// 17. 루팡 급여 계산기 & 시간때우기 모듈
 // ==========================================
 let slackTimerInterval = null;
 let slackSeconds = 0;
@@ -1686,13 +1760,14 @@ function setupSlackingEngine() {
 }
 
 // ==========================================
-// 17. 앱 초기화
+// 18. 앱 초기화
 // ==========================================
 async function init() {
   initThemeManager();
   initGlobalHistoryAndEscListener();
   initNavigationAndDrawers();
   initCalendarDetailModal();
+  initFeedbackSystem(); // 🌟 피드백 시스템 초기화
   setupOffWorkTimeInput();
   setupSimCalendarControls();
   setupLunchEngine();
