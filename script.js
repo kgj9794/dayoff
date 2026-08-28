@@ -3,6 +3,7 @@
 // ==========================================
 const holidayMap = new Map();
 const fetchedYears = new Set();
+const weatherMap = new Map(); // 날씨 캐시 맵
 
 const currentRealYear = new Date().getFullYear();
 const currentRealMonth = new Date().getMonth();
@@ -18,7 +19,7 @@ const flipState = {
   "flip-seconds": null
 };
 
-// 🌟 위젯 기본 순서 (insight와 stats를 좌측 4개로 배분)
+// 위젯 기본 순서 (PC 2열 기준: 좌 4개, 우 3개로 균등 배분)
 const DEFAULT_WIDGET_ORDER = [
   "countdown",
   "calendar",
@@ -97,7 +98,90 @@ function checkAndApplyMarquees() {
 }
 
 // ==========================================
-// 2. 통합 모달 & 뒤로가기(History) 매니저
+// 2. WMO 날씨 코드 매핑 & 무료 날씨 API 연동 (Open-Meteo)
+// ==========================================
+function getWmoWeatherInfo(code) {
+  switch (code) {
+    case 0:
+      return { icon: "☀️", name: "맑음" };
+    case 1:
+    case 2:
+      return { icon: "🌤️", name: "대체로 맑음" };
+    case 3:
+      return { icon: "☁️", name: "흐림" };
+    case 45:
+    case 48:
+      return { icon: "🌫️", name: "안개" };
+    case 51:
+    case 53:
+    case 55:
+      return { icon: "🌦️", name: "이슬비" };
+    case 61:
+    case 63:
+    case 65:
+      return { icon: "🌧️", name: "비" };
+    case 66:
+    case 67:
+      return { icon: "🌧️", name: "진눈깨비" };
+    case 71:
+    case 73:
+    case 75:
+    case 77:
+      return { icon: "❄️", name: "눈" };
+    case 80:
+    case 81:
+    case 82:
+      return { icon: "🌦️", name: "소나기" };
+    case 85:
+    case 86:
+      return { icon: "🌨️", name: "눈보라" };
+    case 95:
+    case 96:
+    case 99:
+      return { icon: "⛈️", name: "뇌우" };
+    default:
+      return { icon: "🌤️", name: "구름 조금" };
+  }
+}
+
+async function ensureWeatherForecast() {
+  try {
+    const lat = 37.5665; // 서울 기준 위도
+    const lon = 126.9780; // 서울 기준 경도
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=Asia%2FSeoul&forecast_days=14`;
+    
+    const res = await fetch(url);
+    if (!res.ok) return;
+    const data = await res.json();
+    
+    if (data && data.daily && data.daily.time) {
+      data.daily.time.forEach((dateStr, idx) => {
+        const code = data.daily.weather_code ? data.daily.weather_code[idx] : null;
+        const maxT = data.daily.temperature_2m_max ? data.daily.temperature_2m_max[idx] : null;
+        const minT = data.daily.temperature_2m_min ? data.daily.temperature_2m_min[idx] : null;
+
+        // 🌟 null, undefined 또는 NaN인 경우 유효하지 않은 데이터로 간주하고 제외 (0도 표기 방지)
+        if (maxT === null || minT === null || code === null || isNaN(maxT) || isNaN(minT)) {
+          return;
+        }
+
+        const info = getWmoWeatherInfo(code);
+
+        weatherMap.set(dateStr, {
+          icon: info.icon,
+          name: info.name,
+          maxTemp: Math.round(maxT),
+          minTemp: Math.round(minT)
+        });
+      });
+    }
+  } catch (err) {
+    console.warn("날씨 예보 불러오기 건너뜀:", err);
+  }
+}
+
+// ==========================================
+// 3. 통합 모달 & 뒤로가기(History) 매니저
 // ==========================================
 const modalHistoryStack = [];
 
@@ -203,7 +287,7 @@ function initGlobalHistoryAndEscListener() {
 }
 
 // ==========================================
-// 3. 위젯 순서 관리 & 대시보드 렌더링 (좌 4개 : 우 3개 균등 분배)
+// 4. 위젯 순서 관리 & 대시보드 렌더링 (좌 4개 : 우 3개 균등 분배)
 // ==========================================
 function getSavedWidgetOrder() {
   try {
@@ -236,7 +320,6 @@ function applyWidgetOrderToDOM(order) {
     colPrimary.prepend(topBar);
   }
 
-  // 🌟 상위 4개(카운트다운, 달력, 브리핑, 통계)는 좌측, 나머지 3개(연차, 공휴일, 여행)는 우측으로 균등 배분
   order.forEach((widgetId, idx) => {
     const widgetEl = document.getElementById(`widget-${widgetId}`);
     if (widgetEl) {
@@ -341,7 +424,7 @@ function initWidgetOrderManager() {
 }
 
 // ==========================================
-// 4. 퇴근 시간 브라우저 스토리지 & 클릭 반응성 강화
+// 5. 퇴근 시간 브라우저 스토리지 & 클릭 반응성 강화
 // ==========================================
 function getOffWorkTime() {
   const saved = localStorage.getItem("app_off_work_time") || "17:00";
@@ -383,7 +466,7 @@ function setupOffWorkTimeInput() {
 }
 
 // ==========================================
-// 5. 네비게이션 드로어 & 모달 이벤트 등록
+// 6. 네비게이션 드로어 & 모달 이벤트 등록
 // ==========================================
 function initNavigationAndDrawers() {
   const openNavBtn = document.getElementById("btn-open-nav-menu");
@@ -436,7 +519,7 @@ function initNavigationAndDrawers() {
 }
 
 // ==========================================
-// 6. 달력 상세 팝업 모달
+// 7. 달력 상세 팝업 모달 (날씨 정보 연동)
 // ==========================================
 function initCalendarDetailModal() {
   const closeBtn = document.getElementById("btn-close-modal");
@@ -452,9 +535,21 @@ function openCalendarDetailModal(cellDate, dateKey, isHoliday, isLeave, isToday,
   const nameEl = document.getElementById("modal-info-name");
   const descEl = document.getElementById("modal-info-desc");
   const iconEl = document.getElementById("modal-type-icon");
+  const weatherBox = document.getElementById("modal-weather-box");
+  const weatherInfoEl = document.getElementById("modal-info-weather");
 
+  const todayKey = formatDateKey(new Date());
   const dayName = ['일', '월', '화', '수', '목', '금', '토'][cellDate.getDay()];
   dateTextEl.innerText = `${cellDate.getFullYear()}년 ${cellDate.getMonth() + 1}월 ${cellDate.getDate()}일 (${dayName})`;
+
+  // 오늘 및 미래 날씨 예보만 표기
+  if (dateKey >= todayKey && weatherMap.has(dateKey)) {
+    const w = weatherMap.get(dateKey);
+    weatherBox.style.display = "flex";
+    weatherInfoEl.innerText = `${w.icon} ${w.name} (최저 ${w.minTemp}°C / 최고 ${w.maxTemp}°C)`;
+  } else {
+    weatherBox.style.display = "none";
+  }
 
   if (isHoliday) {
     iconEl.innerText = "celebration";
@@ -486,7 +581,7 @@ function openCalendarDetailModal(cellDate, dateKey, isHoliday, isLeave, isToday,
 }
 
 // ==========================================
-// 7. 테마 관리
+// 8. 테마 관리
 // ==========================================
 function initThemeManager() {
   const root = document.documentElement;
@@ -549,7 +644,7 @@ function initThemeManager() {
 }
 
 // ==========================================
-// 8. 동적 공휴일 수집 (Nager.Date API)
+// 9. 동적 공휴일 수집 (Nager.Date API)
 // ==========================================
 async function ensureHolidaysForYear(year) {
   const yearsToFetch = [year - 1, year, year + 1];
@@ -597,7 +692,7 @@ function getDayOffName(dateObj) {
 }
 
 // ==========================================
-// 9. 클린 플립 카운트다운
+// 10. 클린 플립 카운트다운
 // ==========================================
 function updateTextFlip(containerId, nextValue) {
   const container = document.getElementById(containerId);
@@ -766,7 +861,7 @@ function updateDynamicProgressBar(now, targetTime) {
 }
 
 // ==========================================
-// 10. 연차 추천 및 해외여행 추천 연산 코어
+// 11. 연차 추천 및 해외여행 추천 연산 코어
 // ==========================================
 function countContiguousOffDays(startDate) {
   let count = 0;
@@ -1023,7 +1118,7 @@ function renderTravelWidget(baseDate, containerId = "main-travel-recommendations
 }
 
 // ==========================================
-// 11. 캘린더 그리드 DOM 생성
+// 12. 캘린더 그리드 DOM 생성 (오늘 이후만 날씨 표기 & 컴팩트 배지)
 // ==========================================
 function createCalendarGridFragment(year, month) {
   const firstDayIndex = new Date(year, month, 1).getDay();
@@ -1060,8 +1155,23 @@ function createCalendarGridFragment(year, month) {
       subText = "연차 추천";
     }
 
+    // 🌟 오늘(todayKey) 및 이후 미래 날짜에만 날씨 미니 배지 표시 (과거 날씨 제외)
+    let weatherHtml = "";
+    if (dateKey >= todayKey && weatherMap.has(dateKey)) {
+      const w = weatherMap.get(dateKey);
+      weatherHtml = `
+        <span class="cal-weather-badge" title="${w.name} (최저 ${w.minTemp}° / 최고 ${w.maxTemp}°)">
+          <span class="cal-weather-icon">${w.icon}</span>
+          <span class="cal-temp">${w.maxTemp}°</span>
+        </span>
+      `;
+    }
+
     cell.innerHTML = `
-      <span class="cal-date-num">${cellDate.getDate()}</span>
+      <div class="cal-cell-top">
+        <span class="cal-date-num">${cellDate.getDate()}</span>
+        ${weatherHtml}
+      </div>
       <span class="cal-sub-label">
         <span class="cal-sub-text">${subText}</span>
       </span>
@@ -1097,10 +1207,13 @@ function createCalendarGridFragment(year, month) {
 }
 
 // ==========================================
-// 12. 메인 화면 렌더링
+// 13. 메인 화면 렌더링
 // ==========================================
 async function renderMainRealtimeSpace() {
-  await ensureHolidaysForYear(currentRealYear);
+  await Promise.all([
+    ensureHolidaysForYear(currentRealYear),
+    ensureWeatherForecast() // 날씨 예보 수집
+  ]);
 
   document.getElementById("main-cal-month-year").innerText = `${currentRealYear}년 ${currentRealMonth + 1}월`;
   const container = document.getElementById("main-calendar-days");
@@ -1213,7 +1326,7 @@ async function renderMainRealtimeSpace() {
 }
 
 // ==========================================
-// 13. 미래 연차 시뮬레이터 렌더링
+// 14. 미래 연차 시뮬레이터 렌더링
 // ==========================================
 async function renderSimulatedSpace(direction = "none") {
   await ensureHolidaysForYear(simViewYear);
@@ -1254,7 +1367,7 @@ async function renderSimulatedSpace(direction = "none") {
       activeLayer.className = "calendar-grid-layer slide-up-exit";
       newLayer.className = "calendar-grid-layer slide-up-enter";
     } else if (direction === "prev") {
-      activeLayer.className = "calendar-grid-layer slide-up-enter";
+      activeLayer.className = "calendar-grid-layer slide-down-exit";
       newLayer.className = "calendar-grid-layer slide-down-enter";
     }
 
@@ -1338,7 +1451,6 @@ async function renderSimulatedSpace(direction = "none") {
     `).join("");
   }
 
-  // 🌟 시뮬레이터 화면 해외여행 추천 렌더링
   renderTravelWidget(simBaseDate, "sim-travel-recommendations", "sim-travel-desc");
 
   const simHolListEl = document.getElementById("sim-holiday-list");
@@ -1414,7 +1526,7 @@ function setupSimCalendarControls() {
 }
 
 // ==========================================
-// 14. 점심 메뉴 추천 엔진
+// 15. 점심 메뉴 추천 엔진
 // ==========================================
 const lunchDatabase = [
   // 한식
@@ -1521,7 +1633,7 @@ function setupLunchEngine() {
 }
 
 // ==========================================
-// 15. 루팡 급여 계산기 & 시간때우기 모듈
+// 16. 루팡 급여 계산기 & 시간때우기 모듈
 // ==========================================
 let slackTimerInterval = null;
 let slackSeconds = 0;
@@ -1574,7 +1686,7 @@ function setupSlackingEngine() {
 }
 
 // ==========================================
-// 16. 앱 초기화
+// 17. 앱 초기화
 // ==========================================
 async function init() {
   initThemeManager();
