@@ -121,7 +121,6 @@
             <!-- 게이지 밑 오른쪽 퇴근 시간 설정 칩 -->
             <div class="progress-bottom-row">
               <label for="off-work-time" class="target-time-chip compact-chip" title="퇴근 시간 변경 (브라우저에 자동 저장)">
-                
                 <span class="chip-label">퇴근시간</span>
                 <input type="time" id="off-work-time" class="time-input-inline" />
               </label>
@@ -129,7 +128,7 @@
           </div>
         </section>
 
-        <!-- 위젯 2: 현재 월 고정 달력 -->
+        <!-- 위젯 2: 현재 월 고정 달력 (날씨 표시 지원) -->
         <section class="md-card dashboard-widget" data-widget-id="calendar" id="widget-calendar">
           <div class="cal-nav-bar">
             <div class="cal-title-area">
@@ -161,7 +160,7 @@
           </div>
         </section>
 
-        <!-- 🌟 위젯 3: 이번 달 브리핑 (좌측 컬럼 배치) -->
+        <!-- 위젯 3: 이번 달 브리핑 -->
         <section class="md-card insight-card dashboard-widget" data-widget-id="insight" id="widget-insight">
           <div class="card-headline">
             <div>
@@ -178,7 +177,7 @@
           </div>
         </section>
 
-        <!-- 🌟 위젯 4: 이번 달 통계 (좌측 컬럼 배치) -->
+        <!-- 위젯 4: 이번 달 통계 -->
         <section class="md-card dashboard-widget" data-widget-id="stats" id="widget-stats">
           <div class="card-headline">
             <div>
@@ -279,7 +278,7 @@
     <div class="nav-drawer-header">
       <div class="nav-drawer-title-wrap">
         <h2 class="nav-title">메뉴</h2>
-        <span class="nav-version">v1.3.0</span>
+        <span class="nav-version">v1.5.0</span>
       </div>
       <button type="button" class="md-icon-button" id="btn-close-nav-menu" aria-label="메뉴 닫기">
         <span class="material-symbols-outlined">close</span>
@@ -764,7 +763,7 @@
   </div>
 
   <!-- ==========================================
-       7. 달력 날짜 상세 모달
+       7. 달력 날짜 상세 모달 (날씨 정보 표시 지원)
        ========================================== -->
   <div class="modal-backdrop" id="cal-modal-backdrop"></div>
   <div class="cal-detail-modal" id="cal-detail-modal" role="dialog" aria-modal="true">
@@ -781,6 +780,11 @@
       </button>
     </div>
     <div class="modal-body">
+      <!-- 🌟 상세 모달 내 날씨 예보 영역 -->
+      <div class="modal-info-row" id="modal-weather-box" style="display: none;">
+        <span class="info-label">날씨 예보</span>
+        <p class="info-value-desc" id="modal-info-weather" style="font-weight: 700; color: var(--md-sys-color-primary);"></p>
+      </div>
       <div class="modal-info-row">
         <span class="info-label">명칭 / 사유</span>
         <p class="info-value-highlight" id="modal-info-name">광복절</p>
