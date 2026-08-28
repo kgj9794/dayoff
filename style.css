@@ -356,7 +356,7 @@ body {
   text-transform: uppercase;
 }
 
-/* 🌟 REALTIME COUNTDOWN 상단: 부드러운 라인의 가로형 위젯 순서 변경 버튼 */
+/* REALTIME COUNTDOWN 상단 위젯 순서 변경 버튼 */
 .widget-order-top-bar {
   display: flex;
   width: 100%;
@@ -393,7 +393,7 @@ body {
   font-size: 20px;
 }
 
-/* 게이지 밑 오른쪽 정렬 및 전체 클릭 가능한 퇴근 시간 칩 */
+/* 게이지 밑 오른쪽 정렬 퇴근 시간 칩 */
 .progress-bottom-row {
   display: flex;
   justify-content: flex-end;
@@ -618,7 +618,7 @@ body {
 }
 
 /* ==========================================
-   5. 캘린더 그리드 & 반응형 오버플로우 롤링
+   5. 캘린더 그리드 & 컴팩트 날씨 배지 스타일
    ========================================== */
 .cal-nav-bar {
   display: flex;
@@ -717,7 +717,7 @@ body {
   background-color: var(--md-sys-color-surface);
   border: 1.5px solid var(--cal-cell-border);
   border-radius: var(--md-shape-corner-medium);
-  padding: 6px 3px;
+  padding: 5px 3px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -738,6 +738,15 @@ body {
   border-style: dashed;
 }
 
+/* 날짜 숫자 + 날씨 배지 상단 행 */
+.cal-cell-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  min-height: 16px;
+}
+
 .cal-date-num {
   font-size: 0.9375rem;
   font-weight: 800;
@@ -747,6 +756,30 @@ body {
 
 .cal-cell.sunday .cal-date-num { color: #b91c1c; }
 .cal-cell.saturday .cal-date-num { color: #0369a1; }
+
+/* 🌟 더 컴팩트하고 깔끔해진 날씨 미니 배지 (모바일 가독성 최적화) */
+.cal-weather-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  font-size: 0.5625rem;
+  line-height: 1;
+  font-weight: 700;
+  color: var(--md-sys-color-outline);
+  opacity: 0.9;
+}
+
+.cal-weather-icon {
+  font-size: 0.625rem; /* ~10px */
+  line-height: 1;
+}
+
+.cal-temp {
+  font-size: 0.5rem; /* ~8px */
+  font-weight: 800;
+  color: var(--md-sys-color-outline);
+  letter-spacing: -0.05em;
+}
 
 .cal-cell.holiday {
   background-color: #fee2e2;
@@ -760,7 +793,7 @@ body {
 }
 .cal-cell.leave-rec .cal-date-num { color: #065f46; font-weight: 900; }
 
-/* 오늘(Today) 셀: 튀어나옴 방지 */
+/* 오늘(Today) 셀 */
 .cal-cell.today {
   border: 2px solid var(--md-sys-color-primary);
   background-color: #e0f2fe;
@@ -1855,8 +1888,11 @@ body {
   .countdown-separator { font-size: 1.4rem; margin-bottom: 20px; }
   .stats-grid, .situation-grid { grid-template-columns: 1fr; }
   .calendar-viewport { min-height: 285px; }
-  .cal-cell { min-height: 50px; padding: 3px 2px; }
+  .cal-cell { min-height: 52px; padding: 4px 2px; }
   .cal-date-num { font-size: 0.85rem; }
+  .cal-weather-badge { font-size: 0.5rem; gap: 1px; }
+  .cal-weather-icon { font-size: 0.5625rem; }
+  .cal-temp { font-size: 0.5rem; }
   .cal-sub-label { font-size: 0.5625rem; }
   .recommendation-item { flex-direction: column; align-items: flex-start; gap: 8px; }
   .theme-switcher-fab.left-fab { bottom: 16px; left: 16px; }
@@ -1871,7 +1907,7 @@ body {
   body { padding: 92px 24px 80px; }
   .app-layout { max-width: 1160px; gap: 28px; }
   .brand-title { font-size: 1.5rem; }
-  /* 🌟 PC 화면 50:50 완벽 대칭 2열 그리드 */
+  /* PC 화면 50:50 대칭 2열 그리드 */
   .responsive-dashboard-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1879,8 +1915,11 @@ body {
     align-items: start;
   }
   .calendar-viewport { min-height: 380px; }
-  .cal-cell { min-height: 70px; padding: 6px; }
+  .cal-cell { min-height: 72px; padding: 6px 8px; }
   .cal-date-num { font-size: 1rem; }
+  .cal-weather-badge { font-size: 0.625rem; }
+  .cal-weather-icon { font-size: 0.6875rem; }
+  .cal-temp { font-size: 0.5625rem; }
   .cal-sub-label { font-size: 0.725rem; }
   .stats-grid { grid-template-columns: repeat(2, 1fr); }
 }
