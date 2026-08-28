@@ -34,7 +34,7 @@ function formatDateMD(d) {
 // 2. 퇴근 시간 브라우저 스토리지 연동
 // ==========================================
 function getOffWorkTime() {
-  const saved = localStorage.getItem("app_off_work_time") || "18:00";
+  const saved = localStorage.getItem("app_off_work_time") || "17:00";
   const [h, m] = saved.split(":").map(Number);
   return {
     hours: isNaN(h) ? 18 : h,
