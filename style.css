@@ -101,7 +101,7 @@
 }
 
 /* ==========================================
-   2. 전역 스타일 & 고정 상단 앱 바
+   2. 전역 스타일 & 로딩 화면
    ========================================== */
 * {
   box-sizing: border-box;
@@ -110,6 +110,7 @@
   font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
   transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
   -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -122,6 +123,47 @@ body {
   padding: 84px 16px 80px;
   line-height: 1.5;
   overflow-x: hidden;
+}
+
+.app-loading-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background-color: var(--md-sys-color-background);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.35s ease, visibility 0.35s ease;
+}
+
+.app-loading-screen.is-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.loading-spinner {
+  width: 44px;
+  height: 44px;
+  border: 4px solid var(--card-border-color);
+  border-top-color: var(--md-sys-color-primary);
+  border-radius: 50%;
+  animation: spinLoading 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes spinLoading {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--md-sys-color-outline);
 }
 
 .app-top-bar {
@@ -145,8 +187,8 @@ body {
   max-width: 1160px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 16px;
+  justify-content: flex-start;
+  gap: 14px;
 }
 
 .top-bar-title-wrap {
@@ -165,6 +207,62 @@ body {
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--md-sys-color-outline);
+}
+
+/* ☰ ↔ ← 애니메이션 변형 햄버거 버튼 */
+.hamburger-btn {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--md-shape-corner-full);
+  background: transparent;
+  border: 1.5px solid var(--card-border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.hamburger-btn:hover {
+  background-color: var(--md-sys-color-surface-container-high);
+  border-color: var(--md-sys-color-primary);
+}
+
+.hamburger-lines {
+  width: 18px;
+  height: 14px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.hamburger-lines span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background-color: var(--md-sys-color-on-surface);
+  border-radius: 2px;
+  transition: transform 0.3s cubic-bezier(0.2, 0, 0, 1), width 0.3s cubic-bezier(0.2, 0, 0, 1), opacity 0.2s ease;
+  transform-origin: left center;
+}
+
+.hamburger-btn.is-arrow .hamburger-lines span:nth-child(1) {
+  width: 11px;
+  transform: translateY(6px) rotate(-45deg);
+}
+
+.hamburger-btn.is-arrow .hamburger-lines span:nth-child(2) {
+  width: 18px;
+  transform: translateX(0);
+}
+
+.hamburger-btn.is-arrow .hamburger-lines span:nth-child(3) {
+  width: 11px;
+  transform: translateY(-6px) rotate(45deg);
 }
 
 .app-layout {
@@ -201,7 +299,6 @@ body {
 .body-small { font-size: 0.8125rem; font-weight: 500; color: var(--md-sys-color-outline); margin-top: 2px; }
 
 .material-symbols-outlined { font-size: 20px; vertical-align: middle; }
-.icon-small { font-size: 16px; }
 
 .md-card {
   background-color: var(--md-sys-color-surface-container);
@@ -228,7 +325,13 @@ body {
   text-transform: uppercase;
 }
 
-/* 🌟 컴팩트해진 퇴근 시간 설정 칩 */
+.progress-bottom-row {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-top: 6px;
+}
+
 .target-time-chip.compact-chip {
   display: inline-flex;
   align-items: center;
@@ -320,6 +423,7 @@ body {
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  flex-shrink: 0;
 }
 
 .md-icon-button:hover {
@@ -441,7 +545,7 @@ body {
 }
 
 /* ==========================================
-   5. 캘린더 (7분할 균등 그리드)
+   5. 캘린더 그리드 & 반응형 오버플로우 롤링
    ========================================== */
 .cal-nav-bar {
   display: flex;
@@ -507,21 +611,10 @@ body {
   opacity: 1;
 }
 
-.slide-up-exit {
-  animation: slideUpExitAnim 0.32s cubic-bezier(0.2, 0, 0, 1) forwards;
-}
-
-.slide-up-enter {
-  animation: slideUpEnterAnim 0.32s cubic-bezier(0.2, 0, 0, 1) forwards;
-}
-
-.slide-down-exit {
-  animation: slideDownExitAnim 0.32s cubic-bezier(0.2, 0, 0, 1) forwards;
-}
-
-.slide-down-enter {
-  animation: slideDownEnterAnim 0.32s cubic-bezier(0.2, 0, 0, 1) forwards;
-}
+.slide-up-exit { animation: slideUpExitAnim 0.32s cubic-bezier(0.2, 0, 0, 1) forwards; }
+.slide-up-enter { animation: slideUpEnterAnim 0.32s cubic-bezier(0.2, 0, 0, 1) forwards; }
+.slide-down-exit { animation: slideDownExitAnim 0.32s cubic-bezier(0.2, 0, 0, 1) forwards; }
+.slide-down-enter { animation: slideDownEnterAnim 0.32s cubic-bezier(0.2, 0, 0, 1) forwards; }
 
 @keyframes slideUpExitAnim {
   0% { transform: translateY(0); opacity: 1; }
@@ -585,42 +678,64 @@ body {
   background-color: #fee2e2;
   border-color: #f87171;
 }
-.cal-cell.holiday .cal-date-num {
-  color: #991b1b;
-  font-weight: 900;
-}
+.cal-cell.holiday .cal-date-num { color: #991b1b; font-weight: 900; }
 
 .cal-cell.leave-rec {
   background-color: #d1fae5;
   border: 1.5px dashed #059669;
 }
-.cal-cell.leave-rec .cal-date-num {
-  color: #065f46;
-  font-weight: 900;
-}
+.cal-cell.leave-rec .cal-date-num { color: #065f46; font-weight: 900; }
 
 .cal-cell.today {
   outline: 2.5px solid var(--md-sys-color-primary);
   border-color: var(--md-sys-color-primary);
   background-color: #e0f2fe;
 }
-.cal-cell.today .cal-date-num {
-  color: var(--md-sys-color-primary);
-  font-weight: 900;
-}
+.cal-cell.today .cal-date-num { color: var(--md-sys-color-primary); font-weight: 900; }
 
+/* 🌟 반응형 오버플로우 롤링 라벨 */
 .cal-sub-label {
   font-size: 0.625rem;
   line-height: 1.2;
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
   font-weight: 800;
   padding: 2px 3px;
   border-radius: 4px;
   text-align: center;
   display: block;
   width: 100%;
+  box-sizing: border-box;
+}
+
+.cal-sub-label.has-marquee {
+  text-align: left;
+}
+
+.cal-sub-text {
+  display: inline-block;
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+}
+
+.cal-sub-text.is-marquee {
+  max-width: none;
+  overflow: visible;
+  text-overflow: clip;
+  animation: dynamicMarquee 3.6s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+@keyframes dynamicMarquee {
+  0%, 20% {
+    transform: translateX(0);
+  }
+  80%, 100% {
+    transform: translateX(var(--marquee-dist, -24px));
+  }
 }
 
 .cal-cell.holiday .cal-sub-label {
@@ -639,9 +754,7 @@ body {
   border-color: #991b1b;
 }
 [data-theme="dark"] .cal-cell.holiday .cal-date-num,
-[data-theme="auto"] .cal-cell.holiday .cal-date-num {
-  color: #fca5a5;
-}
+[data-theme="auto"] .cal-cell.holiday .cal-date-num { color: #fca5a5; }
 [data-theme="dark"] .cal-cell.holiday .cal-sub-label,
 [data-theme="auto"] .cal-cell.holiday .cal-sub-label {
   color: #fecaca;
@@ -654,9 +767,7 @@ body {
   border-color: #059669;
 }
 [data-theme="dark"] .cal-cell.leave-rec .cal-date-num,
-[data-theme="auto"] .cal-cell.leave-rec .cal-date-num {
-  color: #6ee7b7;
-}
+[data-theme="auto"] .cal-cell.leave-rec .cal-date-num { color: #6ee7b7; }
 [data-theme="dark"] .cal-cell.leave-rec .cal-sub-label,
 [data-theme="auto"] .cal-cell.leave-rec .cal-sub-label {
   color: #a7f3d0;
@@ -680,25 +791,76 @@ body {
   color: var(--md-sys-color-on-background);
 }
 
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.legend-dot {
-  width: 9px;
-  height: 9px;
-  border-radius: var(--md-shape-corner-full);
-}
-
+.legend-item { display: flex; align-items: center; gap: 6px; }
+.legend-dot { width: 9px; height: 9px; border-radius: var(--md-shape-corner-full); }
 .dot-holiday { background-color: #b91c1c; }
 .dot-leave { background-color: #047857; }
 .dot-today { background-color: var(--md-sys-color-primary); }
 
 /* ==========================================
-   6. 인사이트, 통계, 연차 리스트
+   6. 해외여행 위젯 & 추천 리스트
    ========================================== */
+.travel-rec-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.travel-card-item {
+  background-color: var(--md-sys-color-surface);
+  border: 1.5px solid var(--card-border-color);
+  border-radius: var(--md-shape-corner-medium);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.travel-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.travel-period-tag {
+  font-size: 0.8125rem;
+  font-weight: 800;
+  color: var(--md-sys-color-primary);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.travel-badge-days {
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  font-size: 0.6875rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: var(--md-shape-corner-full);
+}
+
+.travel-destinations-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.dest-chip {
+  background-color: var(--md-sys-color-surface-container-high);
+  border: 1px solid var(--card-border-color);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.travel-tip-text {
+  font-size: 0.75rem;
+  color: var(--md-sys-color-outline);
+}
+
 .insight-content-box {
   background-color: var(--md-sys-color-surface);
   border-radius: var(--md-shape-corner-medium);
@@ -709,28 +871,10 @@ body {
   gap: 8px;
 }
 
-.insight-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.insight-badge-icon {
-  color: var(--md-sys-color-primary);
-  font-size: 24px;
-}
-
-.insight-headline {
-  font-size: 1.05rem;
-  font-weight: 800;
-  color: var(--md-sys-color-on-surface);
-}
-
-.insight-description {
-  font-size: 0.875rem;
-  color: var(--md-sys-color-outline);
-  line-height: 1.6;
-}
+.insight-header { display: flex; align-items: center; gap: 8px; }
+.insight-badge-icon { color: var(--md-sys-color-primary); font-size: 24px; }
+.insight-headline { font-size: 1.05rem; font-weight: 800; color: var(--md-sys-color-on-surface); }
+.insight-description { font-size: 0.875rem; color: var(--md-sys-color-outline); line-height: 1.6; }
 
 .stats-grid {
   display: grid;
@@ -754,45 +898,14 @@ body {
 }
 
 .stat-box.total .stat-label,
-.stat-box.total .stat-value {
-  color: var(--md-sys-color-on-primary-container);
-}
+.stat-box.total .stat-value { color: var(--md-sys-color-on-primary-container); }
+.stat-box.total .stat-icon { color: var(--md-sys-color-primary); }
 
-.stat-box.total .stat-icon {
-  color: var(--md-sys-color-primary);
-}
-
-.stat-content {
-  display: flex;
-  flex-direction: column;
-}
-
-.stat-label {
-  font-size: 0.8125rem;
-  font-weight: 700;
-  color: var(--md-sys-color-outline);
-  margin-bottom: 4px;
-}
-
-.stat-value {
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: var(--md-sys-color-on-surface);
-  line-height: 1.2;
-}
-
-.stat-sub {
-  font-size: 0.6875rem;
-  font-weight: 600;
-  color: var(--md-sys-color-outline);
-  margin-top: 4px;
-}
-
-.stat-icon {
-  font-size: 24px;
-  color: var(--md-sys-color-outline);
-  opacity: 0.8;
-}
+.stat-content { display: flex; flex-direction: column; }
+.stat-label { font-size: 0.8125rem; font-weight: 700; color: var(--md-sys-color-outline); margin-bottom: 4px; }
+.stat-value { font-size: 1.5rem; font-weight: 800; color: var(--md-sys-color-on-surface); line-height: 1.2; }
+.stat-sub { font-size: 0.6875rem; font-weight: 600; color: var(--md-sys-color-outline); margin-top: 4px; }
+.stat-icon { font-size: 24px; color: var(--md-sys-color-outline); opacity: 0.8; }
 
 .recommendation-list, .md-list {
   display: flex;
@@ -811,16 +924,8 @@ body {
   align-items: center;
 }
 
-.item-content h3 {
-  font-size: 0.9375rem;
-  font-weight: 700;
-  margin-bottom: 2px;
-}
-
-.item-content p {
-  font-size: 0.8125rem;
-  color: var(--md-sys-color-outline);
-}
+.item-content h3 { font-size: 0.9375rem; font-weight: 700; margin-bottom: 2px; }
+.item-content p { font-size: 0.8125rem; color: var(--md-sys-color-outline); }
 
 .badge-benefit {
   background-color: var(--md-sys-color-tertiary-container);
@@ -852,7 +957,7 @@ body {
 }
 
 /* ==========================================
-   7. 🌟 사이드 햄버거 메뉴 네비게이션 드로어
+   7. 사이드 메뉴 네비게이션 드로어 (좌측)
    ========================================== */
 .nav-drawer-backdrop {
   position: fixed;
@@ -874,15 +979,15 @@ body {
 .nav-drawer {
   position: fixed;
   top: 0;
-  right: 0;
+  left: 0;
   bottom: 0;
   width: 100%;
   max-width: 380px;
   background-color: var(--md-sys-color-surface);
   z-index: 1350;
-  box-shadow: -5px 0 25px rgba(0, 0, 0, 0.25);
-  border-left: 1.5px solid var(--card-border-color);
-  transform: translateX(100%);
+  box-shadow: 5px 0 25px rgba(0, 0, 0, 0.25);
+  border-right: 1.5px solid var(--card-border-color);
+  transform: translateX(-100%);
   transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   flex-direction: column;
@@ -900,23 +1005,9 @@ body {
   border-bottom: 1.5px solid var(--card-border-color);
 }
 
-.nav-drawer-title-wrap {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-}
-
-.nav-title {
-  font-size: 1.25rem;
-  font-weight: 900;
-  color: var(--md-sys-color-on-surface);
-}
-
-.nav-version {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--md-sys-color-outline);
-}
+.nav-drawer-title-wrap { display: flex; align-items: baseline; gap: 8px; }
+.nav-title { font-size: 1.25rem; font-weight: 900; color: var(--md-sys-color-on-surface); }
+.nav-version { font-size: 0.75rem; font-weight: 700; color: var(--md-sys-color-outline); }
 
 .nav-menu-list {
   flex: 1;
@@ -943,46 +1034,23 @@ body {
 .nav-menu-item:hover:not(.is-disabled) {
   background-color: var(--md-sys-color-surface-container-high);
   border-color: var(--md-sys-color-primary);
-  transform: translateX(-2px);
+  transform: translateX(2px);
 }
 
 .nav-menu-item.primary-action {
   background-color: var(--md-sys-color-primary-container);
   border-color: rgba(0, 95, 176, 0.3);
 }
-
 .nav-menu-item.primary-action .nav-item-icon,
 .nav-menu-item.primary-action .nav-item-arrow {
   color: var(--md-sys-color-primary);
 }
 
-.nav-item-icon {
-  font-size: 24px;
-  color: var(--md-sys-color-outline);
-}
-
-.nav-item-text {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.nav-item-title {
-  font-size: 0.9375rem;
-  font-weight: 800;
-  color: var(--md-sys-color-on-surface);
-}
-
-.nav-item-desc {
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--md-sys-color-outline);
-}
-
-.nav-item-arrow {
-  font-size: 20px;
-  color: var(--md-sys-color-outline);
-}
+.nav-item-icon { font-size: 24px; color: var(--md-sys-color-outline); }
+.nav-item-text { flex: 1; display: flex; flex-direction: column; }
+.nav-item-title { font-size: 0.9375rem; font-weight: 800; color: var(--md-sys-color-on-surface); }
+.nav-item-desc { font-size: 0.75rem; font-weight: 500; color: var(--md-sys-color-outline); }
+.nav-item-arrow { font-size: 20px; color: var(--md-sys-color-outline); }
 
 .nav-section-label {
   font-size: 0.75rem;
@@ -993,12 +1061,7 @@ body {
   letter-spacing: 0.05em;
 }
 
-.nav-menu-item.is-disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-  border-style: dashed;
-}
-
+.nav-menu-item.is-disabled { opacity: 0.55; cursor: not-allowed; border-style: dashed; }
 .nav-badge-temp {
   font-size: 0.625rem;
   font-weight: 800;
@@ -1009,7 +1072,7 @@ body {
 }
 
 /* ==========================================
-   8. 미래 연차 시뮬레이터 풀스크린 뷰
+   8. 풀스크린 모달 (Fixed 고정 & 스크롤 완벽 보정)
    ========================================== */
 .drawer-backdrop {
   position: fixed;
@@ -1029,27 +1092,28 @@ body {
 }
 
 .simulation-drawer.full-screen-view {
-  position: fixed;
-  inset: 0;
-  width: 100vw;
-  height: 100vh;
-  max-width: 100vw;
-  max-height: 100vh;
-  background-color: var(--md-sys-color-background);
-  z-index: 1400;
-  border-radius: 0;
-  border: none;
-  box-shadow: none;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: 100vw !important;
+  max-height: 100vh !important;
+  background-color: var(--md-sys-color-background) !important;
+  z-index: 1400 !important;
+  border: none !important;
+  box-shadow: none !important;
   transform: translateY(100%);
   transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  will-change: transform;
 }
 
 .simulation-drawer.full-screen-view.is-open {
-  transform: translateY(0);
+  transform: translateY(0) !important;
 }
 
 .fullscreen-drawer-header {
@@ -1061,6 +1125,7 @@ body {
   justify-content: center;
   padding: 12px 16px;
   z-index: 10;
+  flex-shrink: 0;
 }
 
 .fullscreen-header-inner {
@@ -1072,45 +1137,387 @@ body {
   gap: 16px;
 }
 
-.fullscreen-title-wrap {
-  flex: 1;
-  text-align: left;
-}
+.fullscreen-title-wrap { flex: 1; text-align: left; }
+.drawer-title { font-size: 1.25rem; font-weight: 800; color: var(--md-sys-color-on-surface); }
+.drawer-subtitle { font-size: 0.75rem; font-weight: 600; color: var(--md-sys-color-outline); }
 
-.drawer-title {
-  font-size: 1.25rem;
-  font-weight: 800;
-  color: var(--md-sys-color-on-surface);
-}
-
-.drawer-subtitle {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--md-sys-color-outline);
-}
-
-.btn-close-sim {
-  background-color: var(--md-sys-color-surface-container-high);
-}
-
+/* 🌟 스크롤 컨테이너: flex 제거(표준 블록화)하여 padding/margin 붕괴 버그 해결 */
 .fullscreen-drawer-scroll {
-  flex: 1;
-  overflow-y: auto;
-  display: flex;
-  justify-content: center;
-  padding: 24px 16px 80px;
+  flex: 1 1 auto;
+  width: 100%;
+  height: 100%;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding: 24px 16px 0;
+  box-sizing: border-box;
 }
 
 .fullscreen-content-container {
   width: 100%;
   max-width: 780px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
+/* 🌟 최하단 내용이 하단 툴바에 가려지지 않도록 보장하는 물리적 여백 블록 */
+.drawer-bottom-spacer {
+  height: calc(100px + env(safe-area-inset-bottom, 20px));
+  width: 100%;
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+/* 🌟 시뮬레이터 하단 고정 네비게이션 툴바 */
+.sim-bottom-nav-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  background-color: var(--md-sys-color-surface);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1.5px solid var(--card-border-color);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.12);
+  display: flex;
+  justify-content: center;
+  padding: 10px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+}
+
+.sim-bottom-nav-inner {
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.sim-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 14px;
+  border-radius: var(--md-shape-corner-full);
+  background-color: var(--md-sys-color-surface-container-high);
+  border: 1.5px solid var(--card-border-color);
+  color: var(--md-sys-color-on-surface);
+  font-size: 0.8125rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sim-nav-btn:hover {
+  background-color: var(--md-sys-color-primary-container);
+  border-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary-container);
+}
+
+.sim-bottom-current-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 10px;
+}
+
+.sim-bottom-badge-label {
+  font-size: 0.625rem;
+  font-weight: 800;
+  color: var(--md-sys-color-outline);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.sim-bottom-badge-date {
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: var(--md-sys-color-primary);
+  line-height: 1.2;
+}
+
+.sim-bottom-today-pill {
+  padding: 6px 10px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  border-radius: var(--md-shape-corner-full);
+  background-color: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+  border: 1px solid var(--card-border-color);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.sim-bottom-today-pill.is-hidden {
+  display: none !important;
+}
+
 /* ==========================================
-   9. 달력 상세 모달
+   9. 점심 메뉴 추천 모달 스타일
+   ========================================== */
+.lunch-hero-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 20px;
+}
+
+.lunch-category-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.filter-chip {
+  padding: 6px 14px;
+  border-radius: var(--md-shape-corner-full);
+  border: 1.5px solid var(--card-border-color);
+  background: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-chip.active {
+  background-color: #ea580c;
+  color: #ffffff;
+  border-color: #ea580c;
+}
+
+.lunch-display-box {
+  width: 100%;
+  padding: 30px 20px;
+  background-color: var(--md-sys-color-surface-container-high);
+  border: 2px dashed var(--card-border-color);
+  border-radius: var(--md-shape-corner-large);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 180px;
+}
+
+.lunch-icon-wrap {
+  font-size: 48px;
+  line-height: 1;
+  transition: transform 0.2s ease;
+}
+
+.lunch-icon-wrap.spinning {
+  animation: rouletteSpin 0.6s infinite ease-in-out;
+}
+
+@keyframes rouletteSpin {
+  0% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.25) rotate(180deg); }
+  100% { transform: scale(1) rotate(360deg); }
+}
+
+.lunch-name-display {
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: #ea580c;
+}
+
+.lunch-desc-display {
+  font-size: 0.875rem;
+  color: var(--md-sys-color-outline);
+}
+
+.lunch-spin-btn {
+  background: linear-gradient(135deg, #ea580c, #f97316);
+  color: #ffffff;
+  border: none;
+  padding: 14px 28px;
+  border-radius: var(--md-shape-corner-full);
+  font-size: 1rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(234, 88, 12, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.lunch-spin-btn:hover {
+  transform: scale(1.03);
+  box-shadow: 0 6px 18px rgba(234, 88, 12, 0.45);
+}
+
+.situation-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.situation-item {
+  background-color: var(--md-sys-color-surface);
+  border: 1.5px solid var(--card-border-color);
+  border-radius: var(--md-shape-corner-medium);
+  padding: 14px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.situation-emoji {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.situation-info strong {
+  display: block;
+  font-size: 0.875rem;
+  color: var(--md-sys-color-on-surface);
+  margin-bottom: 2px;
+}
+
+.situation-info p {
+  font-size: 0.75rem;
+  color: var(--md-sys-color-outline);
+}
+
+/* ==========================================
+   10. 루팡 & 시간때우기 모달 스타일
+   ========================================== */
+.slacking-calculator-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.calculator-inputs {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.calc-label {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--md-sys-color-outline);
+}
+
+.calc-input {
+  background-color: var(--md-sys-color-surface);
+  border: 1.5px solid var(--card-border-color);
+  color: var(--md-sys-color-on-surface);
+  padding: 8px 12px;
+  border-radius: var(--md-shape-corner-small);
+  font-size: 0.9375rem;
+  font-weight: 800;
+  width: 140px;
+  outline: none;
+}
+
+.calc-btn {
+  background-color: #0284c7;
+  color: #ffffff;
+  border: none;
+  padding: 9px 18px;
+  border-radius: var(--md-shape-corner-small);
+  font-size: 0.875rem;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.calc-btn.running {
+  background-color: #dc2626;
+}
+
+.slacking-counter-box {
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.08), rgba(2, 132, 199, 0.18));
+  border: 2px solid #0284c7;
+  border-radius: var(--md-shape-corner-large);
+  padding: 24px 16px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+.slacking-time-text {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--md-sys-color-outline);
+}
+
+.slacking-money-earned {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #0284c7;
+  line-height: 1;
+}
+
+.slack-won {
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin-left: 4px;
+}
+
+.slack-cheer {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--md-sys-color-outline);
+}
+
+.slack-tips-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.slack-tip-item {
+  background-color: var(--md-sys-color-surface);
+  border: 1.5px solid var(--card-border-color);
+  border-radius: var(--md-shape-corner-medium);
+  padding: 16px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.tip-badge {
+  background-color: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+  font-size: 0.75rem;
+  font-weight: 900;
+  padding: 4px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.tip-content strong {
+  display: block;
+  font-size: 0.9375rem;
+  font-weight: 800;
+  color: var(--md-sys-color-on-surface);
+  margin-bottom: 4px;
+}
+
+.tip-content p {
+  font-size: 0.8125rem;
+  color: var(--md-sys-color-outline);
+  line-height: 1.5;
+}
+
+/* ==========================================
+   11. 달력 상세 모달
    ========================================== */
 .modal-backdrop {
   position: fixed;
@@ -1133,7 +1540,7 @@ body {
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%) scale(0.95);
+  transform: translate(-50%, -50%) scale(0.92);
   width: 90%;
   max-width: 420px;
   background-color: var(--md-sys-color-surface);
@@ -1142,16 +1549,19 @@ body {
   box-shadow: var(--md-elevation-3);
   z-index: 1550;
   padding: 24px;
-  display: none;
+  display: flex;
   flex-direction: column;
   gap: 18px;
   opacity: 0;
-  transition: transform 0.25s cubic-bezier(0.2, 0, 0, 1), opacity 0.25s ease;
+  visibility: hidden;
+  pointer-events: none;
+  transition: transform 0.25s cubic-bezier(0.2, 0, 0, 1), opacity 0.25s ease, visibility 0.25s ease;
 }
 
-.cal-detail-modal[open] {
-  display: flex;
+.cal-detail-modal.is-open {
   opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
   transform: translate(-50%, -50%) scale(1);
 }
 
@@ -1163,22 +1573,9 @@ body {
   padding-bottom: 12px;
 }
 
-.modal-title-wrap {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.modal-icon {
-  font-size: 28px;
-  color: var(--md-sys-color-primary);
-}
-
-.modal-date {
-  font-size: 1.05rem;
-  font-weight: 800;
-  color: var(--md-sys-color-on-surface);
-}
+.modal-title-wrap { display: flex; align-items: center; gap: 10px; }
+.modal-icon { font-size: 28px; color: var(--md-sys-color-primary); }
+.modal-date { font-size: 1.05rem; font-weight: 800; color: var(--md-sys-color-on-surface); }
 
 .modal-status-badge {
   font-size: 0.6875rem;
@@ -1189,64 +1586,24 @@ body {
   margin-top: 3px;
 }
 
-.modal-status-badge.holiday {
-  background-color: var(--md-sys-color-error-container);
-  color: var(--md-sys-color-error);
-}
+.modal-status-badge.holiday { background-color: var(--md-sys-color-error-container); color: var(--md-sys-color-error); }
+.modal-status-badge.leave { background-color: var(--md-sys-color-tertiary-container); color: var(--md-sys-color-on-tertiary-container); }
+.modal-status-badge.normal { background-color: var(--md-sys-color-surface-container-high); color: var(--md-sys-color-outline); }
+.modal-close-btn { width: 32px; height: 32px; }
 
-.modal-status-badge.leave {
-  background-color: var(--md-sys-color-tertiary-container);
-  color: var(--md-sys-color-on-tertiary-container);
-}
-
-.modal-status-badge.normal {
-  background-color: var(--md-sys-color-surface-container-high);
-  color: var(--md-sys-color-outline);
-}
-
-.modal-close-btn {
-  width: 32px;
-  height: 32px;
-}
-
-.modal-body {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.modal-info-row {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.info-label {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--md-sys-color-outline);
-}
-
-.info-value-highlight {
-  font-size: 1.15rem;
-  font-weight: 800;
-  color: var(--md-sys-color-primary);
-}
-
-.info-value-desc {
-  font-size: 0.875rem;
-  font-weight: 500;
-  line-height: 1.5;
-  color: var(--md-sys-color-on-surface);
-}
+.modal-body { display: flex; flex-direction: column; gap: 12px; }
+.modal-info-row { display: flex; flex-direction: column; gap: 4px; }
+.info-label { font-size: 0.75rem; font-weight: 700; color: var(--md-sys-color-outline); }
+.info-value-highlight { font-size: 1.15rem; font-weight: 800; color: var(--md-sys-color-primary); }
+.info-value-desc { font-size: 0.875rem; font-weight: 500; line-height: 1.5; color: var(--md-sys-color-on-surface); }
 
 /* ==========================================
-   10. 🌟 좌측 하단 고정 테마 모드 컨트롤러
+   12. 테마 모드 FAB 컨트롤러
    ========================================== */
 .theme-switcher-fab.left-fab {
   position: fixed;
   bottom: 24px;
-  left: 24px; /* 좌측 하단 배치 */
+  left: 24px;
   right: auto;
   z-index: 1000;
   display: flex;
@@ -1258,7 +1615,6 @@ body {
   will-change: transform, opacity;
 }
 
-/* 모바일 전용 스크롤 숨김 */
 @media (max-width: 1023px) {
   .theme-switcher-fab.left-fab.is-hidden {
     transform: translateY(90px) scale(0.85);
@@ -1282,9 +1638,7 @@ body {
   transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1);
 }
 
-.md-fab:hover {
-  transform: scale(1.05);
-}
+.md-fab:hover { transform: scale(1.05); }
 
 .theme-menu {
   display: none;
@@ -1297,9 +1651,7 @@ body {
   min-width: 120px;
 }
 
-.theme-menu.active {
-  display: flex;
-}
+.theme-menu.active { display: flex; }
 
 .theme-option {
   display: flex;
@@ -1320,120 +1672,50 @@ body {
   color: var(--md-sys-color-on-secondary-container);
 }
 
-.theme-option.selected {
-  font-weight: 800;
-  color: var(--md-sys-color-primary);
-}
+.theme-option.selected { font-weight: 800; color: var(--md-sys-color-primary); }
 
 /* ==========================================
-   11. 반응형 미디어 쿼리
+   13. 반응형 미디어 쿼리
    ========================================== */
 @media (max-width: 767px) {
-  body {
-    padding: 76px 12px 72px;
-  }
-  .app-top-bar {
-    padding: 10px 12px;
-  }
-  .brand-title {
-    font-size: 1.15rem;
-  }
-  .brand-subtitle {
-    display: none;
-  }
-  .md-card {
-    padding: 16px;
-  }
-  .flip-text-container {
-    height: 40px;
-  }
-  .flip-num {
-    font-size: 2.15rem;
-  }
-  .countdown-unit {
-    min-width: 50px;
-  }
-  .countdown-display {
-    gap: 8px;
-  }
-  .countdown-separator {
-    font-size: 1.4rem;
-    margin-bottom: 20px;
-  }
-  .stats-grid {
-    grid-template-columns: 1fr;
-  }
-  .calendar-viewport {
-    min-height: 285px;
-  }
-  .cal-cell {
-    min-height: 50px;
-    padding: 3px 2px;
-  }
-  .cal-date-num {
-    font-size: 0.85rem;
-  }
-  .cal-sub-label {
-    font-size: 0.5625rem;
-  }
-  .recommendation-item {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-  }
-  .theme-switcher-fab.left-fab {
-    bottom: 16px;
-    left: 16px;
-  }
-  .fullscreen-drawer-header {
-    padding: 10px 12px;
-  }
-  .drawer-title {
-    font-size: 1.1rem;
-  }
-  .drawer-subtitle {
-    display: none;
-  }
-  .fullscreen-drawer-scroll {
-    padding: 16px 12px 60px;
-  }
+  body { padding: 76px 12px 72px; }
+  .app-top-bar { padding: 10px 12px; }
+  .brand-title { font-size: 1.15rem; }
+  .brand-subtitle { display: none; }
+  .md-card { padding: 16px; }
+  .flip-text-container { height: 40px; }
+  .flip-num { font-size: 2.15rem; }
+  .countdown-unit { min-width: 50px; }
+  .countdown-display { gap: 8px; }
+  .countdown-separator { font-size: 1.4rem; margin-bottom: 20px; }
+  .stats-grid, .situation-grid { grid-template-columns: 1fr; }
+  .calendar-viewport { min-height: 285px; }
+  .cal-cell { min-height: 50px; padding: 3px 2px; }
+  .cal-date-num { font-size: 0.85rem; }
+  .cal-sub-label { font-size: 0.5625rem; }
+  .recommendation-item { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .theme-switcher-fab.left-fab { bottom: 16px; left: 16px; }
+  .fullscreen-drawer-header { padding: 10px 12px; }
+  .drawer-title { font-size: 1.1rem; }
+  .drawer-subtitle { display: none; }
+  .fullscreen-drawer-scroll { padding: 16px 12px 0; }
+  .sim-nav-btn .btn-text { display: none; }
 }
 
 @media (min-width: 1024px) {
-  body {
-    padding: 92px 24px 80px;
-  }
-  .app-layout {
-    max-width: 1160px;
-    gap: 28px;
-  }
-  .brand-title {
-    font-size: 1.5rem;
-  }
+  body { padding: 92px 24px 80px; }
+  .app-layout { max-width: 1160px; gap: 28px; }
+  .brand-title { font-size: 1.5rem; }
   .responsive-dashboard-grid {
     display: grid;
     grid-template-columns: 1.15fr 0.85fr;
     gap: 24px;
     align-items: start;
   }
-  .calendar-viewport {
-    min-height: 380px;
-  }
-  .cal-cell {
-    min-height: 70px;
-    padding: 6px;
-  }
-  .cal-date-num {
-    font-size: 1rem;
-  }
-  .cal-sub-label {
-    font-size: 0.725rem;
-  }
-  .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .secondary-col {
-    position: sticky;
-    top: 104px;
-  }
+  .calendar-viewport { min-height: 380px; }
+  .cal-cell { min-height: 70px; padding: 6px; }
+  .cal-date-num { font-size: 1rem; }
+  .cal-sub-label { font-size: 0.725rem; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .secondary-col { position: sticky; top: 104px; }
 }
