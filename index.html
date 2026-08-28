@@ -6,7 +6,7 @@
   <title>주말 언제와?</title>
   <link rel="icon" type="image/png" href="/day-off.png">
 
-  <!-- 🌟 Open Graph (OG) 메타 태그 -->
+  <!-- Open Graph (OG) 메타 태그 -->
   <meta property="og:type" content="website" />
   <meta property="og:title" content="주말 언제와?" />
   <meta property="og:description" content="직장인들의 중요한 주말과 휴가를 위해!" />
@@ -14,12 +14,6 @@
   <meta property="og:url" content="https://day-off.o-r.kr" />
   <meta property="og:site_name" content="주말 언제와?" />
   <meta property="og:locale" content="ko_KR" />
-
-  <!-- 트위터(X) 카드 메타 태그 -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="주말 언제와? - 실시간 다음 휴일 카운트다운" />
-  <meta name="twitter:description" content="실시간 다음 쉬는 날 카운트다운, 미래 연차 황금루트 시뮬레이터 & 직장인 휴식 가이드" />
-  <meta name="twitter:image" content="/day-off.png" />
 
   <link rel="stylesheet" href="style.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -33,7 +27,7 @@
     <p class="loading-text">휴일 및 일정 데이터를 불러오는 중...</p>
   </div>
 
-  <!-- 상단 앱 바 (애니메이션 햄버거 버튼) -->
+  <!-- 상단 앱 바 (애니메이션 햄버거 버튼 & 타이틀) -->
   <header class="app-top-bar" id="app-top-bar">
     <div class="top-bar-inner">
       <!-- ☰ ↔ ← 애니메이션 변형 햄버거 버튼 -->
@@ -53,14 +47,23 @@
   </header>
 
   <!-- ==========================================
-       1. 메인 대시보드
+       1. 메인 대시보드 (좌/우 균등 배치)
        ========================================== -->
   <div class="app-layout">
-    <main class="responsive-dashboard-grid">
-      <!-- 좌측 칼럼: 카운트다운 & 현재 월 달력 -->
-      <div class="grid-col primary-col">
-        <!-- 실시간 쉬는 날 카운트다운 카드 -->
-        <section class="md-card hero-card">
+    <main class="responsive-dashboard-grid" id="main-dashboard-grid">
+      <!-- 좌측 칼럼 영역 (4개 위젯) -->
+      <div class="grid-col primary-col" id="col-primary">
+        
+        <!-- REALTIME COUNTDOWN 상단: 위젯 순서 변경 버튼 바 -->
+        <div class="widget-order-top-bar">
+          <button type="button" class="btn-widget-reorder-main" id="btn-open-widget-order" title="대시보드 위젯 순서 변경">
+            <span class="material-symbols-outlined">swap_vert</span>
+            <span>메인 위젯 순서 변경</span>
+          </button>
+        </div>
+
+        <!-- 위젯 1: 실시간 쉬는 날 카운트다운 -->
+        <section class="md-card hero-card dashboard-widget" data-widget-id="countdown" id="widget-countdown">
           <div class="card-header">
             <div>
               <span class="card-overline">REALTIME COUNTDOWN</span>
@@ -115,19 +118,19 @@
               <div class="linear-progress-indicator" id="progress-bar"></div>
             </div>
 
-            <!-- 게이지 밑 왼쪽 퇴근 시간 설정 칩 -->
+            <!-- 게이지 밑 오른쪽 퇴근 시간 설정 칩 -->
             <div class="progress-bottom-row">
-              <div class="target-time-chip compact-chip" title="퇴근 시간 변경 (브라우저에 자동 저장)">
-                <span class="material-symbols-outlined chip-icon">schedule</span>
-                <label for="off-work-time" class="chip-label">퇴근시간</label>
+              <label for="off-work-time" class="target-time-chip compact-chip" title="퇴근 시간 변경 (브라우저에 자동 저장)">
+                
+                <span class="chip-label">퇴근시간</span>
                 <input type="time" id="off-work-time" class="time-input-inline" />
-              </div>
+              </label>
             </div>
           </div>
         </section>
 
-        <!-- 현재 월 고정 달력 -->
-        <section class="md-card">
+        <!-- 위젯 2: 현재 월 고정 달력 -->
+        <section class="md-card dashboard-widget" data-widget-id="calendar" id="widget-calendar">
           <div class="cal-nav-bar">
             <div class="cal-title-area">
               <span class="card-overline">CURRENT MONTH CALENDAR</span>
@@ -157,12 +160,9 @@
             <span class="legend-item"><span class="legend-dot dot-today"></span>오늘</span>
           </div>
         </section>
-      </div>
 
-      <!-- 우측 칼럼: 브리핑, 해외여행 추천, 현황, 연차추천, 공휴일 -->
-      <div class="grid-col secondary-col">
-        <!-- 이번 달 브리핑 -->
-        <section class="md-card insight-card">
+        <!-- 🌟 위젯 3: 이번 달 브리핑 (좌측 컬럼 배치) -->
+        <section class="md-card insight-card dashboard-widget" data-widget-id="insight" id="widget-insight">
           <div class="card-headline">
             <div>
               <span class="card-overline">MONTHLY INSIGHT</span>
@@ -178,20 +178,8 @@
           </div>
         </section>
 
-        <!-- 해외여행 황금 연휴 추천 위젯 -->
-        <section class="md-card travel-recommend-card">
-          <div class="card-headline">
-            <div>
-              <span class="card-overline">TRAVEL PLANNER</span>
-              <h2 class="title-medium">✈️ 황금연휴 해외여행 추천</h2>
-              <p class="body-small">연차 1~3일로 떠나기 좋은 최적의 여행 루트</p>
-            </div>
-          </div>
-          <div class="travel-rec-list" id="main-travel-recommendations"></div>
-        </section>
-
-        <!-- 이번 달 통계 -->
-        <section class="md-card">
+        <!-- 🌟 위젯 4: 이번 달 통계 (좌측 컬럼 배치) -->
+        <section class="md-card dashboard-widget" data-widget-id="stats" id="widget-stats">
           <div class="card-headline">
             <div>
               <span class="card-overline">MONTHLY SUMMARY</span>
@@ -236,9 +224,12 @@
             </div>
           </div>
         </section>
+      </div>
 
-        <!-- 실시간 가성비 연차 추천 -->
-        <section class="md-card">
+      <!-- 우측 칼럼 영역 (3개 위젯) -->
+      <div class="grid-col secondary-col" id="col-secondary">
+        <!-- 위젯 5: 실시간 가성비 연차 추천 -->
+        <section class="md-card dashboard-widget" data-widget-id="vacation" id="widget-vacation">
           <div class="card-headline">
             <div>
               <span class="card-overline">VACATION PLANNER</span>
@@ -249,8 +240,8 @@
           <div class="recommendation-list" id="main-vacation-recommendations"></div>
         </section>
 
-        <!-- 실시간 다가오는 공휴일 일정 -->
-        <section class="md-card">
+        <!-- 위젯 6: 실시간 다가오는 공휴일 일정 -->
+        <section class="md-card dashboard-widget" data-widget-id="holidays" id="widget-holidays">
           <div class="card-headline">
             <div>
               <span class="card-overline">UPCOMING HOLIDAYS</span>
@@ -259,6 +250,18 @@
             </div>
           </div>
           <ul class="md-list" id="main-holiday-list"></ul>
+        </section>
+
+        <!-- 위젯 7: 해외여행 황금 연휴 추천 -->
+        <section class="md-card travel-recommend-card dashboard-widget" data-widget-id="travel" id="widget-travel">
+          <div class="card-headline">
+            <div>
+              <span class="card-overline">TRAVEL PLANNER</span>
+              <h2 class="title-medium">✈️ 황금연휴 해외여행 추천</h2>
+              <p class="body-small">연차 1~3일로 떠나기 좋은 최적의 여행 루트</p>
+            </div>
+          </div>
+          <div class="travel-rec-list" id="main-travel-recommendations"></div>
         </section>
       </div>
     </main>
@@ -355,7 +358,7 @@
 
     <div class="fullscreen-drawer-scroll">
       <div class="fullscreen-content-container">
-        <!-- 상단 캘린더 -->
+        <!-- 1. 상단 캘린더 -->
         <section class="md-card">
           <div class="cal-nav-bar">
             <div class="cal-title-area">
@@ -396,7 +399,7 @@
           </div>
         </section>
 
-        <!-- 브리핑 -->
+        <!-- 2. 브리핑 -->
         <section class="md-card insight-card">
           <div class="card-headline">
             <div>
@@ -413,7 +416,7 @@
           </div>
         </section>
 
-        <!-- 현황 통계 -->
+        <!-- 3. 현황 통계 -->
         <section class="md-card">
           <div class="card-headline">
             <div>
@@ -460,7 +463,7 @@
           </div>
         </section>
 
-        <!-- 연차 추천 -->
+        <!-- 4. 연차 추천 -->
         <section class="md-card">
           <div class="card-headline">
             <div>
@@ -472,7 +475,7 @@
           <div class="recommendation-list" id="sim-vacation-recommendations"></div>
         </section>
 
-        <!-- 공휴일 일정 -->
+        <!-- 5. 공휴일 일정 -->
         <section class="md-card">
           <div class="card-headline">
             <div>
@@ -484,7 +487,19 @@
           <ul class="md-list" id="sim-holiday-list"></ul>
         </section>
 
-        <!-- 하단 고정 바로 인한 잘림 방지 물리적 스페이서 -->
+        <!-- 6. 시뮬레이터 전용 TRAVEL PLANNER 위젯 -->
+        <section class="md-card travel-recommend-card">
+          <div class="card-headline">
+            <div>
+              <span class="card-overline">TRAVEL PLANNER (SIMULATED)</span>
+              <h2 class="title-medium">✈️ 황금연휴 해외여행 추천</h2>
+              <p class="body-small" id="sim-travel-desc">선택된 달 이후 최적의 여행 루트</p>
+            </div>
+          </div>
+          <div class="travel-rec-list" id="sim-travel-recommendations"></div>
+        </section>
+
+        <!-- 하단 고정바 여백 스페이서 -->
         <div class="drawer-bottom-spacer" aria-hidden="true"></div>
       </div>
     </div>
@@ -531,7 +546,6 @@
 
     <div class="fullscreen-drawer-scroll">
       <div class="fullscreen-content-container">
-        <!-- 룰렛 추천 박스 -->
         <section class="md-card lunch-hero-card">
           <div class="lunch-category-chips" id="lunch-category-chips">
             <button type="button" class="filter-chip active" data-cat="all">전체 메뉴</button>
@@ -558,7 +572,6 @@
           </div>
         </section>
 
-        <!-- 상황별 점심 테마 추천 -->
         <section class="md-card">
           <div class="card-headline">
             <div>
@@ -624,7 +637,6 @@
 
     <div class="fullscreen-drawer-scroll">
       <div class="fullscreen-content-container">
-        <!-- 실시간 루팡 급여 계산기 -->
         <section class="md-card slacking-calculator-card">
           <div class="card-headline">
             <div>
@@ -654,7 +666,6 @@
           </div>
         </section>
 
-        <!-- 합법적 루팡 꿀팁 6계명 -->
         <section class="md-card">
           <div class="card-headline">
             <div>
@@ -720,7 +731,40 @@
   </aside>
 
   <!-- ==========================================
-       6. 달력 날짜 상세 모달
+       6. 메인 위젯 순서 설정 모달
+       ========================================== -->
+  <div class="modal-backdrop" id="widget-order-modal-backdrop"></div>
+  <div class="cal-detail-modal widget-order-modal" id="widget-order-modal" role="dialog" aria-modal="true">
+    <div class="modal-header">
+      <div class="modal-title-wrap">
+        <span class="material-symbols-outlined modal-icon" style="color: #005fb0;">swap_vert</span>
+        <div>
+          <h3 class="modal-date">메인 위젯 순서 설정</h3>
+          <span class="modal-status-badge normal">커스텀 배치</span>
+        </div>
+      </div>
+      <button type="button" class="md-icon-button modal-close-btn" id="btn-close-widget-order" aria-label="닫기">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p class="widget-order-guide">화살표(▲/▼)를 눌러 위젯의 표시 순서를 변경하세요.</p>
+      <div class="widget-order-list" id="widget-order-list"></div>
+      
+      <div class="widget-order-actions">
+        <button type="button" class="md-button md-button-text" id="btn-reset-widget-order">
+          <span class="material-symbols-outlined icon-small">restart_alt</span>
+          <span>기본 순서로 복원</span>
+        </button>
+        <button type="button" class="md-button sim-today-btn" id="btn-save-widget-order">
+          <span>완료</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       7. 달력 날짜 상세 모달
        ========================================== -->
   <div class="modal-backdrop" id="cal-modal-backdrop"></div>
   <div class="cal-detail-modal" id="cal-detail-modal" role="dialog" aria-modal="true">
