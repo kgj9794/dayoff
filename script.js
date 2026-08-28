@@ -18,6 +18,27 @@ const flipState = {
   "flip-seconds": null
 };
 
+// 🌟 위젯 기본 순서 (insight와 stats를 좌측 4개로 배분)
+const DEFAULT_WIDGET_ORDER = [
+  "countdown",
+  "calendar",
+  "insight",
+  "stats",
+  "vacation",
+  "holidays",
+  "travel"
+];
+
+const WIDGET_META = {
+  countdown: { name: "⏱️ 다음 쉬는 날 카운트다운" },
+  calendar: { name: "📅 이번 달 달력" },
+  insight: { name: "💡 이번 달 휴일 브리핑" },
+  stats: { name: "📊 이번 달 휴일 현황" },
+  vacation: { name: "🌴 가성비 연차 추천" },
+  holidays: { name: "🚩 다가오는 공휴일 일정" },
+  travel: { name: "✈️ 황금연휴 해외여행 추천" }
+};
+
 function formatDateKey(d) {
   const year = d.getFullYear();
   const month = String(d.getMonth() + 1).padStart(2, "0");
@@ -40,7 +61,7 @@ function hideLoadingScreen() {
   }
 }
 
-// 🌟 햄버거 버튼 아이콘 상태 동기화 (☰ <-> ←)
+// 햄버거 버튼 아이콘 상태 동기화 (☰ <-> ←)
 function updateHamburgerIconState() {
   const navDrawer = document.getElementById("nav-drawer");
   const hamburgerBtn = document.getElementById("btn-open-nav-menu");
@@ -51,21 +72,19 @@ function updateHamburgerIconState() {
   }
 }
 
-// 🌟 실제 셀 너비 대비 글자가 잘리는지(overflow) 동적으로 감지하여 롤링 적용
+// 반응형 오버플로우 감지 롤링
 function checkAndApplyMarquees() {
   const subLabels = document.querySelectorAll('.cal-sub-label');
   subLabels.forEach(label => {
     const textEl = label.querySelector('.cal-sub-text');
     if (!textEl || !textEl.innerText.trim()) return;
 
-    // 자연 상태 너비 측정을 위해 롤링 클래스 임시 제거
     textEl.classList.remove('is-marquee');
     label.classList.remove('has-marquee');
 
     const containerWidth = label.clientWidth;
     const textWidth = textEl.scrollWidth;
 
-    // 글자가 라벨 영역보다 1px 이상 클 때만 롤링 활성화
     if (textWidth > containerWidth + 1) {
       label.classList.add('has-marquee');
       textEl.classList.add('is-marquee');
@@ -176,7 +195,6 @@ function initGlobalHistoryAndEscListener() {
     }
   });
 
-  // 🌟 화면 리사이즈 시 텍스트 잘림 여부 재계산
   let resizeTimer = null;
   window.addEventListener("resize", () => {
     clearTimeout(resizeTimer);
@@ -185,7 +203,145 @@ function initGlobalHistoryAndEscListener() {
 }
 
 // ==========================================
-// 3. 퇴근 시간 브라우저 스토리지 연동
+// 3. 위젯 순서 관리 & 대시보드 렌더링 (좌 4개 : 우 3개 균등 분배)
+// ==========================================
+function getSavedWidgetOrder() {
+  try {
+    const saved = localStorage.getItem("app_widget_order");
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length === DEFAULT_WIDGET_ORDER.length) {
+        return parsed;
+      }
+    }
+  } catch (e) {
+    console.error("위젯 순서 불러오기 오류:", e);
+  }
+  return [...DEFAULT_WIDGET_ORDER];
+}
+
+function saveWidgetOrder(order) {
+  localStorage.setItem("app_widget_order", JSON.stringify(order));
+  applyWidgetOrderToDOM(order);
+}
+
+function applyWidgetOrderToDOM(order) {
+  const colPrimary = document.getElementById("col-primary");
+  const colSecondary = document.getElementById("col-secondary");
+  const topBar = document.querySelector(".widget-order-top-bar");
+
+  if (!colPrimary || !colSecondary) return;
+
+  if (topBar && colPrimary.contains(topBar)) {
+    colPrimary.prepend(topBar);
+  }
+
+  // 🌟 상위 4개(카운트다운, 달력, 브리핑, 통계)는 좌측, 나머지 3개(연차, 공휴일, 여행)는 우측으로 균등 배분
+  order.forEach((widgetId, idx) => {
+    const widgetEl = document.getElementById(`widget-${widgetId}`);
+    if (widgetEl) {
+      if (idx < 4) {
+        colPrimary.appendChild(widgetEl);
+      } else {
+        colSecondary.appendChild(widgetEl);
+      }
+    }
+  });
+
+  checkAndApplyMarquees();
+}
+
+let tempWidgetOrder = [];
+
+function renderWidgetOrderModalList() {
+  const listEl = document.getElementById("widget-order-list");
+  if (!listEl) return;
+
+  listEl.innerHTML = tempWidgetOrder.map((widgetId, idx) => {
+    const meta = WIDGET_META[widgetId] || { name: widgetId };
+    const isFirst = idx === 0;
+    const isLast = idx === tempWidgetOrder.length - 1;
+
+    return `
+      <div class="widget-order-item" data-index="${idx}">
+        <div class="widget-order-item-left">
+          <span class="widget-order-index">${idx + 1}</span>
+          <span class="widget-order-name">${meta.name}</span>
+        </div>
+        <div class="widget-order-btns">
+          <button type="button" class="btn-order-move btn-move-up" data-idx="${idx}" ${isFirst ? 'disabled' : ''} title="위로 이동">
+            <span class="material-symbols-outlined icon-small">arrow_upward</span>
+          </button>
+          <button type="button" class="btn-order-move btn-move-down" data-idx="${idx}" ${isLast ? 'disabled' : ''} title="아래로 이동">
+            <span class="material-symbols-outlined icon-small">arrow_downward</span>
+          </button>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  listEl.querySelectorAll(".btn-move-up").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const idx = Number(btn.dataset.idx);
+      if (idx > 0) {
+        const temp = tempWidgetOrder[idx];
+        tempWidgetOrder[idx] = tempWidgetOrder[idx - 1];
+        tempWidgetOrder[idx - 1] = temp;
+        renderWidgetOrderModalList();
+      }
+    });
+  });
+
+  listEl.querySelectorAll(".btn-move-down").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const idx = Number(btn.dataset.idx);
+      if (idx < tempWidgetOrder.length - 1) {
+        const temp = tempWidgetOrder[idx];
+        tempWidgetOrder[idx] = tempWidgetOrder[idx + 1];
+        tempWidgetOrder[idx + 1] = temp;
+        renderWidgetOrderModalList();
+      }
+    });
+  });
+}
+
+function initWidgetOrderManager() {
+  const openBtn = document.getElementById("btn-open-widget-order");
+  const closeBtn = document.getElementById("btn-close-widget-order");
+  const backdrop = document.getElementById("widget-order-modal-backdrop");
+  const saveBtn = document.getElementById("btn-save-widget-order");
+  const resetBtn = document.getElementById("btn-reset-widget-order");
+
+  if (openBtn) {
+    openBtn.addEventListener("click", () => {
+      tempWidgetOrder = getSavedWidgetOrder();
+      renderWidgetOrderModalList();
+      openModalView("widget-order-modal", "widget-order-modal-backdrop");
+    });
+  }
+
+  if (closeBtn) closeBtn.addEventListener("click", () => closeModalView("widget-order-modal"));
+  if (backdrop) backdrop.addEventListener("click", () => closeModalView("widget-order-modal"));
+
+  if (saveBtn) {
+    saveBtn.addEventListener("click", () => {
+      saveWidgetOrder(tempWidgetOrder);
+      closeModalView("widget-order-modal");
+    });
+  }
+
+  if (resetBtn) {
+    resetBtn.addEventListener("click", () => {
+      tempWidgetOrder = [...DEFAULT_WIDGET_ORDER];
+      renderWidgetOrderModalList();
+    });
+  }
+
+  applyWidgetOrderToDOM(getSavedWidgetOrder());
+}
+
+// ==========================================
+// 4. 퇴근 시간 브라우저 스토리지 & 클릭 반응성 강화
 // ==========================================
 function getOffWorkTime() {
   const saved = localStorage.getItem("app_off_work_time") || "17:00";
@@ -199,6 +355,7 @@ function getOffWorkTime() {
 
 function setupOffWorkTimeInput() {
   const timeInput = document.getElementById("off-work-time");
+  const chip = document.querySelector(".target-time-chip");
   const current = getOffWorkTime();
   timeInput.value = current.str;
 
@@ -207,10 +364,26 @@ function setupOffWorkTimeInput() {
     localStorage.setItem("app_off_work_time", e.target.value);
     updateCountdown();
   });
+
+  if (chip) {
+    chip.addEventListener("click", (e) => {
+      if (e.target !== timeInput) {
+        try {
+          if (typeof timeInput.showPicker === 'function') {
+            timeInput.showPicker();
+          } else {
+            timeInput.focus();
+          }
+        } catch (err) {
+          timeInput.focus();
+        }
+      }
+    });
+  }
 }
 
 // ==========================================
-// 4. 네비게이션 드로어 & 모달 이벤트 등록
+// 5. 네비게이션 드로어 & 모달 이벤트 등록
 // ==========================================
 function initNavigationAndDrawers() {
   const openNavBtn = document.getElementById("btn-open-nav-menu");
@@ -229,7 +402,6 @@ function initNavigationAndDrawers() {
   const closeSlackingBtn = document.getElementById("btn-close-slacking");
   const slackingBackdrop = document.getElementById("slacking-drawer-backdrop");
 
-  // 1. 햄버거 토글 버튼
   openNavBtn.addEventListener("click", () => {
     const navDrawer = document.getElementById("nav-drawer");
     if (navDrawer.classList.contains("is-open")) {
@@ -242,7 +414,6 @@ function initNavigationAndDrawers() {
   closeNavBtn.addEventListener("click", () => closeModalView("nav-drawer"));
   navBackdrop.addEventListener("click", () => closeModalView("nav-drawer"));
 
-  // 2. 미래 연차 시뮬레이터
   openSimBtn.addEventListener("click", () => {
     transitionModalView("nav-drawer", "simulation-drawer", "sim-drawer-backdrop", () => {
       renderSimulatedSpace("none");
@@ -251,14 +422,12 @@ function initNavigationAndDrawers() {
   closeSimBtn.addEventListener("click", () => closeModalView("simulation-drawer"));
   simBackdrop.addEventListener("click", () => closeModalView("simulation-drawer"));
 
-  // 3. 점심 메뉴 추천 모달
   openLunchBtn.addEventListener("click", () => {
     transitionModalView("nav-drawer", "lunch-drawer", "lunch-drawer-backdrop");
   });
   closeLunchBtn.addEventListener("click", () => closeModalView("lunch-drawer"));
   lunchBackdrop.addEventListener("click", () => closeModalView("lunch-drawer"));
 
-  // 4. 월급 루팡 가이드 모달
   openSlackingBtn.addEventListener("click", () => {
     transitionModalView("nav-drawer", "slacking-drawer", "slacking-drawer-backdrop");
   });
@@ -267,7 +436,7 @@ function initNavigationAndDrawers() {
 }
 
 // ==========================================
-// 5. 달력 상세 팝업 모달
+// 6. 달력 상세 팝업 모달
 // ==========================================
 function initCalendarDetailModal() {
   const closeBtn = document.getElementById("btn-close-modal");
@@ -317,7 +486,7 @@ function openCalendarDetailModal(cellDate, dateKey, isHoliday, isLeave, isToday,
 }
 
 // ==========================================
-// 6. 테마 관리
+// 7. 테마 관리
 // ==========================================
 function initThemeManager() {
   const root = document.documentElement;
@@ -380,7 +549,7 @@ function initThemeManager() {
 }
 
 // ==========================================
-// 7. 동적 공휴일 수집 (Nager.Date API)
+// 8. 동적 공휴일 수집 (Nager.Date API)
 // ==========================================
 async function ensureHolidaysForYear(year) {
   const yearsToFetch = [year - 1, year, year + 1];
@@ -428,7 +597,7 @@ function getDayOffName(dateObj) {
 }
 
 // ==========================================
-// 8. 클린 플립 카운트다운
+// 9. 클린 플립 카운트다운
 // ==========================================
 function updateTextFlip(containerId, nextValue) {
   const container = document.getElementById(containerId);
@@ -597,7 +766,7 @@ function updateDynamicProgressBar(now, targetTime) {
 }
 
 // ==========================================
-// 9. 연차 추천 및 해외여행 추천 연산 코어
+// 10. 연차 추천 및 해외여행 추천 연산 코어
 // ==========================================
 function countContiguousOffDays(startDate) {
   let count = 0;
@@ -807,9 +976,15 @@ function getTravelDestinations(totalDays) {
   }
 }
 
-function renderTravelWidget(baseDate) {
-  const container = document.getElementById("main-travel-recommendations");
+// 메인 & 시뮬레이터 공통 해외여행 추천 렌더링 함수
+function renderTravelWidget(baseDate, containerId = "main-travel-recommendations", descId = null) {
+  const container = document.getElementById(containerId);
   if (!container) return;
+
+  if (descId) {
+    const descEl = document.getElementById(descId);
+    if (descEl) descEl.innerText = `${baseDate.getFullYear()}년 ${baseDate.getMonth() + 1}월 이후 최적의 여행 루트`;
+  }
 
   const vacations = calculateVacationsForBase(baseDate);
   const travelPicks = vacations.filter(v => v.totalRest >= 4).slice(0, 3);
@@ -818,9 +993,9 @@ function renderTravelWidget(baseDate) {
     container.innerHTML = `
       <div class="travel-card-item">
         <div class="travel-item-header">
-          <span class="travel-period-tag">가까운 시일 내 4일 이상 연휴가 없습니다.</span>
+          <span class="travel-period-tag">해당 시점 이후 4일 이상 연휴가 없습니다.</span>
         </div>
-        <p class="travel-tip-text">미래 연차 시뮬레이터에서 하반기/내년 황금연휴를 확인해보세요.</p>
+        <p class="travel-tip-text">다른 달로 이동하여 일정을 탐색해보세요.</p>
       </div>
     `;
     return;
@@ -848,7 +1023,7 @@ function renderTravelWidget(baseDate) {
 }
 
 // ==========================================
-// 10. 캘린더 그리드 DOM 생성
+// 11. 캘린더 그리드 DOM 생성
 // ==========================================
 function createCalendarGridFragment(year, month) {
   const firstDayIndex = new Date(year, month, 1).getDay();
@@ -922,7 +1097,7 @@ function createCalendarGridFragment(year, month) {
 }
 
 // ==========================================
-// 11. 메인 화면 렌더링
+// 12. 메인 화면 렌더링
 // ==========================================
 async function renderMainRealtimeSpace() {
   await ensureHolidaysForYear(currentRealYear);
@@ -1003,7 +1178,7 @@ async function renderMainRealtimeSpace() {
     `).join("");
   }
 
-  renderTravelWidget(today);
+  renderTravelWidget(today, "main-travel-recommendations");
 
   const holListEl = document.getElementById("main-holiday-list");
   const baseDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
@@ -1034,12 +1209,11 @@ async function renderMainRealtimeSpace() {
     }).join("");
   }
 
-  // 🌟 렌더링 직후 텍스트 오버플로우 검사 및 롤링 적용
   checkAndApplyMarquees();
 }
 
 // ==========================================
-// 12. 미래 연차 시뮬레이터 렌더링
+// 13. 미래 연차 시뮬레이터 렌더링
 // ==========================================
 async function renderSimulatedSpace(direction = "none") {
   await ensureHolidaysForYear(simViewYear);
@@ -1080,7 +1254,7 @@ async function renderSimulatedSpace(direction = "none") {
       activeLayer.className = "calendar-grid-layer slide-up-exit";
       newLayer.className = "calendar-grid-layer slide-up-enter";
     } else if (direction === "prev") {
-      activeLayer.className = "calendar-grid-layer slide-down-exit";
+      activeLayer.className = "calendar-grid-layer slide-up-enter";
       newLayer.className = "calendar-grid-layer slide-down-enter";
     }
 
@@ -1164,6 +1338,9 @@ async function renderSimulatedSpace(direction = "none") {
     `).join("");
   }
 
+  // 🌟 시뮬레이터 화면 해외여행 추천 렌더링
+  renderTravelWidget(simBaseDate, "sim-travel-recommendations", "sim-travel-desc");
+
   const simHolListEl = document.getElementById("sim-holiday-list");
   document.getElementById("sim-holiday-desc").innerText = `${simViewYear}년 ${simViewMonth + 1}월 이후 예정된 휴일`;
   
@@ -1237,7 +1414,7 @@ function setupSimCalendarControls() {
 }
 
 // ==========================================
-// 13. 점심 메뉴 추천 엔진
+// 14. 점심 메뉴 추천 엔진
 // ==========================================
 const lunchDatabase = [
   // 한식
@@ -1344,7 +1521,7 @@ function setupLunchEngine() {
 }
 
 // ==========================================
-// 14. 루팡 급여 계산기 & 시간때우기 모듈
+// 15. 루팡 급여 계산기 & 시간때우기 모듈
 // ==========================================
 let slackTimerInterval = null;
 let slackSeconds = 0;
@@ -1397,7 +1574,7 @@ function setupSlackingEngine() {
 }
 
 // ==========================================
-// 15. 앱 초기화
+// 16. 앱 초기화
 // ==========================================
 async function init() {
   initThemeManager();
@@ -1408,6 +1585,7 @@ async function init() {
   setupSimCalendarControls();
   setupLunchEngine();
   setupSlackingEngine();
+  initWidgetOrderManager();
 
   await renderMainRealtimeSpace();
   updateCountdown();
