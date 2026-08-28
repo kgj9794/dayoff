@@ -738,7 +738,6 @@ body {
   border-style: dashed;
 }
 
-/* 날짜 숫자 + 날씨 배지 상단 행 */
 .cal-cell-top {
   display: flex;
   justify-content: space-between;
@@ -757,7 +756,6 @@ body {
 .cal-cell.sunday .cal-date-num { color: #b91c1c; }
 .cal-cell.saturday .cal-date-num { color: #0369a1; }
 
-/* 🌟 더 컴팩트하고 깔끔해진 날씨 미니 배지 (모바일 가독성 최적화) */
 .cal-weather-badge {
   display: inline-flex;
   align-items: center;
@@ -770,12 +768,12 @@ body {
 }
 
 .cal-weather-icon {
-  font-size: 0.625rem; /* ~10px */
+  font-size: 0.625rem;
   line-height: 1;
 }
 
 .cal-temp {
-  font-size: 0.5rem; /* ~8px */
+  font-size: 0.5rem;
   font-weight: 800;
   color: var(--md-sys-color-outline);
   letter-spacing: -0.05em;
@@ -793,7 +791,6 @@ body {
 }
 .cal-cell.leave-rec .cal-date-num { color: #065f46; font-weight: 900; }
 
-/* 오늘(Today) 셀 */
 .cal-cell.today {
   border: 2px solid var(--md-sys-color-primary);
   background-color: #e0f2fe;
@@ -802,7 +799,6 @@ body {
 }
 .cal-cell.today .cal-date-num { color: var(--md-sys-color-primary); font-weight: 900; }
 
-/* 반응형 오버플로우 롤링 라벨 */
 .cal-sub-label {
   font-size: 0.625rem;
   line-height: 1.2;
@@ -857,7 +853,6 @@ body {
   background: rgba(16, 185, 129, 0.28);
 }
 
-/* 다크모드 직접 선택 시 색상 */
 [data-theme="dark"] .cal-cell.holiday {
   background-color: #450a0a;
   border-color: #991b1b;
@@ -1796,7 +1791,113 @@ body {
 .info-value-desc { font-size: 0.875rem; font-weight: 500; line-height: 1.5; color: var(--md-sys-color-on-surface); }
 
 /* ==========================================
-   13. 테마 모드 FAB 컨트롤러
+   13. 🌟 피드백 작성 모달 및 플로팅 FAB 스타일
+   ========================================== */
+.feedback-fab.right-fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 18px;
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  border: 1.5px solid var(--card-border-color);
+  border-radius: var(--md-shape-corner-full);
+  font-size: 0.875rem;
+  font-weight: 800;
+  box-shadow: var(--md-elevation-3);
+  cursor: pointer;
+  transform: translateZ(0);
+  transition: transform 0.3s cubic-bezier(0.2, 0, 0, 1), opacity 0.25s ease;
+  will-change: transform, opacity;
+}
+
+.feedback-fab.right-fab:hover {
+  transform: scale(1.05);
+}
+
+.feedback-fab.right-fab.is-hidden {
+  transform: translateY(90px) scale(0.85);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.feedback-modal-card {
+  max-width: 440px;
+}
+
+.feedback-form-content {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.form-group-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fb-label {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--md-sys-color-outline);
+}
+
+.fb-select, .fb-textarea {
+  width: 100%;
+  background-color: var(--md-sys-color-surface-container-high);
+  border: 1.5px solid var(--card-border-color);
+  color: var(--md-sys-color-on-surface);
+  border-radius: var(--md-shape-corner-small);
+  padding: 10px 12px;
+  font-size: 0.875rem;
+  font-family: inherit;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.fb-select:focus, .fb-textarea:focus {
+  border-color: var(--md-sys-color-primary);
+}
+
+.fb-textarea {
+  resize: vertical;
+  min-height: 90px;
+}
+
+.fb-submit-btn {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 18px;
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  border: none;
+  border-radius: var(--md-shape-corner-small);
+  font-size: 0.9375rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: opacity 0.2s ease, transform 0.15s ease;
+}
+
+.fb-submit-btn:hover:not(:disabled) {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
+.fb-submit-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ==========================================
+   14. 테마 모드 FAB 컨트롤러
    ========================================== */
 .theme-switcher-fab.left-fab {
   position: fixed;
@@ -1873,7 +1974,7 @@ body {
 .theme-option.selected { font-weight: 800; color: var(--md-sys-color-primary); }
 
 /* ==========================================
-   14. 반응형 미디어 쿼리
+   15. 반응형 미디어 쿼리
    ========================================== */
 @media (max-width: 767px) {
   body { padding: 76px 12px 72px; }
@@ -1896,6 +1997,7 @@ body {
   .cal-sub-label { font-size: 0.5625rem; }
   .recommendation-item { flex-direction: column; align-items: flex-start; gap: 8px; }
   .theme-switcher-fab.left-fab { bottom: 16px; left: 16px; }
+  .feedback-fab.right-fab { bottom: 16px; right: 16px; padding: 10px 14px; font-size: 0.8125rem; }
   .fullscreen-drawer-header { padding: 10px 12px; }
   .drawer-title { font-size: 1.1rem; }
   .drawer-subtitle { display: none; }
