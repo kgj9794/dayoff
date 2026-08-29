@@ -27,22 +27,30 @@
     <p class="loading-text">휴일 및 일정 데이터를 불러오는 중...</p>
   </div>
 
-  <!-- 상단 앱 바 (애니메이션 햄버거 버튼 & 타이틀) -->
+  <!-- 상단 앱 바 (애니메이션 햄버거 버튼 & 타이틀 & 스크롤 시 나타나는 상단 피드백 버튼) -->
   <header class="app-top-bar" id="app-top-bar">
     <div class="top-bar-inner">
-      <!-- ☰ ↔ ← 애니메이션 변형 햄버거 버튼 -->
-      <button type="button" class="hamburger-btn" id="btn-open-nav-menu" aria-label="메뉴 열기" title="전체 메뉴">
-        <div class="hamburger-lines">
-          <span></span>
-          <span></span>
-          <span></span>
-        </div>
-      </button>
+      <div class="top-bar-left">
+        <!-- ☰ ↔ ← 애니메이션 변형 햄버거 버튼 -->
+        <button type="button" class="hamburger-btn" id="btn-open-nav-menu" aria-label="메뉴 열기" title="전체 메뉴">
+          <div class="hamburger-lines">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </button>
 
-      <div class="top-bar-title-wrap">
-        <h1 class="brand-title">주말 언제와?</h1>
-        <p class="brand-subtitle">실시간 다음 휴일 카운트다운 및 직장인 휴식 가이드</p>
+        <div class="top-bar-title-wrap">
+          <h1 class="brand-title">주말 언제와?</h1>
+          <p class="brand-subtitle">실시간 다음 휴일 카운트다운 및 직장인 휴식 가이드</p>
+        </div>
       </div>
+
+      <!-- 🌟 스크롤 시 상단 우측에 나타나는 피드백 버튼 -->
+      <button type="button" class="top-bar-feedback-btn is-hidden" id="btn-top-feedback" title="피드백 작성">
+        <span class="material-symbols-outlined">chat</span>
+        <span class="btn-text">피드백</span>
+      </button>
     </div>
   </header>
 
@@ -796,7 +804,7 @@
   </div>
 
   <!-- ==========================================
-       8. 🌟 피드백 작성 모달 (신규 추가)
+       8. 피드백 작성 모달
        ========================================== -->
   <div class="modal-backdrop" id="feedback-modal-backdrop"></div>
   <div class="cal-detail-modal feedback-modal-card" id="feedback-modal" role="dialog" aria-modal="true">
@@ -858,7 +866,7 @@
     </button>
   </aside>
 
-  <!-- 🌟 우측 하단 플로팅 피드백 버튼 (최상단 노출 / 스크롤 시 자동 숨김) -->
+  <!-- 우측 하단 플로팅 피드백 버튼 (최상단 노출 / 스크롤 시 상단 바로 이동) -->
   <button type="button" class="feedback-fab right-fab" id="btn-feedback-fab" aria-label="피드백 작성" title="피드백 작성">
     <span class="material-symbols-outlined">chat</span>
     <span class="fab-text">피드백</span>
