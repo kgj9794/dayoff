@@ -61,12 +61,13 @@
     .header-title-wrap h2 { font-size: 1.4rem; font-weight: 900; color: #0f172a; }
     .header-title-wrap p { font-size: 0.85rem; color: #64748b; margin-top: 2px; }
     
-    .header-actions { display: flex; align-items: center; gap: 10px; }
-    .refresh-btn {
+    .header-actions { display: flex; align-items: center; gap: 8px; }
+    
+    .btn-action {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 8px 16px;
+      padding: 8px 14px;
       border-radius: 8px;
       border: 1.5px solid #cbd5e1;
       background-color: #ffffff;
@@ -76,8 +77,19 @@
       cursor: pointer;
       transition: all 0.2s;
     }
-    .refresh-btn:hover { background-color: #f8fafc; border-color: #005fb0; color: #005fb0; }
-    .refresh-btn .material-symbols-outlined { font-size: 18px; }
+    .btn-action:hover { background-color: #f8fafc; border-color: #005fb0; color: #005fb0; }
+    .btn-action .material-symbols-outlined { font-size: 18px; }
+
+    .btn-logout {
+      color: #b91c1c;
+      border-color: #fca5a5;
+      background-color: #fff1f2;
+    }
+    .btn-logout:hover {
+      background-color: #fee2e2;
+      border-color: #ef4444;
+      color: #991b1b;
+    }
 
     /* 테이블 카드 영역 */
     .table-card {
@@ -145,9 +157,13 @@
           <p>구글 스프레드시트 FEED 시트와 실시간 연동된 피드백 목록입니다.</p>
         </div>
         <div class="header-actions">
-          <button type="button" class="refresh-btn" onclick="fetchFeedbacks()">
+          <button type="button" class="btn-action" id="btn-refresh" onclick="fetchFeedbacks(false)">
             <span class="material-symbols-outlined">refresh</span>
             <span>새로고침</span>
+          </button>
+          <button type="button" class="btn-action btn-logout" onclick="handleLogout()" title="로그아웃 및 인증 정보 초기화">
+            <span class="material-symbols-outlined">logout</span>
+            <span>로그아웃</span>
           </button>
         </div>
       </div>
@@ -172,15 +188,10 @@
 
   <script>
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxyLX-M_XVv8_9TiIEZ9mmHaKyGz4XHE_bcwyMGWnms5fs6G-gfW6nwghUoxpFB1cL58g/exec';
+    const STORAGE_KEY = 'admin_session_pass';
     let currentPassword = '';
 
-    function handleLogin(e) {
-      e.preventDefault();
-      currentPassword = document.getElementById('admin-pw').value;
-      fetchFeedbacks();
-    }
-
-    // 🌟 ISO 8601 및 다양한 날짜 형식을 'YYYY-MM-DD HH:mm:ss'로 깔끔하게 변환하는 포맷터
+    // 날짜 포맷터 ('YYYY-MM-DD HH:mm:ss')
     function formatDateTime(val) {
       if (!val) return '-';
       const d = new Date(val);
@@ -196,9 +207,31 @@
       return `${yyyy}-${mm}-${dd} ${hh}:${min}:${ss}`;
     }
 
-    async function fetchFeedbacks() {
-      const btn = document.getElementById('login-btn');
-      if (btn) btn.innerText = '인증 확인 중...';
+    // 폼 제출 시 로그인 처리
+    function handleLogin(e) {
+      e.preventDefault();
+      currentPassword = document.getElementById('admin-pw').value.trim();
+      fetchFeedbacks(false);
+    }
+
+    // 로그아웃 처리 (로컬 스토리지 삭제 및 폼 복구)
+    function handleLogout() {
+      if (confirm('로그아웃 하시겠습니까? 다음 접속 시 비밀번호를 다시 입력해야 합니다.')) {
+        localStorage.removeItem(STORAGE_KEY);
+        currentPassword = '';
+        document.getElementById('admin-pw').value = '';
+        document.getElementById('dashboard-view').style.display = 'none';
+        document.getElementById('auth-view').style.display = 'block';
+      }
+    }
+
+    // 피드백 데이터 조회 및 인증 검증
+    async function fetchFeedbacks(isAutoLogin = false) {
+      const loginBtn = document.getElementById('login-btn');
+      const refreshBtn = document.getElementById('btn-refresh');
+
+      if (!isAutoLogin && loginBtn) loginBtn.innerText = '인증 확인 중...';
+      if (refreshBtn) refreshBtn.style.opacity = '0.6';
 
       try {
         const response = await fetch(APPS_SCRIPT_URL, {
@@ -212,26 +245,40 @@
         const result = await response.json();
 
         if (result.status === 'success') {
+          // 🌟 인증 성공 시 로컬 스토리지에 비밀번호 저장 (영구 자동 로그인)
+          localStorage.setItem(STORAGE_KEY, currentPassword);
+
           document.getElementById('auth-view').style.display = 'none';
           document.getElementById('dashboard-view').style.display = 'block';
           renderTable(result.data);
         } else {
-          alert(result.message || '인증에 실패했습니다. 비밀번호를 다시 확인하세요.');
+          // 인증 실패 시 기존 저장된 키 삭제
+          localStorage.removeItem(STORAGE_KEY);
+          document.getElementById('dashboard-view').style.display = 'none';
+          document.getElementById('auth-view').style.display = 'block';
+
+          if (!isAutoLogin) {
+            alert(result.message || '인증에 실패했습니다. 비밀번호를 다시 확인하세요.');
+          }
         }
       } catch (err) {
         console.error('관리자 조회 오류:', err);
-        alert('데이터를 가져오는 중 네트워크 오류가 발생했습니다.');
+        if (!isAutoLogin) {
+          alert('데이터를 가져오는 중 네트워크 오류가 발생했습니다.');
+        }
       } finally {
-        if (btn) btn.innerText = '인증 및 내역 조회';
+        if (loginBtn) loginBtn.innerText = '인증 및 내역 조회';
+        if (refreshBtn) refreshBtn.style.opacity = '1';
       }
     }
 
+    // 테이블 렌더링
     function renderTable(data) {
       const tbody = document.getElementById('feedback-table-body');
       document.getElementById('total-count').innerText = data.length;
       tbody.innerHTML = '';
 
-      if (data.length === 0) {
+      if (!data || data.length === 0) {
         tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 48px; color: #94a3b8; font-weight:600;">접수된 피드백 내역이 없습니다.</td></tr>';
         return;
       }
@@ -239,7 +286,7 @@
       data.forEach((item, index) => {
         const badgeClass = 'badge-' + String(item.category || '').replace(/\s+/g, '-');
         const formattedDate = formatDateTime(item.createdAt);
-        const rowNumber = index + 1; // 🌟 1, 2, 3... 순번 번호 부여
+        const rowNumber = index + 1; // 1, 2, 3... 순번 표기
 
         const row = document.createElement('tr');
         row.innerHTML = `
@@ -257,6 +304,16 @@
       div.innerText = text;
       return div.innerHTML;
     }
+
+    // 🌟 페이지 로드 시 저장된 인증 정보 확인 후 자동 로그인 실행
+    document.addEventListener('DOMContentLoaded', () => {
+      const savedPass = localStorage.getItem(STORAGE_KEY);
+      if (savedPass) {
+        currentPassword = savedPass;
+        // 비밀번호 입력창을 거치지 않고 바로 데이터 로드
+        fetchFeedbacks(true);
+      }
+    });
   </script>
 </body>
 </html>
