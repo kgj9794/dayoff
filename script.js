@@ -321,6 +321,7 @@ function applyWidgetOrderToDOM(order) {
     colPrimary.prepend(topBar);
   }
 
+  // 상위 4개(카운트다운, 달력, 브리핑, 통계)는 좌측, 나머지 3개(연차, 공휴일, 여행)는 우측으로 균등 배분
   order.forEach((widgetId, idx) => {
     const widgetEl = document.getElementById(`widget-${widgetId}`);
     if (widgetEl) {
@@ -582,18 +583,27 @@ function openCalendarDetailModal(cellDate, dateKey, isHoliday, isLeave, isToday,
 }
 
 // ==========================================
-// 8. 🌟 피드백 제출 & 스크롤 숨김/노출 매니저
+// 8. 🌟 피드백 제출 & 스크롤 연동 매니저 (최상단=하단FAB / 스크롤=상단버튼)
 // ==========================================
 function initFeedbackSystem() {
   const fabBtn = document.getElementById("btn-feedback-fab");
+  const topFeedbackBtn = document.getElementById("btn-top-feedback");
   const closeBtn = document.getElementById("btn-close-feedback");
   const backdrop = document.getElementById("feedback-modal-backdrop");
   const form = document.getElementById("feedback-form");
   const submitBtn = document.getElementById("fb-submit-btn");
   const btnText = document.getElementById("fb-btn-text");
 
+  // 하단 플로팅 버튼 클릭
   if (fabBtn) {
     fabBtn.addEventListener("click", () => {
+      openModalView("feedback-modal", "feedback-modal-backdrop");
+    });
+  }
+
+  // 🌟 상단 헤더 피드백 버튼 클릭
+  if (topFeedbackBtn) {
+    topFeedbackBtn.addEventListener("click", () => {
       openModalView("feedback-modal", "feedback-modal-backdrop");
     });
   }
@@ -601,16 +611,20 @@ function initFeedbackSystem() {
   if (closeBtn) closeBtn.addEventListener("click", () => closeModalView("feedback-modal"));
   if (backdrop) backdrop.addEventListener("click", () => closeModalView("feedback-modal"));
 
-  // 🌟 스크롤 최상위일 때 노출, 아래로 스크롤 시 자동 숨김
-  window.addEventListener("scroll", () => {
-    if (!fabBtn) return;
+  // 🌟 스크롤 상태에 따른 상단/하단 버튼 상호 전환
+  const handleScrollFeedback = () => {
     const scrollY = window.scrollY;
     if (scrollY <= 20) {
-      fabBtn.classList.remove("is-hidden");
+      if (fabBtn) fabBtn.classList.remove("is-hidden");
+      if (topFeedbackBtn) topFeedbackBtn.classList.add("is-hidden");
     } else {
-      fabBtn.classList.add("is-hidden");
+      if (fabBtn) fabBtn.classList.add("is-hidden");
+      if (topFeedbackBtn) topFeedbackBtn.classList.remove("is-hidden");
     }
-  }, { passive: true });
+  };
+
+  window.addEventListener("scroll", handleScrollFeedback, { passive: true });
+  handleScrollFeedback(); // 초기 상태 실행
 
   // 피드백 전송 처리
   if (form) {
@@ -1145,7 +1159,6 @@ function getTravelDestinations(totalDays) {
   }
 }
 
-// 메인 & 시뮬레이터 공통 해외여행 추천 렌더링 함수
 function renderTravelWidget(baseDate, containerId = "main-travel-recommendations", descId = null) {
   const container = document.getElementById(containerId);
   if (!container) return;
@@ -1767,7 +1780,7 @@ async function init() {
   initGlobalHistoryAndEscListener();
   initNavigationAndDrawers();
   initCalendarDetailModal();
-  initFeedbackSystem(); // 🌟 피드백 시스템 초기화
+  initFeedbackSystem(); // 피드백 시스템 초기화
   setupOffWorkTimeInput();
   setupSimCalendarControls();
   setupLunchEngine();
