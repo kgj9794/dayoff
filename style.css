@@ -255,7 +255,7 @@ body {
   text-overflow: ellipsis;
 }
 
-/* 🌟 상단 앱 바 우측에 스크롤 시 부드럽게 나타나는 피드백 버튼 */
+/* 상단 앱 바 우측 피드백 버튼 */
 .top-bar-feedback-btn {
   display: inline-flex;
   align-items: center;
@@ -630,6 +630,16 @@ body {
   100% { transform: translateY(0); opacity: 1; }
 }
 
+@keyframes slideDownExitAnim {
+  0% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(100%); opacity: 0; }
+}
+
+@keyframes slideDownEnterAnim {
+  0% { transform: translateY(-100%); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
 .countdown-separator {
   font-size: 1.85rem;
   font-weight: 800;
@@ -738,26 +748,6 @@ body {
 .slide-up-enter { animation: slideUpEnterAnim 0.32s cubic-bezier(0.2, 0, 0, 1) forwards; }
 .slide-down-exit { animation: slideDownExitAnim 0.32s cubic-bezier(0.2, 0, 0, 1) forwards; }
 .slide-down-enter { animation: slideDownEnterAnim 0.32s cubic-bezier(0.2, 0, 0, 1) forwards; }
-
-@keyframes slideUpExitAnim {
-  0% { transform: translateY(0); opacity: 1; }
-  100% { transform: translateY(-100%); opacity: 0; }
-}
-
-@keyframes slideUpEnterAnim {
-  0% { transform: translateY(100%); opacity: 0; }
-  100% { transform: translateY(0); opacity: 1; }
-}
-
-@keyframes slideDownExitAnim {
-  0% { transform: translateY(0); opacity: 1; }
-  100% { transform: translateY(100%); opacity: 0; }
-}
-
-@keyframes slideDownEnterAnim {
-  0% { transform: translateY(-100%); opacity: 0; }
-  100% { transform: translateY(0); opacity: 1; }
-}
 
 .cal-cell {
   min-height: 58px;
@@ -953,7 +943,7 @@ body {
 .dot-today { background-color: var(--md-sys-color-primary); }
 
 /* ==========================================
-   6. 해외여행 위젯 & 추천 리스트
+   6. 🌟 해외여행 위젯 (황금루트 아래 총 휴식일수 배치)
    ========================================== */
 .travel-rec-list {
   display: flex;
@@ -965,34 +955,46 @@ body {
   background-color: var(--md-sys-color-surface);
   border: 1.5px solid var(--card-border-color);
   border-radius: var(--md-shape-corner-medium);
-  padding: 14px 16px;
+  padding: 16px 18px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
+/* 🌟 타이틀 + 아래 총 휴식일수 세로 그룹 */
 .travel-item-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.travel-period-tag {
-  font-size: 0.8125rem;
-  font-weight: 800;
-  color: var(--md-sys-color-primary);
-  display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
   gap: 4px;
 }
 
+.travel-period-tag {
+  font-size: 0.9375rem;
+  font-weight: 900;
+  color: var(--md-sys-color-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .travel-badge-days {
-  background-color: var(--md-sys-color-primary-container);
-  color: var(--md-sys-color-on-primary-container);
-  font-size: 0.6875rem;
-  font-weight: 800;
-  padding: 2px 8px;
-  border-radius: var(--md-shape-corner-full);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--md-sys-color-on-surface);
+}
+
+.highlight-rest {
+  color: var(--md-sys-color-primary);
+  font-weight: 900;
+}
+
+.highlight-leave {
+  color: var(--md-sys-color-outline);
+  font-weight: 600;
 }
 
 .travel-destinations-row {
@@ -1007,7 +1009,7 @@ body {
   border: 1px solid var(--card-border-color);
   font-size: 0.75rem;
   font-weight: 700;
-  padding: 3px 8px;
+  padding: 4px 8px;
   border-radius: 6px;
 }
 
