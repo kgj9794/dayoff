@@ -218,13 +218,22 @@ body {
   max-width: 1160px;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: space-between;
   gap: 14px;
+}
+
+.top-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1;
+  min-width: 0;
 }
 
 .top-bar-title-wrap {
   flex: 1;
   text-align: left;
+  min-width: 0;
 }
 
 .brand-title {
@@ -232,12 +241,52 @@ body {
   font-weight: 900;
   letter-spacing: -0.03em;
   color: var(--md-sys-color-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .brand-subtitle {
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--md-sys-color-outline);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 🌟 상단 앱 바 우측에 스크롤 시 부드럽게 나타나는 피드백 버튼 */
+.top-bar-feedback-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 14px;
+  border-radius: var(--md-shape-corner-full);
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  border: 1px solid var(--card-border-color);
+  font-size: 0.8125rem;
+  font-weight: 800;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: opacity 0.25s ease, transform 0.25s ease, background-color 0.2s;
+  opacity: 1;
+  transform: scale(1);
+}
+
+.top-bar-feedback-btn:hover {
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+}
+
+.top-bar-feedback-btn.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.85);
+}
+
+.top-bar-feedback-btn .material-symbols-outlined {
+  font-size: 16px;
 }
 
 /* ☰ ↔ ← 애니메이션 변형 햄버거 버튼 */
@@ -506,7 +555,7 @@ body {
 
 /* ==========================================
    4. 클린 텍스트 플립다운 시계
-   ========================================= */
+   ========================================== */
 .countdown-display {
   display: flex;
   justify-content: center;
@@ -572,13 +621,13 @@ body {
 }
 
 @keyframes flipTextOutDown {
-  0% { transform: translateY(0) rotateX(0deg); opacity: 1; }
-  100% { transform: translateY(50%) rotateX(-90deg); opacity: 0; }
+  0% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(-100%); opacity: 0; }
 }
 
 @keyframes flipTextInDown {
-  0% { transform: translateY(-50%) rotateX(90deg); opacity: 0; }
-  100% { transform: translateY(0) rotateX(0deg); opacity: 1; }
+  0% { transform: translateY(100%); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
 }
 
 .countdown-separator {
@@ -757,7 +806,7 @@ body {
 .cal-cell.sunday .cal-date-num { color: #b91c1c; }
 .cal-cell.saturday .cal-date-num { color: #0369a1; }
 
-/* 🌟 컴팩트 날씨 미니 배지 (모바일 가독성 최적화) */
+/* 컴팩트 날씨 미니 배지 */
 .cal-weather-badge {
   display: inline-flex;
   align-items: center;
@@ -1197,7 +1246,6 @@ body {
   pointer-events: auto;
 }
 
-/* 🌟 모바일 동적 주소창 완벽 대응: 100dvh 및 Flexbox 채택 */
 .simulation-drawer.full-screen-view {
   position: fixed !important;
   top: 0 !important;
@@ -1251,7 +1299,6 @@ body {
 .drawer-title { font-size: 1.25rem; font-weight: 800; color: var(--md-sys-color-on-surface); }
 .drawer-subtitle { font-size: 0.75rem; font-weight: 600; color: var(--md-sys-color-outline); }
 
-/* 스크롤 컨테이너 */
 .fullscreen-drawer-scroll {
   flex: 1 1 auto;
   width: 100%;
@@ -1279,7 +1326,6 @@ body {
   pointer-events: none;
 }
 
-/* 🌟 시뮬레이터 하단 날짜 네비게이션 툴바: 모바일 주소창 위에 항상 고정 노출 */
 .sim-bottom-nav-bar {
   position: relative;
   z-index: 20;
@@ -1990,6 +2036,8 @@ body {
   .app-top-bar { padding: 10px 12px; }
   .brand-title { font-size: 1.15rem; }
   .brand-subtitle { display: none; }
+  .top-bar-feedback-btn .btn-text { display: none; }
+  .top-bar-feedback-btn { padding: 6px 10px; }
   .md-card { padding: 16px; }
   .flip-text-container { height: 40px; }
   .flip-num { font-size: 2.15rem; }
