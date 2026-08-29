@@ -812,7 +812,7 @@ function updateCountdown() {
 
   if (isTodayOff) {
     const offName = getDayOffName(now);
-    showBreakMessage(`현재 ${offName} 진행 중입니다. 충전의 시간을 가지세요.`);
+    showBreakMessage(`현재 ${offName} 진행 중입니다.<br>충전의 시간을 가지세요.`);
     timerTitleEl.innerText = `${offName} 진행 중`;
     return;
   }
