@@ -3,212 +3,750 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>피드백 관리자 대시보드 - 주말 언제와?</title>
+  <title>피드백 관리자 센터 - 주말 언제와?</title>
   <link rel="icon" type="image/png" href="/day-off.png">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800;900&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800;900&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
+  
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', -apple-system, sans-serif; }
-    body { background-color: #f1f5f9; color: #0f172a; min-height: 100vh; padding: 32px 16px 60px; line-height: 1.5; }
-    .container { max-width: 1120px; margin: 0 auto; }
+    /* ==========================================
+       1. Material Design 3 토큰 정의
+       ========================================== */
+    :root {
+      --md-sys-color-primary: #005fb0;
+      --md-sys-color-on-primary: #ffffff;
+      --md-sys-color-primary-container: #d6e4ff;
+      --md-sys-color-on-primary-container: #001b3d;
+      
+      --md-sys-color-secondary: #535f70;
+      --md-sys-color-secondary-container: #d7e3f7;
+      --md-sys-color-on-secondary-container: #101c2b;
+      
+      --md-sys-color-surface: #ffffff;
+      --md-sys-color-surface-dim: #f8fafc;
+      --md-sys-color-surface-container: #ffffff;
+      --md-sys-color-surface-container-high: #f1f5f9;
+      --md-sys-color-surface-container-highest: #e2e8f0;
+      
+      --md-sys-color-on-surface: #0f172a;
+      --md-sys-color-on-surface-variant: #475569;
+      --md-sys-color-outline: #94a3b8;
+      --md-sys-color-outline-variant: #cbd5e1;
+      
+      --md-sys-color-error: #ba1a1a;
+      --md-sys-color-error-container: #ffdad6;
+      --md-sys-color-on-error-container: #410002;
 
-    /* 로그인 인증 카드 */
-    .auth-card {
-      max-width: 380px;
-      margin: 100px auto;
-      background: #ffffff;
-      padding: 36px 28px;
-      border-radius: 16px;
-      border: 1.5px solid #cbd5e1;
-      box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08);
-      text-align: center;
+      --md-shape-corner-xs: 4px;
+      --md-shape-corner-s: 8px;
+      --md-shape-corner-m: 12px;
+      --md-shape-corner-l: 16px;
+      --md-shape-corner-xl: 24px;
+      --md-shape-corner-full: 9999px;
+
+      --md-elevation-1: 0 1px 3px 0 rgba(15, 23, 42, 0.08), 0 1px 2px -1px rgba(15, 23, 42, 0.08);
+      --md-elevation-2: 0 4px 6px -1px rgba(15, 23, 42, 0.08), 0 2px 4px -2px rgba(15, 23, 42, 0.08);
+      --md-elevation-3: 0 10px 15px -3px rgba(15, 23, 42, 0.1), 0 4px 6px -4px rgba(15, 23, 42, 0.1);
     }
-    .auth-title { font-size: 1.25rem; font-weight: 900; margin-bottom: 8px; color: #005fb0; }
-    .auth-desc { font-size: 0.8125rem; color: #64748b; margin-bottom: 24px; }
-    .auth-input {
-      width: 100%;
-      padding: 12px 14px;
-      border: 1.5px solid #cbd5e1;
-      border-radius: 8px;
-      font-size: 0.9375rem;
-      outline: none;
-      margin-bottom: 14px;
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -webkit-tap-highlight-color: transparent;
     }
-    .auth-input:focus { border-color: #005fb0; }
-    .auth-btn {
+
+    body {
+      background-color: var(--md-sys-color-surface-dim);
+      color: var(--md-sys-color-on-surface);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 0 60px;
+    }
+
+    .material-symbols-outlined {
+      font-size: 20px;
+      vertical-align: middle;
+      font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+    }
+
+    .container {
       width: 100%;
-      padding: 12px;
-      background-color: #005fb0;
-      color: #ffffff;
-      border: none;
-      border-radius: 8px;
-      font-size: 0.9375rem;
-      font-weight: 800;
+      max-width: 1140px;
+      padding: 0 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* ==========================================
+       2. 상단 고정 네비게이션 탑 바
+       ========================================== */
+    .top-app-bar {
+      width: 100%;
+      background-color: var(--md-sys-color-surface);
+      border-bottom: 1.5px solid var(--md-sys-color-outline-variant);
+      box-shadow: var(--md-elevation-1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: center;
+      padding: 12px 20px;
+      margin-bottom: 24px;
+    }
+
+    .top-app-bar-inner {
+      width: 100%;
+      max-width: 1140px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo-badge {
+      width: 38px;
+      height: 38px;
+      border-radius: var(--md-shape-corner-m);
+      background-color: var(--md-sys-color-primary-container);
+      color: var(--md-sys-color-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .brand-text h1 {
+      font-size: 1.15rem;
+      font-weight: 900;
+      color: var(--md-sys-color-on-surface);
+      line-height: 1.2;
+    }
+
+    .brand-text p {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--md-sys-color-on-surface-variant);
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ==========================================
+       3. 버튼 & 배지 (M3 스타일)
+       ========================================== */
+    .md-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: var(--md-shape-corner-full);
+      font-size: 0.8125rem;
+      font-weight: 700;
+      border: 1px solid transparent;
       cursor: pointer;
-      transition: background-color 0.2s;
+      transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+      white-space: nowrap;
+      user-select: none;
     }
-    .auth-btn:hover { background-color: #00497d; }
 
-    /* 대시보드 화면 */
-    #dashboard-view { display: none; }
-    .dashboard-header {
+    .md-btn-tonal {
+      background-color: var(--md-sys-color-secondary-container);
+      color: var(--md-sys-color-on-secondary-container);
+      border-color: var(--md-sys-color-outline-variant);
+    }
+    .md-btn-tonal:hover {
+      background-color: #c5d7f2;
+      box-shadow: var(--md-elevation-1);
+    }
+
+    .md-btn-error {
+      background-color: var(--md-sys-color-error-container);
+      color: var(--md-sys-color-error);
+      border-color: rgba(186, 26, 26, 0.2);
+    }
+    .md-btn-error:hover {
+      background-color: #ffc9c2;
+    }
+
+    .md-btn-filled {
+      background-color: var(--md-sys-color-primary);
+      color: var(--md-sys-color-on-primary);
+    }
+    .md-btn-filled:hover {
+      background-color: #00497d;
+      box-shadow: var(--md-elevation-1);
+    }
+
+    .sync-status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: var(--md-shape-corner-full);
+      background-color: var(--md-sys-color-primary-container);
+      color: var(--md-sys-color-primary);
+      font-size: 0.6875rem;
+      font-weight: 800;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+    .sync-status-pill.active {
+      opacity: 1;
+    }
+    .spin-icon {
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
+    }
+
+    /* ==========================================
+       4. 로그인 인증 카드 (M3 Elevated Sheet)
+       ========================================== */
+    .auth-container {
+      width: 100%;
+      min-height: calc(100vh - 180px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .auth-card {
+      width: 100%;
+      max-width: 400px;
+      background-color: var(--md-sys-color-surface-container);
+      border-radius: var(--md-shape-corner-xl);
+      border: 1.5px solid var(--md-sys-color-outline-variant);
+      box-shadow: var(--md-elevation-2);
+      padding: 36px 28px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .auth-icon-circle {
+      width: 56px;
+      height: 56px;
+      border-radius: var(--md-shape-corner-full);
+      background-color: var(--md-sys-color-primary-container);
+      color: var(--md-sys-color-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+    }
+    .auth-icon-circle .material-symbols-outlined { font-size: 28px; }
+
+    .auth-header h2 {
+      font-size: 1.35rem;
+      font-weight: 900;
+      color: var(--md-sys-color-on-surface);
+    }
+    .auth-header p {
+      font-size: 0.8125rem;
+      color: var(--md-sys-color-on-surface-variant);
+      margin-top: 4px;
+    }
+
+    .auth-input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      text-align: left;
+    }
+
+    .m3-text-field {
+      width: 100%;
+      padding: 14px 16px;
+      background-color: var(--md-sys-color-surface-container-high);
+      border: 1.5px solid var(--md-sys-color-outline-variant);
+      border-radius: var(--md-shape-corner-m);
+      font-size: 0.9375rem;
+      color: var(--md-sys-color-on-surface);
+      outline: none;
+      transition: border-color 0.2s ease, background-color 0.2s ease;
+    }
+    .m3-text-field:focus {
+      border-color: var(--md-sys-color-primary);
+      background-color: var(--md-sys-color-surface);
+      box-shadow: 0 0 0 3px rgba(0, 95, 176, 0.15);
+    }
+
+    /* ==========================================
+       5. 통계 KPI 요약 카드 그리드 (M3 Cards)
+       ========================================== */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      width: 100%;
+    }
+
+    .kpi-card {
+      background-color: var(--md-sys-color-surface-container);
+      border: 1.5px solid var(--md-sys-color-outline-variant);
+      border-radius: var(--md-shape-corner-l);
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: var(--md-elevation-1);
+    }
+
+    .kpi-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .kpi-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--md-sys-color-on-surface-variant);
+    }
+    .kpi-value {
+      font-size: 1.75rem;
+      font-weight: 900;
+      color: var(--md-sys-color-on-surface);
+      line-height: 1.2;
+    }
+
+    .kpi-icon-box {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--md-shape-corner-m);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .kpi-icon-box.total { background-color: var(--md-sys-color-primary-container); color: var(--md-sys-color-primary); }
+    .kpi-icon-box.bug { background-color: #fee2e2; color: #b91c1c; }
+    .kpi-icon-box.improve { background-color: #fef3c7; color: #d97706; }
+    .kpi-icon-box.idea { background-color: #e0e7ff; color: #4338ca; }
+
+    /* ==========================================
+       6. 검색 & 필터 칩 바 (Filter Bar)
+       ========================================== */
+    .filter-search-bar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
       flex-wrap: wrap;
-      gap: 12px;
+      gap: 14px;
+      background-color: var(--md-sys-color-surface-container);
+      border: 1.5px solid var(--md-sys-color-outline-variant);
+      border-radius: var(--md-shape-corner-l);
+      padding: 14px 18px;
+      box-shadow: var(--md-elevation-1);
     }
-    .header-title-wrap h2 { font-size: 1.4rem; font-weight: 900; color: #0f172a; display: flex; align-items: center; gap: 8px; }
-    .header-title-wrap p { font-size: 0.85rem; color: #64748b; margin-top: 2px; }
-    
-    .sync-badge {
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: #005fb0;
-      background: #e0f2fe;
-      padding: 2px 8px;
-      border-radius: 9999px;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      opacity: 0;
-      transition: opacity 0.2s;
-    }
-    .sync-badge.active { opacity: 1; }
 
-    .header-actions { display: flex; align-items: center; gap: 8px; }
-    
-    .btn-action {
+    .filter-chips-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .filter-chip {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      padding: 8px 14px;
-      border-radius: 8px;
-      border: 1.5px solid #cbd5e1;
-      background-color: #ffffff;
-      color: #0f172a;
-      font-weight: 700;
+      gap: 5px;
+      padding: 6px 14px;
+      border-radius: var(--md-shape-corner-s);
+      background-color: var(--md-sys-color-surface-container-high);
+      border: 1px solid var(--md-sys-color-outline-variant);
+      color: var(--md-sys-color-on-surface-variant);
       font-size: 0.8125rem;
+      font-weight: 700;
       cursor: pointer;
-      transition: all 0.2s;
-    }
-    .btn-action:hover { background-color: #f8fafc; border-color: #005fb0; color: #005fb0; }
-    .btn-action .material-symbols-outlined { font-size: 18px; }
-
-    .btn-logout {
-      color: #b91c1c;
-      border-color: #fca5a5;
-      background-color: #fff1f2;
-    }
-    .btn-logout:hover {
-      background-color: #fee2e2;
-      border-color: #ef4444;
-      color: #991b1b;
+      transition: all 0.2s ease;
+      user-select: none;
     }
 
-    /* 테이블 카드 영역 */
-    .table-card {
-      background: #ffffff;
-      border: 1.5px solid #cbd5e1;
-      border-radius: 14px;
+    .filter-chip:hover {
+      border-color: var(--md-sys-color-primary);
+      color: var(--md-sys-color-on-surface);
+    }
+
+    .filter-chip.active {
+      background-color: var(--md-sys-color-primary-container);
+      color: var(--md-sys-color-on-primary-container);
+      border-color: var(--md-sys-color-primary);
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background-color: var(--md-sys-color-surface-container-high);
+      border: 1.5px solid var(--md-sys-color-outline-variant);
+      border-radius: var(--md-shape-corner-full);
+      padding: 6px 14px;
+      width: 260px;
+    }
+    .search-box:focus-within {
+      border-color: var(--md-sys-color-primary);
+      background-color: var(--md-sys-color-surface);
+    }
+    .search-box input {
+      border: none;
+      background: transparent;
+      outline: none;
+      font-size: 0.8125rem;
+      color: var(--md-sys-color-on-surface);
+      width: 100%;
+    }
+    .search-box .material-symbols-outlined {
+      color: var(--md-sys-color-outline);
+      font-size: 18px;
+    }
+
+    /* ==========================================
+       7. PC용 M3 데이터 테이블 뷰 (>768px)
+       ========================================== */
+    .table-container-card {
+      background-color: var(--md-sys-color-surface-container);
+      border: 1.5px solid var(--md-sys-color-outline-variant);
+      border-radius: var(--md-shape-corner-l);
       overflow: hidden;
-      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+      box-shadow: var(--md-elevation-1);
+      display: block;
     }
-    table { width: 100%; border-collapse: collapse; text-align: left; }
-    th, td { padding: 16px 18px; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
-    th { background: #f8fafc; font-weight: 800; color: #475569; border-bottom: 1.5px solid #cbd5e1; font-size: 0.8125rem; }
-    tr:last-child td { border-bottom: none; }
-    tr:hover td { background-color: #f8fafc; }
 
-    .col-no { width: 64px; text-align: center; font-weight: 800; color: #64748b; font-size: 0.875rem; }
-    .col-date { width: 175px; color: #475569; font-size: 0.8125rem; white-space: nowrap; font-variant-numeric: tabular-nums; }
-    .col-category { width: 140px; }
+    table.m3-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    table.m3-table th,
+    table.m3-table td {
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--md-sys-color-surface-container-highest);
+      vertical-align: top;
+    }
+
+    table.m3-table th {
+      background-color: var(--md-sys-color-surface-container-high);
+      font-size: 0.8125rem;
+      font-weight: 800;
+      color: var(--md-sys-color-on-surface-variant);
+      border-bottom: 1.5px solid var(--md-sys-color-outline-variant);
+      white-space: nowrap;
+    }
+
+    table.m3-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    table.m3-table tr:hover td {
+      background-color: var(--md-sys-color-surface-dim);
+    }
+
+    .col-no { width: 60px; text-align: center; font-weight: 800; color: var(--md-sys-color-on-surface-variant); font-size: 0.875rem; }
+    .col-date { width: 170px; font-size: 0.8125rem; color: var(--md-sys-color-on-surface-variant); font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .col-cat { width: 140px; }
     .col-content {
       font-size: 0.9375rem;
-      color: #1e293b;
+      color: var(--md-sys-color-on-surface);
       white-space: pre-wrap;
       word-break: break-word;
       line-height: 1.6;
     }
 
-    /* 카테고리 배지 */
-    .badge {
-      display: inline-block;
+    /* 카테고리 배지 (M3 Pills) */
+    .cat-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
       padding: 4px 10px;
-      border-radius: 6px;
+      border-radius: var(--md-shape-corner-s);
       font-size: 0.75rem;
       font-weight: 800;
       white-space: nowrap;
     }
-    .badge-오류신고 { background-color: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
-    .badge-개선사항-요청 { background-color: #fef3c7; color: #d97706; border: 1px solid #fcd34d; }
-    .badge-신기능-아이디어 { background-color: #e0e7ff; color: #4338ca; border: 1px solid #c7d2fe; }
+    .badge-bug { background-color: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
+    .badge-improve { background-color: #fef3c7; color: #d97706; border: 1px solid #fcd34d; }
+    .badge-idea { background-color: #e0e7ff; color: #4338ca; border: 1px solid #c7d2fe; }
+    .badge-etc { background-color: var(--md-sys-color-surface-container-highest); color: var(--md-sys-color-on-surface-variant); }
 
+    /* ==========================================
+       8. 모바일 전용 M3 카드 리스트 뷰 (<=768px)
+       ========================================== */
+    .mobile-cards-view {
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+    }
+
+    .mobile-feedback-card {
+      background-color: var(--md-sys-color-surface-container);
+      border: 1.5px solid var(--md-sys-color-outline-variant);
+      border-radius: var(--md-shape-corner-l);
+      padding: 16px;
+      box-shadow: var(--md-elevation-1);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .mobile-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px dashed var(--md-sys-color-outline-variant);
+      padding-bottom: 10px;
+    }
+
+    .mobile-card-header-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .mobile-card-num {
+      font-size: 0.8125rem;
+      font-weight: 900;
+      color: var(--md-sys-color-primary);
+      background-color: var(--md-sys-color-primary-container);
+      padding: 2px 7px;
+      border-radius: var(--md-shape-corner-s);
+    }
+
+    .mobile-card-date {
+      font-size: 0.75rem;
+      color: var(--md-sys-color-on-surface-variant);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .mobile-card-body {
+      font-size: 0.9375rem;
+      color: var(--md-sys-color-on-surface);
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* 빈 상태 안내 */
+    .empty-state {
+      padding: 60px 20px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      color: var(--md-sys-color-on-surface-variant);
+    }
+    .empty-state .material-symbols-outlined { font-size: 48px; color: var(--md-sys-color-outline); }
+    .empty-state p { font-size: 0.9375rem; font-weight: 600; }
+
+    /* ==========================================
+       9. 반응형 미디어 쿼리
+       ========================================== */
     @media (max-width: 768px) {
-      .table-card { overflow-x: auto; }
-      table { min-width: 680px; }
-      body { padding: 24px 12px 40px; }
+      body { padding-bottom: 40px; }
+      .top-app-bar { padding: 10px 16px; margin-bottom: 16px; }
+      .container { padding: 0 14px; gap: 16px; }
+      
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+      .kpi-card { padding: 14px 16px; }
+      .kpi-value { font-size: 1.4rem; }
+      .kpi-icon-box { width: 36px; height: 36px; }
+      
+      .filter-search-bar {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 12px;
+        gap: 10px;
+      }
+      .search-box { width: 100%; }
+
+      /* PC 테이블 숨김 & 모바일 전용 카드 뷰 노출 */
+      .table-container-card { display: none !important; }
+      .mobile-cards-view { display: flex !important; }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <!-- 1. 비밀번호 인증 폼 -->
-    <div class="auth-card" id="auth-view">
-      <h1 class="auth-title">🔒 관리자 인증</h1>
-      <p class="auth-desc">피드백 데이터를 조회하려면 비밀번호를 입력하세요.</p>
-      <form onsubmit="handleLogin(event)">
-        <input type="password" id="admin-pw" class="auth-input" placeholder="비밀번호 입력" required autofocus />
-        <button type="submit" id="login-btn" class="auth-btn">인증 및 내역 조회</button>
-      </form>
-    </div>
 
-    <!-- 2. 피드백 목록 대시보드 -->
-    <div id="dashboard-view">
-      <div class="dashboard-header">
-        <div class="header-title-wrap">
-          <h2>
-            📬 피드백 접수 현황 (<span id="total-count">0</span>건)
-            <span class="sync-badge" id="sync-status">동기화 중...</span>
-          </h2>
-          <p>구글 스프레드시트 FEED 시트와 실시간 연동된 피드백 목록입니다.</p>
+  <!-- 1. M3 탑 앱 바 -->
+  <header class="top-app-bar">
+    <div class="top-app-bar-inner">
+      <div class="brand-section">
+        <div class="brand-logo-badge">
+          <span class="material-symbols-outlined">dashboard</span>
         </div>
-        <div class="header-actions">
-          <button type="button" class="btn-action" id="btn-refresh" onclick="fetchFeedbacks()">
-            <span class="material-symbols-outlined">refresh</span>
-            <span>새로고침</span>
-          </button>
-          <button type="button" class="btn-action btn-logout" onclick="handleLogout()" title="로그아웃 및 인증 정보 초기화">
-            <span class="material-symbols-outlined">logout</span>
-            <span>로그아웃</span>
-          </button>
+        <div class="brand-text">
+          <h1>피드백 관리 센터</h1>
+          <p>주말 언제와? 서비스 운영</p>
         </div>
       </div>
 
-      <div class="table-card">
-        <table>
+      <div class="top-actions" id="top-actions-box" style="display: none;">
+        <span class="sync-status-pill" id="sync-status">
+          <span class="material-symbols-outlined spin-icon" style="font-size: 14px;">sync</span>
+          <span>동기화 중...</span>
+        </span>
+        <button type="button" class="md-btn md-btn-tonal" id="btn-refresh" onclick="fetchFeedbacks(false)">
+          <span class="material-symbols-outlined">refresh</span>
+          <span class="btn-text">새로고침</span>
+        </button>
+        <button type="button" class="md-btn md-btn-error" onclick="handleLogout()" title="로그아웃">
+          <span class="material-symbols-outlined">logout</span>
+          <span class="btn-text">로그아웃</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- 2. 비밀번호 인증 뷰 -->
+    <div class="auth-container" id="auth-view">
+      <div class="auth-card">
+        <div class="auth-icon-circle">
+          <span class="material-symbols-outlined">admin_panel_settings</span>
+        </div>
+        <div class="auth-header">
+          <h2>관리자 인증</h2>
+          <p>피드백 시스템 조회를 위해 비밀번호를 입력해주세요.</p>
+        </div>
+        <form onsubmit="handleLogin(event)" class="auth-input-group">
+          <input type="password" id="admin-pw" class="m3-text-field" placeholder="비밀번호를 입력하세요" required autofocus />
+          <button type="submit" id="login-btn" class="md-btn md-btn-filled" style="padding: 12px; font-size: 0.9375rem;">
+            <span>인증 및 데이터 조회</span>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- 3. 메인 대시보드 뷰 (인증 성공 시 표시) -->
+    <div id="dashboard-view" style="display: none; flex-direction: column; gap: 20px;">
+      
+      <!-- KPI 요약 카드 그리드 -->
+      <section class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-info">
+            <span class="kpi-label">전체 피드백</span>
+            <span class="kpi-value" id="kpi-total">0</span>
+          </div>
+          <div class="kpi-icon-box total">
+            <span class="material-symbols-outlined">mark_chat_unread</span>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-info">
+            <span class="kpi-label">개선사항 요청</span>
+            <span class="kpi-value" id="kpi-improve">0</span>
+          </div>
+          <div class="kpi-icon-box improve">
+            <span class="material-symbols-outlined">tune</span>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-info">
+            <span class="kpi-label">오류 신고</span>
+            <span class="kpi-value" id="kpi-bug">0</span>
+          </div>
+          <div class="kpi-icon-box bug">
+            <span class="material-symbols-outlined">bug_report</span>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-info">
+            <span class="kpi-label">신기능 아이디어</span>
+            <span class="kpi-value" id="kpi-idea">0</span>
+          </div>
+          <div class="kpi-icon-box idea">
+            <span class="material-symbols-outlined">lightbulb</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 필터 & 검색 바 -->
+      <section class="filter-search-bar">
+        <div class="filter-chips-group">
+          <button type="button" class="filter-chip active" data-filter="all">
+            <span>전체보기</span>
+          </button>
+          <button type="button" class="filter-chip" data-filter="개선사항 요청">
+            <span class="material-symbols-outlined" style="font-size: 16px;">tune</span>
+            <span>개선요청</span>
+          </button>
+          <button type="button" class="filter-chip" data-filter="오류신고">
+            <span class="material-symbols-outlined" style="font-size: 16px;">bug_report</span>
+            <span>오류신고</span>
+          </button>
+          <button type="button" class="filter-chip" data-filter="신기능 아이디어">
+            <span class="material-symbols-outlined" style="font-size: 16px;">lightbulb</span>
+            <span>신기능</span>
+          </button>
+        </div>
+
+        <div class="search-box">
+          <span class="material-symbols-outlined">search</span>
+          <input type="text" id="search-input" placeholder="내용 검색..." />
+        </div>
+      </section>
+
+      <!-- 🖥️ PC 전용 M3 데이터 테이블 뷰 -->
+      <div class="table-container-card">
+        <table class="m3-table">
           <thead>
             <tr>
               <th class="col-no">No.</th>
-              <th class="col-date">추가한 시간</th>
-              <th class="col-category">카테고리</th>
-              <th>피드백 내용</th>
+              <th class="col-date">접수 일시</th>
+              <th class="col-cat">카테고리</th>
+              <th>피드백 상세 내용</th>
             </tr>
           </thead>
-          <tbody id="feedback-table-body">
-            <!-- 자바스크립트로 즉시 렌더링 -->
+          <tbody id="desktop-table-body">
+            <!-- 자바스크립트로 렌더링 -->
           </tbody>
         </table>
       </div>
+
+      <!-- 📱 모바일 전용 M3 카드 리스트 뷰 -->
+      <div class="mobile-cards-view" id="mobile-cards-container">
+        <!-- 자바스크립트로 렌더링 -->
+      </div>
+
     </div>
-  </div>
+  </main>
 
   <script>
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxyLX-M_XVv8_9TiIEZ9mmHaKyGz4XHE_bcwyMGWnms5fs6G-gfW6nwghUoxpFB1cL58g/exec';
     const STORAGE_KEY = 'admin_session_pass';
     const CACHE_DATA_KEY = 'admin_cached_feedbacks';
-    let currentPassword = '';
 
+    let currentPassword = '';
+    let allFeedbacks = [];
+    let activeFilter = 'all';
+    let searchQuery = '';
+
+    // 날짜 포맷터 ('YYYY-MM-DD HH:mm:ss')
     function formatDateTime(val) {
       if (!val) return '-';
       const d = new Date(val);
@@ -222,23 +760,42 @@
       return `${yyyy}-${mm}-${dd} ${hh}:${min}:${ss}`;
     }
 
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.innerText = text;
+      return div.innerHTML;
+    }
+
+    function getCategoryBadge(category) {
+      const cat = String(category || '').trim();
+      if (cat === '오류신고') return `<span class="cat-badge badge-bug"><span class="material-symbols-outlined" style="font-size: 14px;">bug_report</span>오류신고</span>`;
+      if (cat === '개선사항 요청') return `<span class="cat-badge badge-improve"><span class="material-symbols-outlined" style="font-size: 14px;">tune</span>개선요청</span>`;
+      if (cat === '신기능 아이디어') return `<span class="cat-badge badge-idea"><span class="material-symbols-outlined" style="font-size: 14px;">lightbulb</span>신기능</span>`;
+      return `<span class="cat-badge badge-etc">${escapeHtml(cat || '기타')}</span>`;
+    }
+
+    // 로그인 폼 처리
     function handleLogin(e) {
       e.preventDefault();
       currentPassword = document.getElementById('admin-pw').value.trim();
       fetchFeedbacks(true);
     }
 
+    // 로그아웃 처리
     function handleLogout() {
       if (confirm('로그아웃 하시겠습니까? 다음 접속 시 비밀번호를 다시 입력해야 합니다.')) {
         localStorage.removeItem(STORAGE_KEY);
         localStorage.removeItem(CACHE_DATA_KEY);
         currentPassword = '';
+        allFeedbacks = [];
         document.getElementById('admin-pw').value = '';
         document.getElementById('dashboard-view').style.display = 'none';
-        document.getElementById('auth-view').style.display = 'block';
+        document.getElementById('top-actions-box').style.display = 'none';
+        document.getElementById('auth-view').style.display = 'flex';
       }
     }
 
+    // 데이터 조회 및 인증
     async function fetchFeedbacks(isManualLogin = false) {
       const syncStatus = document.getElementById('sync-status');
       const loginBtn = document.getElementById('login-btn');
@@ -260,87 +817,161 @@
         const result = await response.json();
 
         if (result.status === 'success') {
-          // 인증 정보 및 최신 데이터 캐시 저장
           localStorage.setItem(STORAGE_KEY, currentPassword);
           localStorage.setItem(CACHE_DATA_KEY, JSON.stringify(result.data));
 
+          allFeedbacks = result.data || [];
           document.getElementById('auth-view').style.display = 'none';
-          document.getElementById('dashboard-view').style.display = 'block';
-          renderTable(result.data);
+          document.getElementById('dashboard-view').style.display = 'flex';
+          document.getElementById('top-actions-box').style.display = 'flex';
+
+          updateKpis();
+          renderViews();
         } else {
-          // 비밀번호가 틀린 경우에만 초기화 후 로그인 화면으로 전환
           localStorage.removeItem(STORAGE_KEY);
           localStorage.removeItem(CACHE_DATA_KEY);
           document.getElementById('dashboard-view').style.display = 'none';
-          document.getElementById('auth-view').style.display = 'block';
+          document.getElementById('top-actions-box').style.display = 'none';
+          document.getElementById('auth-view').style.display = 'flex';
           alert(result.message || '인증에 실패했습니다. 비밀번호를 다시 확인하세요.');
         }
       } catch (err) {
         console.error('관리자 조회 오류:', err);
-        // 캐시 데이터가 없는 수동 로그인 시에만 알림
         if (isManualLogin) {
           alert('데이터를 가져오는 중 네트워크 오류가 발생했습니다.');
         }
       } finally {
         if (syncStatus) syncStatus.classList.remove('active');
-        if (loginBtn) loginBtn.innerText = '인증 및 내역 조회';
+        if (loginBtn) loginBtn.innerText = '인증 및 데이터 조회';
         if (refreshBtn) refreshBtn.style.opacity = '1';
       }
     }
 
-    function renderTable(data) {
-      const tbody = document.getElementById('feedback-table-body');
-      document.getElementById('total-count').innerText = data ? data.length : 0;
-      tbody.innerHTML = '';
+    // KPI 카드 업데이트
+    function updateKpis() {
+      let bugCount = 0;
+      let improveCount = 0;
+      let ideaCount = 0;
 
-      if (!data || data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 48px; color: #94a3b8; font-weight:600;">접수된 피드백 내역이 없습니다.</td></tr>';
+      allFeedbacks.forEach(item => {
+        const cat = String(item.category || '').trim();
+        if (cat === '오류신고') bugCount++;
+        else if (cat === '개선사항 요청') improveCount++;
+        else if (cat === '신기능 아이디어') ideaCount++;
+      });
+
+      document.getElementById('kpi-total').innerText = allFeedbacks.length;
+      document.getElementById('kpi-bug').innerText = bugCount;
+      document.getElementById('kpi-improve').innerText = improveCount;
+      document.getElementById('kpi-idea').innerText = ideaCount;
+    }
+
+    // PC 테이블 및 모바일 카드 뷰 동시 렌더링
+    function renderViews() {
+      const desktopTbody = document.getElementById('desktop-table-body');
+      const mobileContainer = document.getElementById('mobile-cards-container');
+
+      // 1. 필터 및 검색 적용
+      const filtered = allFeedbacks.filter(item => {
+        const matchCategory = (activeFilter === 'all') || (item.category === activeFilter);
+        const matchSearch = !searchQuery || 
+          String(item.content || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+          String(item.id || '').toLowerCase().includes(searchQuery.toLowerCase());
+        return matchCategory && matchSearch;
+      });
+
+      // 2. 빈 상태 처리
+      if (filtered.length === 0) {
+        const emptyHtml = `
+          <div class="empty-state">
+            <span class="material-symbols-outlined">inbox</span>
+            <p>조건에 일치하는 피드백 내역이 없습니다.</p>
+          </div>
+        `;
+        desktopTbody.innerHTML = `<tr><td colspan="4">${emptyHtml}</td></tr>`;
+        mobileContainer.innerHTML = emptyHtml;
         return;
       }
 
-      data.forEach((item, index) => {
-        const badgeClass = 'badge-' + String(item.category || '').replace(/\s+/g, '-');
+      // 3. PC 테이블 렌더링
+      desktopTbody.innerHTML = filtered.map((item, index) => {
         const formattedDate = formatDateTime(item.createdAt);
-        const rowNumber = index + 1;
+        const badgeHtml = getCategoryBadge(item.category);
+        const rowNo = index + 1;
 
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td class="col-no">${rowNumber}</td>
-          <td class="col-date">${formattedDate}</td>
-          <td class="col-category"><span class="badge ${badgeClass}">${escapeHtml(item.category || '기타')}</span></td>
-          <td class="col-content">${escapeHtml(item.content || '')}</td>
+        return `
+          <tr>
+            <td class="col-no">${rowNo}</td>
+            <td class="col-date">${formattedDate}</td>
+            <td class="col-cat">${badgeHtml}</td>
+            <td class="col-content">${escapeHtml(item.content || '')}</td>
+          </tr>
         `;
-        tbody.appendChild(row);
+      }).join('');
+
+      // 4. 모바일 카드 뷰 렌더링
+      mobileContainer.innerHTML = filtered.map((item, index) => {
+        const formattedDate = formatDateTime(item.createdAt);
+        const badgeHtml = getCategoryBadge(item.category);
+        const rowNo = index + 1;
+
+        return `
+          <div class="mobile-feedback-card">
+            <div class="mobile-card-header">
+              <div class="mobile-card-header-left">
+                <span class="mobile-card-num">#${rowNo}</span>
+                ${badgeHtml}
+              </div>
+              <span class="mobile-card-date">${formattedDate}</span>
+            </div>
+            <div class="mobile-card-body">${escapeHtml(item.content || '')}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // 필터 칩 및 검색 이벤트 리스너
+    function setupFilterAndSearch() {
+      const chips = document.querySelectorAll('.filter-chip');
+      chips.forEach(chip => {
+        chip.addEventListener('click', () => {
+          chips.forEach(c => c.classList.remove('active'));
+          chip.classList.add('active');
+          activeFilter = chip.dataset.filter;
+          renderViews();
+        });
+      });
+
+      const searchInput = document.getElementById('search-input');
+      searchInput.addEventListener('input', (e) => {
+        searchQuery = e.target.value.trim();
+        renderViews();
       });
     }
 
-    function escapeHtml(text) {
-      const div = document.createElement('div');
-      div.innerText = text;
-      return div.innerHTML;
-    }
-
-    // 🌟 즉시 실행 (0ms): DOM 로드 대기 없이 저장된 인증 정보와 캐시를 즉시 화면에 렌더링
+    // 🌟 즉시 실행 (0ms): 브라우저에 저장된 세션 및 캐시 데이터를 즉시 표출
     (function initInstantAuth() {
       const savedPass = localStorage.getItem(STORAGE_KEY);
       if (savedPass) {
         currentPassword = savedPass;
-        // 1. 로그인 폼 즉시 숨기고 대시보드 표시
         document.getElementById('auth-view').style.display = 'none';
-        document.getElementById('dashboard-view').style.display = 'block';
+        document.getElementById('dashboard-view').style.display = 'flex';
+        document.getElementById('top-actions-box').style.display = 'flex';
 
-        // 2. 캐시된 피드백 데이터가 있으면 0초 만에 화면에 출력
         const cachedFeedbacks = localStorage.getItem(CACHE_DATA_KEY);
         if (cachedFeedbacks) {
           try {
-            renderTable(JSON.parse(cachedFeedbacks));
+            allFeedbacks = JSON.parse(cachedFeedbacks);
+            updateKpis();
+            renderViews();
           } catch (e) {}
         }
 
-        // 3. 백그라운드에서 구글 시트 최신 데이터 동기화
         fetchFeedbacks(false);
       }
     })();
+
+    document.addEventListener('DOMContentLoaded', setupFilterAndSearch);
   </script>
 </body>
 </html>
