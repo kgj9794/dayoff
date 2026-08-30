@@ -40,14 +40,13 @@
 
       --md-shape-corner-xs: 4px;
       --md-shape-corner-s: 8px;
-      --md-shape-corner-m: 12px;
-      --md-shape-corner-l: 16px;
-      --md-shape-corner-xl: 24px;
+      --md-shape-corner-m: 10px;
+      --md-shape-corner-l: 14px;
+      --md-shape-corner-xl: 20px;
       --md-shape-corner-full: 9999px;
 
-      --md-elevation-1: 0 1px 3px 0 rgba(15, 23, 42, 0.08), 0 1px 2px -1px rgba(15, 23, 42, 0.08);
-      --md-elevation-2: 0 4px 6px -1px rgba(15, 23, 42, 0.08), 0 2px 4px -2px rgba(15, 23, 42, 0.08);
-      --md-elevation-3: 0 10px 15px -3px rgba(15, 23, 42, 0.1), 0 4px 6px -4px rgba(15, 23, 42, 0.1);
+      --md-elevation-1: 0 1px 3px 0 rgba(15, 23, 42, 0.06), 0 1px 2px -1px rgba(15, 23, 42, 0.06);
+      --md-elevation-2: 0 4px 6px -1px rgba(15, 23, 42, 0.06), 0 2px 4px -2px rgba(15, 23, 42, 0.06);
     }
 
     * {
@@ -66,26 +65,64 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 0 0 60px;
+      padding: 0 0 40px;
     }
 
     .material-symbols-outlined {
-      font-size: 20px;
+      font-size: 18px;
       vertical-align: middle;
-      font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+      font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 20;
     }
 
     .container {
       width: 100%;
       max-width: 1140px;
-      padding: 0 20px;
+      padding: 0 16px;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 12px;
     }
 
     /* ==========================================
-       2. 상단 고정 네비게이션 탑 바
+       2. 마퀴 (Marquee) 텍스트 롤링
+       ========================================== */
+    .marquee-box {
+      width: 100%;
+      max-width: 100%;
+      overflow: hidden;
+      white-space: nowrap;
+      display: block;
+      position: relative;
+    }
+
+    .marquee-text {
+      display: inline-block;
+      white-space: nowrap;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      vertical-align: middle;
+    }
+
+    .marquee-text.is-marquee {
+      max-width: none;
+      overflow: visible;
+      text-overflow: clip;
+      animation: autoMarqueeScroll 4.2s ease-in-out infinite alternate;
+      will-change: transform;
+    }
+
+    @keyframes autoMarqueeScroll {
+      0%, 20% {
+        transform: translateX(0);
+      }
+      80%, 100% {
+        transform: translateX(var(--marquee-dist, -24px));
+      }
+    }
+
+    /* ==========================================
+       3. 상단 탑 앱 바
        ========================================== */
     .top-app-bar {
       width: 100%;
@@ -97,8 +134,8 @@
       z-index: 100;
       display: flex;
       justify-content: center;
-      padding: 12px 20px;
-      margin-bottom: 24px;
+      padding: 8px 16px;
+      margin-bottom: 12px;
     }
 
     .top-app-bar-inner {
@@ -107,56 +144,58 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
+      gap: 8px;
+      min-width: 0;
     }
 
     .brand-section {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 8px;
+      min-width: 0;
+      flex: 1 1 auto;
+      overflow: hidden;
     }
 
     .brand-logo-badge {
-      width: 38px;
-      height: 38px;
-      border-radius: var(--md-shape-corner-m);
+      width: 32px;
+      height: 32px;
+      border-radius: var(--md-shape-corner-s);
       background-color: var(--md-sys-color-primary-container);
       color: var(--md-sys-color-primary);
       display: flex;
       align-items: center;
       justify-content: center;
+      flex-shrink: 0;
     }
 
-    .brand-text h1 {
-      font-size: 1.15rem;
+    .brand-text.marquee-box {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .brand-text h1.marquee-text {
+      font-size: 1.05rem;
       font-weight: 900;
       color: var(--md-sys-color-on-surface);
       line-height: 1.2;
     }
 
-    .brand-text p {
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: var(--md-sys-color-on-surface-variant);
-    }
-
     .top-actions {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
+      flex-shrink: 0;
     }
 
-    /* ==========================================
-       3. 버튼 & 배지 (M3 스타일)
-       ========================================== */
     .md-btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      padding: 8px 16px;
+      gap: 4px;
+      padding: 6px 12px;
       border-radius: var(--md-shape-corner-full);
-      font-size: 0.8125rem;
+      font-size: 0.75rem;
       font-weight: 700;
       border: 1px solid transparent;
       cursor: pointer;
@@ -172,7 +211,6 @@
     }
     .md-btn-tonal:hover {
       background-color: #c5d7f2;
-      box-shadow: var(--md-elevation-1);
     }
 
     .md-btn-error {
@@ -190,14 +228,13 @@
     }
     .md-btn-filled:hover {
       background-color: #00497d;
-      box-shadow: var(--md-elevation-1);
     }
 
     .sync-status-pill {
       display: inline-flex;
       align-items: center;
-      gap: 5px;
-      padding: 4px 10px;
+      gap: 4px;
+      padding: 3px 8px;
       border-radius: var(--md-shape-corner-full);
       background-color: var(--md-sys-color-primary-container);
       color: var(--md-sys-color-primary);
@@ -217,11 +254,11 @@
     }
 
     /* ==========================================
-       4. 로그인 인증 카드 (M3 Elevated Sheet)
+       4. 로그인 인증 카드
        ========================================== */
     .auth-container {
       width: 100%;
-      min-height: calc(100vh - 180px);
+      min-height: calc(100vh - 120px);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -229,21 +266,21 @@
 
     .auth-card {
       width: 100%;
-      max-width: 400px;
+      max-width: 360px;
       background-color: var(--md-sys-color-surface-container);
       border-radius: var(--md-shape-corner-xl);
       border: 1.5px solid var(--md-sys-color-outline-variant);
       box-shadow: var(--md-elevation-2);
-      padding: 36px 28px;
+      padding: 30px 24px;
       text-align: center;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 16px;
     }
 
     .auth-icon-circle {
-      width: 56px;
-      height: 56px;
+      width: 48px;
+      height: 48px;
       border-radius: var(--md-shape-corner-full);
       background-color: var(--md-sys-color-primary-container);
       color: var(--md-sys-color-primary);
@@ -252,15 +289,15 @@
       justify-content: center;
       margin: 0 auto;
     }
-    .auth-icon-circle .material-symbols-outlined { font-size: 28px; }
+    .auth-icon-circle .material-symbols-outlined { font-size: 24px; }
 
     .auth-header h2 {
-      font-size: 1.35rem;
+      font-size: 1.2rem;
       font-weight: 900;
       color: var(--md-sys-color-on-surface);
     }
     .auth-header p {
-      font-size: 0.8125rem;
+      font-size: 0.75rem;
       color: var(--md-sys-color-on-surface-variant);
       margin-top: 4px;
     }
@@ -268,72 +305,81 @@
     .auth-input-group {
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 12px;
       text-align: left;
     }
 
     .m3-text-field {
       width: 100%;
-      padding: 14px 16px;
+      padding: 12px 14px;
       background-color: var(--md-sys-color-surface-container-high);
       border: 1.5px solid var(--md-sys-color-outline-variant);
-      border-radius: var(--md-shape-corner-m);
-      font-size: 0.9375rem;
+      border-radius: var(--md-shape-corner-s);
+      font-size: 0.875rem;
       color: var(--md-sys-color-on-surface);
       outline: none;
-      transition: border-color 0.2s ease, background-color 0.2s ease;
+      transition: border-color 0.2s ease;
     }
     .m3-text-field:focus {
       border-color: var(--md-sys-color-primary);
       background-color: var(--md-sys-color-surface);
-      box-shadow: 0 0 0 3px rgba(0, 95, 176, 0.15);
     }
 
     /* ==========================================
-       5. 통계 KPI 요약 카드 그리드 (M3 Cards)
+       5. KPI 요약 카드 그리드
        ========================================== */
     .kpi-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 14px;
+      gap: 10px;
       width: 100%;
     }
 
     .kpi-card {
       background-color: var(--md-sys-color-surface-container);
       border: 1.5px solid var(--md-sys-color-outline-variant);
-      border-radius: var(--md-shape-corner-l);
-      padding: 18px 20px;
+      border-radius: var(--md-shape-corner-m);
+      padding: 10px 12px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       box-shadow: var(--md-elevation-1);
+      min-width: 0;
+      gap: 8px;
     }
 
     .kpi-info {
       display: flex;
       flex-direction: column;
-      gap: 2px;
+      min-width: 0;
+      flex: 1;
+      overflow: hidden;
     }
+
     .kpi-label {
-      font-size: 0.75rem;
+      font-size: 0.6875rem;
       font-weight: 700;
       color: var(--md-sys-color-on-surface-variant);
+      white-space: nowrap;
+      overflow: hidden;
     }
+
     .kpi-value {
-      font-size: 1.75rem;
+      font-size: 1.25rem;
       font-weight: 900;
       color: var(--md-sys-color-on-surface);
-      line-height: 1.2;
+      line-height: 1.1;
+      margin-top: 2px;
     }
 
     .kpi-icon-box {
-      width: 44px;
-      height: 44px;
-      border-radius: var(--md-shape-corner-m);
+      width: 32px;
+      height: 32px;
+      border-radius: var(--md-shape-corner-s);
       display: flex;
       align-items: center;
       justify-content: center;
+      flex-shrink: 0;
     }
     .kpi-icon-box.total { background-color: var(--md-sys-color-primary-container); color: var(--md-sys-color-primary); }
     .kpi-icon-box.bug { background-color: #fee2e2; color: #b91c1c; }
@@ -341,42 +387,49 @@
     .kpi-icon-box.idea { background-color: #e0e7ff; color: #4338ca; }
 
     /* ==========================================
-       6. 검색 & 필터 칩 바 (Filter Bar)
+       6. 검색 & 필터 바
        ========================================== */
     .filter-search-bar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      flex-wrap: wrap;
-      gap: 14px;
+      gap: 8px;
       background-color: var(--md-sys-color-surface-container);
       border: 1.5px solid var(--md-sys-color-outline-variant);
-      border-radius: var(--md-shape-corner-l);
-      padding: 14px 18px;
+      border-radius: var(--md-shape-corner-m);
+      padding: 8px 12px;
       box-shadow: var(--md-elevation-1);
     }
 
     .filter-chips-group {
       display: flex;
       align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
+      gap: 6px;
+      overflow-x: auto;
+      white-space: nowrap;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      padding: 2px 0;
+    }
+    .filter-chips-group::-webkit-scrollbar {
+      display: none;
     }
 
     .filter-chip {
       display: inline-flex;
       align-items: center;
-      gap: 5px;
-      padding: 6px 14px;
+      gap: 4px;
+      padding: 5px 11px;
       border-radius: var(--md-shape-corner-s);
       background-color: var(--md-sys-color-surface-container-high);
       border: 1px solid var(--md-sys-color-outline-variant);
       color: var(--md-sys-color-on-surface-variant);
-      font-size: 0.8125rem;
+      font-size: 0.75rem;
       font-weight: 700;
       cursor: pointer;
       transition: all 0.2s ease;
       user-select: none;
+      flex-shrink: 0;
     }
 
     .filter-chip:hover {
@@ -393,12 +446,13 @@
     .search-box {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       background-color: var(--md-sys-color-surface-container-high);
       border: 1.5px solid var(--md-sys-color-outline-variant);
       border-radius: var(--md-shape-corner-full);
-      padding: 6px 14px;
-      width: 260px;
+      padding: 4px 12px;
+      width: 220px;
+      flex-shrink: 0;
     }
     .search-box:focus-within {
       border-color: var(--md-sys-color-primary);
@@ -408,22 +462,22 @@
       border: none;
       background: transparent;
       outline: none;
-      font-size: 0.8125rem;
+      font-size: 0.75rem;
       color: var(--md-sys-color-on-surface);
       width: 100%;
     }
     .search-box .material-symbols-outlined {
       color: var(--md-sys-color-outline);
-      font-size: 18px;
+      font-size: 16px;
     }
 
     /* ==========================================
-       7. PC용 M3 데이터 테이블 뷰 (>768px)
+       7. PC 데이터 테이블 뷰 (>768px)
        ========================================== */
     .table-container-card {
       background-color: var(--md-sys-color-surface-container);
       border: 1.5px solid var(--md-sys-color-outline-variant);
-      border-radius: var(--md-shape-corner-l);
+      border-radius: var(--md-shape-corner-m);
       overflow: hidden;
       box-shadow: var(--md-elevation-1);
       display: block;
@@ -437,14 +491,14 @@
 
     table.m3-table th,
     table.m3-table td {
-      padding: 16px 18px;
+      padding: 12px 14px;
       border-bottom: 1px solid var(--md-sys-color-surface-container-highest);
       vertical-align: top;
     }
 
     table.m3-table th {
       background-color: var(--md-sys-color-surface-container-high);
-      font-size: 0.8125rem;
+      font-size: 0.75rem;
       font-weight: 800;
       color: var(--md-sys-color-on-surface-variant);
       border-bottom: 1.5px solid var(--md-sys-color-outline-variant);
@@ -459,25 +513,24 @@
       background-color: var(--md-sys-color-surface-dim);
     }
 
-    .col-no { width: 60px; text-align: center; font-weight: 800; color: var(--md-sys-color-on-surface-variant); font-size: 0.875rem; }
-    .col-date { width: 170px; font-size: 0.8125rem; color: var(--md-sys-color-on-surface-variant); font-variant-numeric: tabular-nums; white-space: nowrap; }
-    .col-cat { width: 140px; }
+    .col-no { width: 50px; text-align: center; font-weight: 800; color: var(--md-sys-color-on-surface-variant); font-size: 0.8125rem; }
+    .col-date { width: 160px; font-size: 0.75rem; color: var(--md-sys-color-on-surface-variant); font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .col-cat { width: 130px; }
     .col-content {
-      font-size: 0.9375rem;
+      font-size: 0.875rem;
       color: var(--md-sys-color-on-surface);
       white-space: pre-wrap;
       word-break: break-word;
-      line-height: 1.6;
+      line-height: 1.5;
     }
 
-    /* 카테고리 배지 (M3 Pills) */
     .cat-badge {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
-      padding: 4px 10px;
+      gap: 3px;
+      padding: 3px 8px;
       border-radius: var(--md-shape-corner-s);
-      font-size: 0.75rem;
+      font-size: 0.6875rem;
       font-weight: 800;
       white-space: nowrap;
     }
@@ -487,24 +540,24 @@
     .badge-etc { background-color: var(--md-sys-color-surface-container-highest); color: var(--md-sys-color-on-surface-variant); }
 
     /* ==========================================
-       8. 모바일 전용 M3 카드 리스트 뷰 (<=768px)
+       8. 모바일 카드 리스트 뷰 (<=768px)
        ========================================== */
     .mobile-cards-view {
       display: none;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
       width: 100%;
     }
 
     .mobile-feedback-card {
       background-color: var(--md-sys-color-surface-container);
       border: 1.5px solid var(--md-sys-color-outline-variant);
-      border-radius: var(--md-shape-corner-l);
-      padding: 16px;
+      border-radius: var(--md-shape-corner-m);
+      padding: 12px 14px;
       box-shadow: var(--md-elevation-1);
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
     }
 
     .mobile-card-header {
@@ -512,76 +565,90 @@
       align-items: center;
       justify-content: space-between;
       border-bottom: 1px dashed var(--md-sys-color-outline-variant);
-      padding-bottom: 10px;
+      padding-bottom: 8px;
     }
 
     .mobile-card-header-left {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
     }
 
     .mobile-card-num {
-      font-size: 0.8125rem;
+      font-size: 0.75rem;
       font-weight: 900;
       color: var(--md-sys-color-primary);
       background-color: var(--md-sys-color-primary-container);
-      padding: 2px 7px;
+      padding: 1px 6px;
       border-radius: var(--md-shape-corner-s);
     }
 
     .mobile-card-date {
-      font-size: 0.75rem;
+      font-size: 0.6875rem;
       color: var(--md-sys-color-on-surface-variant);
       font-variant-numeric: tabular-nums;
     }
 
     .mobile-card-body {
-      font-size: 0.9375rem;
+      font-size: 0.875rem;
       color: var(--md-sys-color-on-surface);
-      line-height: 1.6;
+      line-height: 1.5;
       white-space: pre-wrap;
       word-break: break-word;
     }
 
-    /* 빈 상태 안내 */
     .empty-state {
-      padding: 60px 20px;
+      padding: 40px 16px;
       text-align: center;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       color: var(--md-sys-color-on-surface-variant);
     }
-    .empty-state .material-symbols-outlined { font-size: 48px; color: var(--md-sys-color-outline); }
-    .empty-state p { font-size: 0.9375rem; font-weight: 600; }
+    .empty-state .material-symbols-outlined { font-size: 40px; color: var(--md-sys-color-outline); }
+    .empty-state p { font-size: 0.875rem; font-weight: 600; }
 
     /* ==========================================
        9. 반응형 미디어 쿼리
        ========================================== */
     @media (max-width: 768px) {
-      body { padding-bottom: 40px; }
-      .top-app-bar { padding: 10px 16px; margin-bottom: 16px; }
-      .container { padding: 0 14px; gap: 16px; }
+      body { padding-bottom: 30px; }
+      .top-app-bar { padding: 8px 12px; margin-bottom: 10px; }
+      .container { padding: 0 10px; gap: 10px; }
       
+      .brand-section {
+        flex: 1 1 0%;
+        min-width: 0;
+      }
+      .brand-text h1.marquee-text {
+        font-size: 0.95rem;
+      }
+
+      .top-actions .btn-text {
+        display: none;
+      }
+      .top-actions .md-btn {
+        padding: 6px 8px;
+      }
+
       .kpi-grid {
         grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
+        gap: 8px;
       }
-      .kpi-card { padding: 14px 16px; }
-      .kpi-value { font-size: 1.4rem; }
-      .kpi-icon-box { width: 36px; height: 36px; }
+      .kpi-card { padding: 8px 10px; }
+      .kpi-value { font-size: 1.15rem; }
+      .kpi-icon-box { width: 28px; height: 28px; }
+      .kpi-icon-box .material-symbols-outlined { font-size: 16px; }
       
       .filter-search-bar {
         flex-direction: column;
         align-items: stretch;
-        padding: 12px;
-        gap: 10px;
+        padding: 8px 10px;
+        gap: 8px;
       }
       .search-box { width: 100%; }
 
-      /* PC 테이블 숨김 & 모바일 전용 카드 뷰 노출 */
       .table-container-card { display: none !important; }
       .mobile-cards-view { display: flex !important; }
     }
@@ -589,22 +656,21 @@
 </head>
 <body>
 
-  <!-- 1. M3 탑 앱 바 -->
+  <!-- 1. M3 슬림 탑 앱 바 (타이틀 마퀴 적용) -->
   <header class="top-app-bar">
     <div class="top-app-bar-inner">
       <div class="brand-section">
         <div class="brand-logo-badge">
           <span class="material-symbols-outlined">dashboard</span>
         </div>
-        <div class="brand-text">
-          <h1>피드백 관리 센터</h1>
-          <p>주말 언제와? 서비스 운영</p>
+        <div class="brand-text marquee-box" id="brand-title-box">
+          <h1 class="marquee-text" id="brand-title-text">피드백 관리 센터</h1>
         </div>
       </div>
 
       <div class="top-actions" id="top-actions-box" style="display: none;">
         <span class="sync-status-pill" id="sync-status">
-          <span class="material-symbols-outlined spin-icon" style="font-size: 14px;">sync</span>
+          <span class="material-symbols-outlined spin-icon" style="font-size: 12px;">sync</span>
           <span>동기화 중...</span>
         </span>
         <button type="button" class="md-btn md-btn-tonal" id="btn-refresh" onclick="fetchFeedbacks(false)">
@@ -632,21 +698,23 @@
         </div>
         <form onsubmit="handleLogin(event)" class="auth-input-group">
           <input type="password" id="admin-pw" class="m3-text-field" placeholder="비밀번호를 입력하세요" required autofocus />
-          <button type="submit" id="login-btn" class="md-btn md-btn-filled" style="padding: 12px; font-size: 0.9375rem;">
+          <button type="submit" id="login-btn" class="md-btn md-btn-filled" style="padding: 10px; font-size: 0.875rem;">
             <span>인증 및 데이터 조회</span>
           </button>
         </form>
       </div>
     </div>
 
-    <!-- 3. 메인 대시보드 뷰 (인증 성공 시 표시) -->
-    <div id="dashboard-view" style="display: none; flex-direction: column; gap: 20px;">
+    <!-- 3. 메인 대시보드 뷰 -->
+    <div id="dashboard-view" style="display: none; flex-direction: column; gap: 12px;">
       
       <!-- KPI 요약 카드 그리드 -->
       <section class="kpi-grid">
         <div class="kpi-card">
           <div class="kpi-info">
-            <span class="kpi-label">전체 피드백</span>
+            <span class="kpi-label marquee-box">
+              <span class="marquee-text">전체 피드백</span>
+            </span>
             <span class="kpi-value" id="kpi-total">0</span>
           </div>
           <div class="kpi-icon-box total">
@@ -656,7 +724,9 @@
 
         <div class="kpi-card">
           <div class="kpi-info">
-            <span class="kpi-label">개선사항 요청</span>
+            <span class="kpi-label marquee-box">
+              <span class="marquee-text">개선사항 요청</span>
+            </span>
             <span class="kpi-value" id="kpi-improve">0</span>
           </div>
           <div class="kpi-icon-box improve">
@@ -666,7 +736,9 @@
 
         <div class="kpi-card">
           <div class="kpi-info">
-            <span class="kpi-label">오류 신고</span>
+            <span class="kpi-label marquee-box">
+              <span class="marquee-text">오류 신고</span>
+            </span>
             <span class="kpi-value" id="kpi-bug">0</span>
           </div>
           <div class="kpi-icon-box bug">
@@ -676,7 +748,9 @@
 
         <div class="kpi-card">
           <div class="kpi-info">
-            <span class="kpi-label">신기능 아이디어</span>
+            <span class="kpi-label marquee-box">
+              <span class="marquee-text">신기능 아이디어</span>
+            </span>
             <span class="kpi-value" id="kpi-idea">0</span>
           </div>
           <div class="kpi-icon-box idea">
@@ -692,15 +766,15 @@
             <span>전체보기</span>
           </button>
           <button type="button" class="filter-chip" data-filter="개선사항 요청">
-            <span class="material-symbols-outlined" style="font-size: 16px;">tune</span>
+            <span class="material-symbols-outlined" style="font-size: 14px;">tune</span>
             <span>개선요청</span>
           </button>
           <button type="button" class="filter-chip" data-filter="오류신고">
-            <span class="material-symbols-outlined" style="font-size: 16px;">bug_report</span>
+            <span class="material-symbols-outlined" style="font-size: 14px;">bug_report</span>
             <span>오류신고</span>
           </button>
           <button type="button" class="filter-chip" data-filter="신기능 아이디어">
-            <span class="material-symbols-outlined" style="font-size: 16px;">lightbulb</span>
+            <span class="material-symbols-outlined" style="font-size: 14px;">lightbulb</span>
             <span>신기능</span>
           </button>
         </div>
@@ -723,14 +797,14 @@
             </tr>
           </thead>
           <tbody id="desktop-table-body">
-            <!-- 자바스크립트로 렌더링 -->
+            <!-- 렌더링 영역 -->
           </tbody>
         </table>
       </div>
 
       <!-- 📱 모바일 전용 M3 카드 리스트 뷰 -->
       <div class="mobile-cards-view" id="mobile-cards-container">
-        <!-- 자바스크립트로 렌더링 -->
+        <!-- 렌더링 영역 -->
       </div>
 
     </div>
@@ -746,7 +820,28 @@
     let activeFilter = 'all';
     let searchQuery = '';
 
-    // 날짜 포맷터 ('YYYY-MM-DD HH:mm:ss')
+    // 🌟 가로 폭을 벗어나는 텍스트 감지 후 자동 Marquee 애니메이션 적용 (헤더 타이틀 포함)
+    function checkAndApplyMarquees() {
+      const marqueeBoxes = document.querySelectorAll('.marquee-box');
+      marqueeBoxes.forEach(box => {
+        const textEl = box.querySelector('.marquee-text');
+        if (!textEl || !textEl.innerText.trim()) return;
+
+        textEl.classList.remove('is-marquee');
+
+        const containerWidth = box.clientWidth;
+        const textWidth = textEl.scrollWidth;
+
+        if (textWidth > containerWidth + 1) {
+          textEl.classList.add('is-marquee');
+          const overflowDistance = textWidth - containerWidth + 8;
+          textEl.style.setProperty('--marquee-dist', `-${overflowDistance}px`);
+        } else {
+          textEl.style.removeProperty('--marquee-dist');
+        }
+      });
+    }
+
     function formatDateTime(val) {
       if (!val) return '-';
       const d = new Date(val);
@@ -768,20 +863,18 @@
 
     function getCategoryBadge(category) {
       const cat = String(category || '').trim();
-      if (cat === '오류신고') return `<span class="cat-badge badge-bug"><span class="material-symbols-outlined" style="font-size: 14px;">bug_report</span>오류신고</span>`;
-      if (cat === '개선사항 요청') return `<span class="cat-badge badge-improve"><span class="material-symbols-outlined" style="font-size: 14px;">tune</span>개선요청</span>`;
-      if (cat === '신기능 아이디어') return `<span class="cat-badge badge-idea"><span class="material-symbols-outlined" style="font-size: 14px;">lightbulb</span>신기능</span>`;
+      if (cat === '오류신고') return `<span class="cat-badge badge-bug"><span class="material-symbols-outlined" style="font-size: 13px;">bug_report</span>오류신고</span>`;
+      if (cat === '개선사항 요청') return `<span class="cat-badge badge-improve"><span class="material-symbols-outlined" style="font-size: 13px;">tune</span>개선요청</span>`;
+      if (cat === '신기능 아이디어') return `<span class="cat-badge badge-idea"><span class="material-symbols-outlined" style="font-size: 13px;">lightbulb</span>신기능</span>`;
       return `<span class="cat-badge badge-etc">${escapeHtml(cat || '기타')}</span>`;
     }
 
-    // 로그인 폼 처리
     function handleLogin(e) {
       e.preventDefault();
       currentPassword = document.getElementById('admin-pw').value.trim();
       fetchFeedbacks(true);
     }
 
-    // 로그아웃 처리
     function handleLogout() {
       if (confirm('로그아웃 하시겠습니까? 다음 접속 시 비밀번호를 다시 입력해야 합니다.')) {
         localStorage.removeItem(STORAGE_KEY);
@@ -795,7 +888,6 @@
       }
     }
 
-    // 데이터 조회 및 인증
     async function fetchFeedbacks(isManualLogin = false) {
       const syncStatus = document.getElementById('sync-status');
       const loginBtn = document.getElementById('login-btn');
@@ -827,6 +919,7 @@
 
           updateKpis();
           renderViews();
+          checkAndApplyMarquees();
         } else {
           localStorage.removeItem(STORAGE_KEY);
           localStorage.removeItem(CACHE_DATA_KEY);
@@ -847,7 +940,6 @@
       }
     }
 
-    // KPI 카드 업데이트
     function updateKpis() {
       let bugCount = 0;
       let improveCount = 0;
@@ -866,12 +958,10 @@
       document.getElementById('kpi-idea').innerText = ideaCount;
     }
 
-    // PC 테이블 및 모바일 카드 뷰 동시 렌더링
     function renderViews() {
       const desktopTbody = document.getElementById('desktop-table-body');
       const mobileContainer = document.getElementById('mobile-cards-container');
 
-      // 1. 필터 및 검색 적용
       const filtered = allFeedbacks.filter(item => {
         const matchCategory = (activeFilter === 'all') || (item.category === activeFilter);
         const matchSearch = !searchQuery || 
@@ -880,7 +970,6 @@
         return matchCategory && matchSearch;
       });
 
-      // 2. 빈 상태 처리
       if (filtered.length === 0) {
         const emptyHtml = `
           <div class="empty-state">
@@ -893,7 +982,6 @@
         return;
       }
 
-      // 3. PC 테이블 렌더링
       desktopTbody.innerHTML = filtered.map((item, index) => {
         const formattedDate = formatDateTime(item.createdAt);
         const badgeHtml = getCategoryBadge(item.category);
@@ -909,7 +997,6 @@
         `;
       }).join('');
 
-      // 4. 모바일 카드 뷰 렌더링
       mobileContainer.innerHTML = filtered.map((item, index) => {
         const formattedDate = formatDateTime(item.createdAt);
         const badgeHtml = getCategoryBadge(item.category);
@@ -930,7 +1017,6 @@
       }).join('');
     }
 
-    // 필터 칩 및 검색 이벤트 리스너
     function setupFilterAndSearch() {
       const chips = document.querySelectorAll('.filter-chip');
       chips.forEach(chip => {
@@ -947,9 +1033,14 @@
         searchQuery = e.target.value.trim();
         renderViews();
       });
+
+      let resizeTimer = null;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(checkAndApplyMarquees, 150);
+      });
     }
 
-    // 🌟 즉시 실행 (0ms): 브라우저에 저장된 세션 및 캐시 데이터를 즉시 표출
     (function initInstantAuth() {
       const savedPass = localStorage.getItem(STORAGE_KEY);
       if (savedPass) {
@@ -971,7 +1062,10 @@
       }
     })();
 
-    document.addEventListener('DOMContentLoaded', setupFilterAndSearch);
+    document.addEventListener('DOMContentLoaded', () => {
+      setupFilterAndSearch();
+      checkAndApplyMarquees();
+    });
   </script>
 </body>
 </html>
