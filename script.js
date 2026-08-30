@@ -321,6 +321,7 @@ function applyWidgetOrderToDOM(order) {
     colPrimary.prepend(topBar);
   }
 
+  // 상위 4개(카운트다운, 달력, 브리핑, 통계)는 좌측, 나머지 3개(연차, 공휴일, 여행)는 우측으로 균등 배분
   order.forEach((widgetId, idx) => {
     const widgetEl = document.getElementById(`widget-${widgetId}`);
     if (widgetEl) {
@@ -543,6 +544,7 @@ function openCalendarDetailModal(cellDate, dateKey, isHoliday, isLeave, isToday,
   const dayName = ['일', '월', '화', '수', '목', '금', '토'][cellDate.getDay()];
   dateTextEl.innerText = `${cellDate.getFullYear()}년 ${cellDate.getMonth() + 1}월 ${cellDate.getDate()}일 (${dayName})`;
 
+  // 오늘 및 미래 날씨 예보만 표기
   if (dateKey >= todayKey && weatherMap.has(dateKey)) {
     const w = weatherMap.get(dateKey);
     weatherBox.style.display = "flex";
@@ -581,7 +583,7 @@ function openCalendarDetailModal(cellDate, dateKey, isHoliday, isLeave, isToday,
 }
 
 // ==========================================
-// 8. 피드백 제출 & 스크롤 연동 매니저
+// 8. 🌟 피드백 제출 & 스크롤 연동 매니저 (최상단=하단FAB / 스크롤=상단버튼)
 // ==========================================
 function initFeedbackSystem() {
   const fabBtn = document.getElementById("btn-feedback-fab");
@@ -592,12 +594,14 @@ function initFeedbackSystem() {
   const submitBtn = document.getElementById("fb-submit-btn");
   const btnText = document.getElementById("fb-btn-text");
 
+  // 하단 플로팅 버튼 클릭
   if (fabBtn) {
     fabBtn.addEventListener("click", () => {
       openModalView("feedback-modal", "feedback-modal-backdrop");
     });
   }
 
+  // 🌟 상단 헤더 피드백 버튼 클릭
   if (topFeedbackBtn) {
     topFeedbackBtn.addEventListener("click", () => {
       openModalView("feedback-modal", "feedback-modal-backdrop");
@@ -607,6 +611,7 @@ function initFeedbackSystem() {
   if (closeBtn) closeBtn.addEventListener("click", () => closeModalView("feedback-modal"));
   if (backdrop) backdrop.addEventListener("click", () => closeModalView("feedback-modal"));
 
+  // 🌟 스크롤 상태에 따른 상단/하단 버튼 상호 전환
   const handleScrollFeedback = () => {
     const scrollY = window.scrollY;
     if (scrollY <= 20) {
@@ -619,8 +624,9 @@ function initFeedbackSystem() {
   };
 
   window.addEventListener("scroll", handleScrollFeedback, { passive: true });
-  handleScrollFeedback();
+  handleScrollFeedback(); // 초기 상태 실행
 
+  // 피드백 전송 처리
   if (form) {
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -1110,7 +1116,7 @@ function calculateVacationsForBase(baseDay) {
             benefit: `총 ${blockLength + 1}일 연속 휴식 (${formatDateMD(blockStart)} ~ ${formatDateMD(dayAfter)})`,
             badge: `연차 1일 = ${blockLength + 1}일 휴식`,
             totalRest: blockLength + 1,
-            startDate: dayBefore,
+            startDate: blockStart,
             endDate: dayAfter
           });
         }
@@ -1153,7 +1159,6 @@ function getTravelDestinations(totalDays) {
   }
 }
 
-// 🌟 메인 & 시뮬레이터 공통 해외여행 추천 렌더링 (황금루트 아래 총 휴식일수 표시)
 function renderTravelWidget(baseDate, containerId = "main-travel-recommendations", descId = null) {
   const container = document.getElementById(containerId);
   if (!container) return;
@@ -1185,13 +1190,10 @@ function renderTravelWidget(baseDate, containerId = "main-travel-recommendations
       <div class="travel-card-item">
         <div class="travel-item-header">
           <div class="travel-period-tag">
-            <span class="material-symbols-outlined" style="font-size: 18px;">flight_takeoff</span>
+            <span class="material-symbols-outlined" style="font-size: 16px;">flight_takeoff</span>
             <strong>${pick.startDate.getFullYear()}년 ${pick.startDate.getMonth() + 1}월 황금루트</strong>
           </div>
-          <div class="travel-badge-days">
-            <span class="highlight-rest">총 ${pick.totalRest}일 휴식</span>
-            <span class="highlight-leave">(${pick.leave})</span>
-          </div>
+          <span class="travel-badge-days">총 ${pick.totalRest}일 휴식 (${pick.leave})</span>
         </div>
         <div class="travel-destinations-row">
           ${dest.chips.map(chip => `<span class="dest-chip">${chip}</span>`).join("")}
@@ -1203,7 +1205,7 @@ function renderTravelWidget(baseDate, containerId = "main-travel-recommendations
 }
 
 // ==========================================
-// 13. 캘린더 그리드 DOM 생성
+// 13. 캘린더 그리드 DOM 생성 (오늘 이후만 날씨 표기 & 컴팩트 배지)
 // ==========================================
 function createCalendarGridFragment(year, month) {
   const firstDayIndex = new Date(year, month, 1).getDay();
@@ -1240,6 +1242,7 @@ function createCalendarGridFragment(year, month) {
       subText = "연차 추천";
     }
 
+    // 오늘(todayKey) 및 이후 미래 날짜에만 날씨 미니 배지 표시 (과거 날씨 제외)
     let weatherHtml = "";
     if (dateKey >= todayKey && weatherMap.has(dateKey)) {
       const w = weatherMap.get(dateKey);
@@ -1296,7 +1299,7 @@ function createCalendarGridFragment(year, month) {
 async function renderMainRealtimeSpace() {
   await Promise.all([
     ensureHolidaysForYear(currentRealYear),
-    ensureWeatherForecast()
+    ensureWeatherForecast() // 날씨 예보 수집
   ]);
 
   document.getElementById("main-cal-month-year").innerText = `${currentRealYear}년 ${currentRealMonth + 1}월`;
@@ -1543,7 +1546,7 @@ async function renderSimulatedSpace(direction = "none") {
   const holidays = Array.from(holidayMap.entries()).map(([dateStr, name]) => {
     const [y, m, d] = dateStr.split("-").map(Number);
     const holidayDate = new Date(y, m - 1, d);
-    const diffDays = Math.ceil((holidayDate - baseDay) / (1000 * 60 * 60 * 24));
+    const diffDays = Math.ceil((holidayDate - simBaseDate) / (1000 * 60 * 60 * 24));
     return { name, dateStr, effectiveDate: holidayDate, diffDays };
   });
 
@@ -1777,7 +1780,7 @@ async function init() {
   initGlobalHistoryAndEscListener();
   initNavigationAndDrawers();
   initCalendarDetailModal();
-  initFeedbackSystem();
+  initFeedbackSystem(); // 피드백 시스템 초기화
   setupOffWorkTimeInput();
   setupSimCalendarControls();
   setupLunchEngine();
