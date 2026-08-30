@@ -667,7 +667,7 @@ body {
 }
 
 /* ==========================================
-   5. 캘린더 그리드 & 컴팩트 날씨 배지 스타일
+   5. 캘린더 그리드 & 이미지 맞춤 수직 날씨 배지 스타일
    ========================================== */
 .cal-nav-bar {
   display: flex;
@@ -766,7 +766,7 @@ body {
   background-color: var(--md-sys-color-surface);
   border: 1.5px solid var(--cal-cell-border);
   border-radius: var(--md-shape-corner-medium);
-  padding: 5px 3px;
+  padding: 5px 4px 4px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -791,43 +791,46 @@ body {
 .cal-cell-top {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   width: 100%;
-  min-height: 16px;
+  min-height: 18px;
 }
 
 .cal-date-num {
   font-size: 0.9375rem;
-  font-weight: 800;
+  font-weight: 900;
   line-height: 1;
   color: var(--md-sys-color-on-background);
+  letter-spacing: -0.02em;
 }
 
 .cal-cell.sunday .cal-date-num { color: #b91c1c; }
 .cal-cell.saturday .cal-date-num { color: #0369a1; }
 
-/* 컴팩트 날씨 미니 배지 */
+/* 🌟 첨부 사진 매칭: 수직 배치(아이콘 상단, 기온 하단) 날씨 미니 배지 */
 .cal-weather-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 1px;
-  font-size: 0.5625rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-start;
   line-height: 1;
-  font-weight: 700;
-  color: var(--md-sys-color-outline);
-  opacity: 0.9;
+  gap: 1px;
+  opacity: 0.92;
+  margin-top: -1px;
 }
 
 .cal-weather-icon {
-  font-size: 0.625rem;
+  font-size: 0.8125rem;
   line-height: 1;
+  display: block;
 }
 
 .cal-temp {
-  font-size: 0.5rem;
-  font-weight: 800;
+  font-size: 0.625rem;
+  font-weight: 900;
   color: var(--md-sys-color-outline);
-  letter-spacing: -0.05em;
+  line-height: 1;
+  letter-spacing: -0.04em;
 }
 
 .cal-cell.holiday {
@@ -968,31 +971,42 @@ body {
   padding: 14px 16px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
 .travel-item-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  justify-content: flex-start;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.travel-title-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  width: 100%;
 }
 
 .travel-period-tag {
-  font-size: 0.8125rem;
+  font-size: 0.875rem;
   font-weight: 800;
   color: var(--md-sys-color-primary);
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
 }
 
 .travel-badge-days {
   background-color: var(--md-sys-color-primary-container);
   color: var(--md-sys-color-on-primary-container);
-  font-size: 0.6875rem;
+  font-size: 0.75rem;
   font-weight: 800;
-  padding: 2px 8px;
-  border-radius: var(--md-shape-corner-full);
+  padding: 3px 8px;
+  border-radius: var(--md-shape-corner-small);
+  border: 1px solid rgba(0, 95, 176, 0.2);
+  display: inline-block;
 }
 
 .travel-destinations-row {
@@ -2036,8 +2050,8 @@ body {
   .app-top-bar { padding: 10px 12px; }
   .brand-title { font-size: 1.15rem; }
   .brand-subtitle { display: none; }
-  .top-bar-feedback-btn .btn-text { display: none; }
-  .top-bar-feedback-btn { padding: 6px 10px; }
+  /* 🌟 모바일에서도 피드백 텍스트 항상 표시 */
+  .top-bar-feedback-btn { padding: 6px 12px; }
   .md-card { padding: 16px; }
   .flip-text-container { height: 40px; }
   .flip-num { font-size: 2.15rem; }
@@ -2046,11 +2060,10 @@ body {
   .countdown-separator { font-size: 1.4rem; margin-bottom: 20px; }
   .stats-grid, .situation-grid { grid-template-columns: 1fr; }
   .calendar-viewport { min-height: 285px; }
-  .cal-cell { min-height: 52px; padding: 4px 2px; }
+  .cal-cell { min-height: 52px; padding: 4px 3px 3px; }
   .cal-date-num { font-size: 0.85rem; }
-  .cal-weather-badge { font-size: 0.5rem; gap: 1px; }
-  .cal-weather-icon { font-size: 0.5625rem; }
-  .cal-temp { font-size: 0.5rem; }
+  .cal-weather-icon { font-size: 0.75rem; }
+  .cal-temp { font-size: 0.5625rem; }
   .cal-sub-label { font-size: 0.5625rem; }
   .recommendation-item { flex-direction: column; align-items: flex-start; gap: 8px; }
   .theme-switcher-fab.left-fab { bottom: 16px; left: 16px; }
@@ -2076,9 +2089,8 @@ body {
   .calendar-viewport { min-height: 380px; }
   .cal-cell { min-height: 72px; padding: 6px 8px; }
   .cal-date-num { font-size: 1rem; }
-  .cal-weather-badge { font-size: 0.625rem; }
-  .cal-weather-icon { font-size: 0.6875rem; }
-  .cal-temp { font-size: 0.5625rem; }
+  .cal-weather-icon { font-size: 0.9375rem; }
+  .cal-temp { font-size: 0.6875rem; }
   .cal-sub-label { font-size: 0.725rem; }
   .stats-grid { grid-template-columns: repeat(2, 1fr); }
 }
