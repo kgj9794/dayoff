@@ -558,25 +558,29 @@ body {
   font-size: 20px;
 }
 
-/* 게이지 밑 오른쪽 정렬 퇴근 시간 칩 */
+/* 🌟 게이지 밑 출근시간 / 퇴근시간 50:50 반반 정렬 행 */
 .progress-bottom-row {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  margin-top: 6px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  width: 100%;
+  margin-top: 8px;
 }
 
 .target-time-chip.compact-chip {
-  display: inline-flex;
+  display: flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
-  padding: 4px 10px;
+  width: 100%;
+  padding: 6px 10px;
   border-radius: var(--md-shape-corner-small);
   background-color: var(--md-sys-color-surface-container-high);
   color: var(--md-sys-color-on-surface);
   border: 1px solid var(--card-border-color);
   cursor: pointer;
   user-select: none;
+  box-sizing: border-box;
   transition: background-color 0.2s, border-color 0.2s;
 }
 
@@ -585,10 +589,9 @@ body {
   background-color: var(--md-sys-color-primary-container);
 }
 
+/* 🌟 PC 및 모바일 전 화면에서 시계 아이콘 제거 */
 .chip-icon {
-  font-size: 16px;
-  color: var(--md-sys-color-outline);
-  pointer-events: none;
+  display: none !important;
 }
 
 .chip-label {
@@ -596,6 +599,7 @@ body {
   font-weight: 700;
   color: var(--md-sys-color-outline);
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .time-input-inline {
@@ -1585,7 +1589,7 @@ body {
 }
 
 /* ==========================================
-   9. 점심 메뉴 추천 모달 스타일
+   9. 점심 메뉴 추천 모달 스타일 & 마퀴/하이라이트 애니메이션
    ========================================== */
 .lunch-hero-card {
   display: flex;
@@ -1632,6 +1636,29 @@ body {
   justify-content: center;
   gap: 10px;
   min-height: 180px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* 🌟 추천 완료 시 하이라이트 강조 애니메이션 */
+.lunch-display-box.highlight {
+  border-color: #ea580c;
+  border-style: solid;
+  background: linear-gradient(145deg, rgba(234, 88, 12, 0.12), rgba(249, 115, 22, 0.04));
+  box-shadow: 0 0 28px rgba(234, 88, 12, 0.22), inset 0 0 16px rgba(234, 88, 12, 0.08);
+  animation: lunchBoxPop 0.65s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+[data-theme="dark"] .lunch-display-box.highlight {
+  background: linear-gradient(145deg, rgba(234, 88, 12, 0.24), rgba(249, 115, 22, 0.08));
+  box-shadow: 0 0 32px rgba(234, 88, 12, 0.38), inset 0 0 20px rgba(234, 88, 12, 0.15);
+}
+
+@keyframes lunchBoxPop {
+  0% { transform: scale(0.92); }
+  50% { transform: scale(1.035); }
+  100% { transform: scale(1); }
 }
 
 .lunch-icon-wrap {
@@ -1650,15 +1677,82 @@ body {
   100% { transform: scale(1) rotate(360deg); }
 }
 
+.lunch-display-box.highlight .lunch-icon-wrap {
+  animation: lunchIconCelebration 0.75s cubic-bezier(0.175, 0.885, 0.32, 1.35) forwards;
+}
+
+@keyframes lunchIconCelebration {
+  0% { transform: scale(0.4) rotate(-20deg); opacity: 0.5; }
+  55% { transform: scale(1.32) rotate(12deg); opacity: 1; }
+  75% { transform: scale(0.95) rotate(-6deg); }
+  100% { transform: scale(1.1) rotate(0deg); }
+}
+
+/* 🌟 음식 이름 영역 및 좌우 롤링(마퀴) 지원 */
 .lunch-name-display {
   font-size: 1.6rem;
   font-weight: 900;
   color: #ea580c;
+  line-height: 1.25;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  padding: 0 4px;
+}
+
+.lunch-name-display.has-marquee {
+  text-overflow: clip;
+  justify-content: flex-start;
+}
+
+.lunch-name-text {
+  display: inline-block;
+  white-space: nowrap;
+  will-change: transform;
+}
+
+.lunch-name-text.is-marquee {
+  animation: lunchNameMarquee 4.2s ease-in-out infinite alternate;
+}
+
+@keyframes lunchNameMarquee {
+  0%, 20% {
+    transform: translateX(0);
+  }
+  80%, 100% {
+    transform: translateX(var(--lunch-marquee-dist, -24px));
+  }
+}
+
+.lunch-display-box.highlight .lunch-name-display {
+  animation: lunchNameSparkle 0.65s cubic-bezier(0.2, 0, 0, 1) forwards;
+}
+
+@keyframes lunchNameSparkle {
+  0% { transform: translateY(10px) scale(0.85); opacity: 0; }
+  60% { transform: translateY(-3px) scale(1.08); opacity: 1; text-shadow: 0 0 12px rgba(234, 88, 12, 0.5); }
+  100% { transform: translateY(0) scale(1); opacity: 1; text-shadow: none; }
 }
 
 .lunch-desc-display {
   font-size: 0.875rem;
   color: var(--md-sys-color-outline);
+  line-height: 1.5;
+}
+
+.lunch-display-box.highlight .lunch-desc-display {
+  animation: lunchDescFade 0.7s cubic-bezier(0.2, 0, 0, 1) forwards;
+}
+
+@keyframes lunchDescFade {
+  0% { opacity: 0; transform: translateY(6px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
 .lunch-spin-btn {
@@ -2285,6 +2379,23 @@ body {
   .countdown-unit { min-width: 50px; }
   .countdown-display { gap: 8px; }
   .countdown-separator { font-size: 1.4rem; margin-bottom: 20px; }
+
+  /* 모바일 출근/퇴근 칩 최적화 */
+  .progress-bottom-row {
+    gap: 6px;
+    margin-top: 6px;
+  }
+  .target-time-chip.compact-chip {
+    padding: 5px 6px;
+    gap: 3px;
+  }
+  .target-time-chip .chip-label {
+    font-size: 0.6875rem;
+  }
+  .target-time-chip .time-input-inline {
+    font-size: 0.6875rem;
+  }
+
   .stats-grid, .situation-grid { grid-template-columns: 1fr; }
   .calendar-viewport { min-height: 285px; }
   .cal-cell { min-height: 52px; padding: 4px 3px 3px; }
