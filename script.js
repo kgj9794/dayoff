@@ -484,7 +484,7 @@ function getStartWorkTime() {
   const saved = localStorage.getItem("app_start_work_time") || "09:00";
   const [h, m] = saved.split(":").map(Number);
   return {
-    hours: isNaN(h) ? 9 : h,
+    hours: isNaN(h) ? 8 : h,
     minutes: isNaN(m) ? 0 : m,
     str: saved
   };
