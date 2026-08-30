@@ -6,7 +6,7 @@
   <title>주말 언제와?</title>
   <link rel="icon" type="image/png" href="/day-off.png">
 
-    <!-- Open Graph (OG) 메타 태그 -->
+  <!-- Open Graph (OG) 메타 태그 -->
   <meta property="og:type" content="website" />
   <meta property="og:title" content="주말 언제와?" />
   <meta property="og:description" content="직장인들의 중요한 주말과 휴가를 위해!" />
@@ -27,11 +27,11 @@
     <p class="loading-text">데이터 불러오는 중...</p>
   </div>
 
-  <!-- 상단 앱 바 (애니메이션 햄버거 버튼 & 타이틀 & 스크롤 시 나타나는 상단 피드백 버튼) -->
+  <!-- 상단 앱 바 (애니메이션 햄버거/X 버튼 & 마퀴 지원 타이틀 & 중앙 백그라운드 루팡 인디케이터 & 우측 피드백 버튼) -->
   <header class="app-top-bar" id="app-top-bar">
     <div class="top-bar-inner">
       <div class="top-bar-left">
-        <!-- ☰ ↔ ← 애니메이션 변형 햄버거 버튼 -->
+        <!-- ☰ ↔ ✖️ 애니메이션 변형 햄버거 버튼 -->
         <button type="button" class="hamburger-btn" id="btn-open-nav-menu" aria-label="메뉴 열기" title="전체 메뉴">
           <div class="hamburger-lines">
             <span></span>
@@ -40,11 +40,23 @@
           </div>
         </button>
 
-        <div class="top-bar-title-wrap">
-          <h1 class="brand-title">주말 언제와?</h1>
-          <p class="brand-subtitle">실시간 다음 휴일 카운트다운 및 직장인 휴식 가이드</p>
+        <div class="top-bar-title-wrap" id="top-bar-title-wrap">
+          <h1 class="brand-title" id="brand-title">
+            <span class="brand-title-text" id="brand-title-text">주말 언제와?</span>
+          </h1>
+          <p class="brand-subtitle" id="brand-subtitle">
+            <span class="brand-subtitle-text" id="brand-subtitle-text">실시간 다음 휴일 카운트다운 및 직장인 휴식 가이드</span>
+          </p>
         </div>
       </div>
+
+      <!-- ☕ 루팡 진행 중 최상단 가운데 미니 인디케이터 (클릭 시 루팡 가이드 모달 열림) -->
+      <button type="button" class="top-bar-slack-indicator is-hidden" id="btn-top-slack-indicator" title="슬기로운 루팡 가이드 열기">
+        <span class="slack-pulse-dot"></span>
+        <span class="slack-indicator-text">☕ <span id="top-slack-time">00:00:00</span></span>
+        <span class="slack-indicator-divider">|</span>
+        <span class="slack-indicator-amount"><span id="top-slack-amount">0</span>원</span>
+      </button>
 
       <!-- 🌟 스크롤 시 상단 우측에 나타나는 피드백 버튼 -->
       <button type="button" class="top-bar-feedback-btn is-hidden" id="btn-top-feedback" title="피드백 작성">
@@ -129,6 +141,7 @@
             <!-- 게이지 밑 오른쪽 퇴근 시간 설정 칩 -->
             <div class="progress-bottom-row">
               <label for="off-work-time" class="target-time-chip compact-chip" title="퇴근 시간 변경 (브라우저에 자동 저장)">
+                <span class="material-symbols-outlined chip-icon">schedule</span>
                 <span class="chip-label">퇴근시간</span>
                 <input type="time" id="off-work-time" class="time-input-inline" />
               </label>
@@ -288,8 +301,13 @@
         <h2 class="nav-title">메뉴</h2>
         <span class="nav-version">v1.3.0</span>
       </div>
-      <button type="button" class="md-icon-button" id="btn-close-nav-menu" aria-label="메뉴 닫기">
-        <span class="material-symbols-outlined">close</span>
+      <!-- 일체감 있는 애니메이션 닫기 버튼 -->
+      <button type="button" class="hamburger-btn" id="btn-close-nav-menu" aria-label="메뉴 닫기" title="메뉴 닫기">
+        <div class="hamburger-lines">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
       </button>
     </div>
     
@@ -511,7 +529,7 @@
       </div>
     </div>
 
-    <!-- 시뮬레이터 하단 고정 네비게이션 바 -->
+    <!-- 🌟 시뮬레이터 하단 고정 네비게이션 바 (자연스러운 슬라이드 애니메이션 래퍼 적용) -->
     <div class="sim-bottom-nav-bar" id="sim-bottom-nav-bar">
       <div class="sim-bottom-nav-inner">
         <button type="button" id="sim-bottom-prev" class="sim-nav-btn prev-btn" aria-label="이전 달 이동">
@@ -519,12 +537,14 @@
           <span class="btn-text">이전 달</span>
         </button>
 
-        <div class="sim-bottom-current-badge">
-          <span class="sim-bottom-badge-label">탐색 시점</span>
-          <strong class="sim-bottom-badge-date" id="sim-bottom-month-year">2026년 9월</strong>
-        </div>
+        <div class="sim-bottom-center-wrap" id="sim-bottom-center-wrap">
+          <div class="sim-bottom-current-badge">
+            <span class="sim-bottom-badge-label">탐색 시점</span>
+            <strong class="sim-bottom-badge-date" id="sim-bottom-month-year">2026년 9월</strong>
+          </div>
 
-        <button type="button" id="sim-bottom-btn-today" class="sim-bottom-today-pill" title="현재 달로 이동">오늘</button>
+          <button type="button" id="sim-bottom-btn-today" class="sim-bottom-today-pill is-hidden" title="현재 달로 이동">오늘</button>
+        </div>
 
         <button type="button" id="sim-bottom-next" class="sim-nav-btn next-btn" aria-label="다음 달 이동">
           <span class="btn-text">다음 달</span>
@@ -644,18 +664,42 @@
 
     <div class="fullscreen-drawer-scroll">
       <div class="fullscreen-content-container">
+        <!-- 루팡 머니 계산기 (연봉/시급 세전 기준 계산 지원) -->
         <section class="md-card slacking-calculator-card">
           <div class="card-headline">
             <div>
               <span class="card-overline">REALTIME SLACKING INCOME</span>
               <h2 class="title-medium">💰 실시간 루팡 머니 계산기</h2>
-              <p class="body-small">지금 멍때리거나 화장실에서 번 돈을 실시간 계산합니다.</p>
+              <p class="body-small">세전 연봉 또는 시급을 기준으로 실시간 번 돈을 계산합니다.</p>
             </div>
           </div>
 
+          <div class="slack-wage-type-toggle">
+            <button type="button" class="slack-type-btn active" data-type="annual">세전 연봉 기준</button>
+            <button type="button" class="slack-type-btn" data-type="hourly">시급 직접 입력</button>
+          </div>
+
           <div class="calculator-inputs">
-            <label class="calc-label" for="user-hourly-wage">내 시급 (원)</label>
-            <input type="number" id="user-hourly-wage" class="calc-input" value="15000" step="1000" />
+            <!-- 연봉 입력 그룹 -->
+            <div class="calc-input-group" id="group-annual-salary">
+              <label class="calc-label" for="user-annual-salary">세전 연봉 (만원)</label>
+              <div class="input-with-unit">
+                <input type="number" id="user-annual-salary" class="calc-input" value="3200" step="100" min="0" />
+                <span class="input-unit">만원</span>
+              </div>
+              <span class="calc-sub-hint" id="calc-converted-hourly">환산 시급: 약 12,759원</span>
+            </div>
+
+            <!-- 시급 입력 그룹 -->
+            <div class="calc-input-group" id="group-hourly-wage" style="display: none;">
+              <label class="calc-label" for="user-hourly-wage">내 시급 (원)</label>
+              <div class="input-with-unit">
+                <input type="number" id="user-hourly-wage" class="calc-input" value="12759" step="500" min="0" />
+                <span class="input-unit">원</span>
+              </div>
+              <span class="calc-sub-hint">주 40시간(월 209시간) 기준</span>
+            </div>
+
             <button type="button" class="calc-btn" id="btn-toggle-slack-timer">
               <span class="material-symbols-outlined" id="slack-btn-icon">play_arrow</span>
               <span id="slack-btn-text">루팡 시작</span>
