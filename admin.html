@@ -58,9 +58,24 @@
       flex-wrap: wrap;
       gap: 12px;
     }
-    .header-title-wrap h2 { font-size: 1.4rem; font-weight: 900; color: #0f172a; }
+    .header-title-wrap h2 { font-size: 1.4rem; font-weight: 900; color: #0f172a; display: flex; align-items: center; gap: 8px; }
     .header-title-wrap p { font-size: 0.85rem; color: #64748b; margin-top: 2px; }
     
+    .sync-badge {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #005fb0;
+      background: #e0f2fe;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .sync-badge.active { opacity: 1; }
+
     .header-actions { display: flex; align-items: center; gap: 8px; }
     
     .btn-action {
@@ -105,7 +120,6 @@
     tr:last-child td { border-bottom: none; }
     tr:hover td { background-color: #f8fafc; }
 
-    /* 열별 가로 너비 및 서식 */
     .col-no { width: 64px; text-align: center; font-weight: 800; color: #64748b; font-size: 0.875rem; }
     .col-date { width: 175px; color: #475569; font-size: 0.8125rem; white-space: nowrap; font-variant-numeric: tabular-nums; }
     .col-category { width: 140px; }
@@ -153,11 +167,14 @@
     <div id="dashboard-view">
       <div class="dashboard-header">
         <div class="header-title-wrap">
-          <h2>📬 피드백 접수 현황 (<span id="total-count">0</span>건)</h2>
+          <h2>
+            📬 피드백 접수 현황 (<span id="total-count">0</span>건)
+            <span class="sync-badge" id="sync-status">동기화 중...</span>
+          </h2>
           <p>구글 스프레드시트 FEED 시트와 실시간 연동된 피드백 목록입니다.</p>
         </div>
         <div class="header-actions">
-          <button type="button" class="btn-action" id="btn-refresh" onclick="fetchFeedbacks(false)">
+          <button type="button" class="btn-action" id="btn-refresh" onclick="fetchFeedbacks()">
             <span class="material-symbols-outlined">refresh</span>
             <span>새로고침</span>
           </button>
@@ -179,7 +196,7 @@
             </tr>
           </thead>
           <tbody id="feedback-table-body">
-            <!-- 자바스크립트로 렌더링 -->
+            <!-- 자바스크립트로 즉시 렌더링 -->
           </tbody>
         </table>
       </div>
@@ -189,15 +206,13 @@
   <script>
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxyLX-M_XVv8_9TiIEZ9mmHaKyGz4XHE_bcwyMGWnms5fs6G-gfW6nwghUoxpFB1cL58g/exec';
     const STORAGE_KEY = 'admin_session_pass';
+    const CACHE_DATA_KEY = 'admin_cached_feedbacks';
     let currentPassword = '';
 
-    // 날짜 포맷터 ('YYYY-MM-DD HH:mm:ss')
     function formatDateTime(val) {
       if (!val) return '-';
       const d = new Date(val);
-      if (isNaN(d.getTime())) {
-        return String(val);
-      }
+      if (isNaN(d.getTime())) return String(val);
       const yyyy = d.getFullYear();
       const mm = String(d.getMonth() + 1).padStart(2, '0');
       const dd = String(d.getDate()).padStart(2, '0');
@@ -207,17 +222,16 @@
       return `${yyyy}-${mm}-${dd} ${hh}:${min}:${ss}`;
     }
 
-    // 폼 제출 시 로그인 처리
     function handleLogin(e) {
       e.preventDefault();
       currentPassword = document.getElementById('admin-pw').value.trim();
-      fetchFeedbacks(false);
+      fetchFeedbacks(true);
     }
 
-    // 로그아웃 처리 (로컬 스토리지 삭제 및 폼 복구)
     function handleLogout() {
       if (confirm('로그아웃 하시겠습니까? 다음 접속 시 비밀번호를 다시 입력해야 합니다.')) {
         localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem(CACHE_DATA_KEY);
         currentPassword = '';
         document.getElementById('admin-pw').value = '';
         document.getElementById('dashboard-view').style.display = 'none';
@@ -225,12 +239,13 @@
       }
     }
 
-    // 피드백 데이터 조회 및 인증 검증
-    async function fetchFeedbacks(isAutoLogin = false) {
+    async function fetchFeedbacks(isManualLogin = false) {
+      const syncStatus = document.getElementById('sync-status');
       const loginBtn = document.getElementById('login-btn');
       const refreshBtn = document.getElementById('btn-refresh');
 
-      if (!isAutoLogin && loginBtn) loginBtn.innerText = '인증 확인 중...';
+      if (syncStatus) syncStatus.classList.add('active');
+      if (isManualLogin && loginBtn) loginBtn.innerText = '인증 확인 중...';
       if (refreshBtn) refreshBtn.style.opacity = '0.6';
 
       try {
@@ -245,37 +260,37 @@
         const result = await response.json();
 
         if (result.status === 'success') {
-          // 🌟 인증 성공 시 로컬 스토리지에 비밀번호 저장 (영구 자동 로그인)
+          // 인증 정보 및 최신 데이터 캐시 저장
           localStorage.setItem(STORAGE_KEY, currentPassword);
+          localStorage.setItem(CACHE_DATA_KEY, JSON.stringify(result.data));
 
           document.getElementById('auth-view').style.display = 'none';
           document.getElementById('dashboard-view').style.display = 'block';
           renderTable(result.data);
         } else {
-          // 인증 실패 시 기존 저장된 키 삭제
+          // 비밀번호가 틀린 경우에만 초기화 후 로그인 화면으로 전환
           localStorage.removeItem(STORAGE_KEY);
+          localStorage.removeItem(CACHE_DATA_KEY);
           document.getElementById('dashboard-view').style.display = 'none';
           document.getElementById('auth-view').style.display = 'block';
-
-          if (!isAutoLogin) {
-            alert(result.message || '인증에 실패했습니다. 비밀번호를 다시 확인하세요.');
-          }
+          alert(result.message || '인증에 실패했습니다. 비밀번호를 다시 확인하세요.');
         }
       } catch (err) {
         console.error('관리자 조회 오류:', err);
-        if (!isAutoLogin) {
+        // 캐시 데이터가 없는 수동 로그인 시에만 알림
+        if (isManualLogin) {
           alert('데이터를 가져오는 중 네트워크 오류가 발생했습니다.');
         }
       } finally {
+        if (syncStatus) syncStatus.classList.remove('active');
         if (loginBtn) loginBtn.innerText = '인증 및 내역 조회';
         if (refreshBtn) refreshBtn.style.opacity = '1';
       }
     }
 
-    // 테이블 렌더링
     function renderTable(data) {
       const tbody = document.getElementById('feedback-table-body');
-      document.getElementById('total-count').innerText = data.length;
+      document.getElementById('total-count').innerText = data ? data.length : 0;
       tbody.innerHTML = '';
 
       if (!data || data.length === 0) {
@@ -286,7 +301,7 @@
       data.forEach((item, index) => {
         const badgeClass = 'badge-' + String(item.category || '').replace(/\s+/g, '-');
         const formattedDate = formatDateTime(item.createdAt);
-        const rowNumber = index + 1; // 1, 2, 3... 순번 표기
+        const rowNumber = index + 1;
 
         const row = document.createElement('tr');
         row.innerHTML = `
@@ -305,15 +320,27 @@
       return div.innerHTML;
     }
 
-    // 🌟 페이지 로드 시 저장된 인증 정보 확인 후 자동 로그인 실행
-    document.addEventListener('DOMContentLoaded', () => {
+    // 🌟 즉시 실행 (0ms): DOM 로드 대기 없이 저장된 인증 정보와 캐시를 즉시 화면에 렌더링
+    (function initInstantAuth() {
       const savedPass = localStorage.getItem(STORAGE_KEY);
       if (savedPass) {
         currentPassword = savedPass;
-        // 비밀번호 입력창을 거치지 않고 바로 데이터 로드
-        fetchFeedbacks(true);
+        // 1. 로그인 폼 즉시 숨기고 대시보드 표시
+        document.getElementById('auth-view').style.display = 'none';
+        document.getElementById('dashboard-view').style.display = 'block';
+
+        // 2. 캐시된 피드백 데이터가 있으면 0초 만에 화면에 출력
+        const cachedFeedbacks = localStorage.getItem(CACHE_DATA_KEY);
+        if (cachedFeedbacks) {
+          try {
+            renderTable(JSON.parse(cachedFeedbacks));
+          } catch (e) {}
+        }
+
+        // 3. 백그라운드에서 구글 시트 최신 데이터 동기화
+        fetchFeedbacks(false);
       }
-    });
+    })();
   </script>
 </body>
 </html>
