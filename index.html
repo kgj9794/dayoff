@@ -6,7 +6,7 @@
   <title>주말 언제와?</title>
   <link rel="icon" type="image/png" href="/day-off.png">
 
-  <!-- Open Graph (OG) 메타 태그 -->
+    <!-- Open Graph (OG) 메타 태그 -->
   <meta property="og:type" content="website" />
   <meta property="og:title" content="주말 언제와?" />
   <meta property="og:description" content="직장인들의 중요한 주말과 휴가를 위해!" />
@@ -24,7 +24,7 @@
   <!-- 글로벌 로딩 화면 -->
   <div class="app-loading-screen" id="app-loading-screen">
     <div class="loading-spinner"></div>
-    <p class="loading-text">데이터 불러오는 중...</p>
+    <p class="loading-text">휴일 및 일정 데이터를 불러오는 중...</p>
   </div>
 
   <!-- 상단 앱 바 (애니메이션 햄버거 버튼 & 타이틀 & 스크롤 시 나타나는 상단 피드백 버튼) -->
@@ -129,6 +129,7 @@
             <!-- 게이지 밑 오른쪽 퇴근 시간 설정 칩 -->
             <div class="progress-bottom-row">
               <label for="off-work-time" class="target-time-chip compact-chip" title="퇴근 시간 변경 (브라우저에 자동 저장)">
+                <span class="material-symbols-outlined chip-icon">schedule</span>
                 <span class="chip-label">퇴근시간</span>
                 <input type="time" id="off-work-time" class="time-input-inline" />
               </label>
