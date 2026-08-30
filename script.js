@@ -481,7 +481,7 @@ function initWidgetOrderManager() {
 // 5. 출근/퇴근 시간 브라우저 스토리지 & 클릭 반응성 강화
 // ==========================================
 function getStartWorkTime() {
-  const saved = localStorage.getItem("app_start_work_time") || "09:00";
+  const saved = localStorage.getItem("app_start_work_time") || "08:00";
   const [h, m] = saved.split(":").map(Number);
   return {
     hours: isNaN(h) ? 8 : h,
