@@ -1159,6 +1159,7 @@ function getTravelDestinations(totalDays) {
   }
 }
 
+// 🌟 TRAVEL PLANNER 위젯: 타이틀 하단에 '총 N일 휴식 (연차 정보)' 배치
 function renderTravelWidget(baseDate, containerId = "main-travel-recommendations", descId = null) {
   const container = document.getElementById(containerId);
   if (!container) return;
@@ -1189,11 +1190,13 @@ function renderTravelWidget(baseDate, containerId = "main-travel-recommendations
     return `
       <div class="travel-card-item">
         <div class="travel-item-header">
-          <div class="travel-period-tag">
-            <span class="material-symbols-outlined" style="font-size: 16px;">flight_takeoff</span>
-            <strong>${pick.startDate.getFullYear()}년 ${pick.startDate.getMonth() + 1}월 황금루트</strong>
+          <div class="travel-title-wrap">
+            <div class="travel-period-tag">
+              <span class="material-symbols-outlined" style="font-size: 16px;">flight_takeoff</span>
+              <strong>${pick.startDate.getFullYear()}년 ${pick.startDate.getMonth() + 1}월 황금루트</strong>
+            </div>
+            <div class="travel-badge-days">총 ${pick.totalRest}일 휴식 (${pick.leave})</div>
           </div>
-          <span class="travel-badge-days">총 ${pick.totalRest}일 휴식 (${pick.leave})</span>
         </div>
         <div class="travel-destinations-row">
           ${dest.chips.map(chip => `<span class="dest-chip">${chip}</span>`).join("")}
@@ -1205,7 +1208,7 @@ function renderTravelWidget(baseDate, containerId = "main-travel-recommendations
 }
 
 // ==========================================
-// 13. 캘린더 그리드 DOM 생성 (오늘 이후만 날씨 표기 & 컴팩트 배지)
+// 13. 캘린더 그리드 DOM 생성 (수직 날씨 배지 적용)
 // ==========================================
 function createCalendarGridFragment(year, month) {
   const firstDayIndex = new Date(year, month, 1).getDay();
@@ -1242,15 +1245,15 @@ function createCalendarGridFragment(year, month) {
       subText = "연차 추천";
     }
 
-    // 오늘(todayKey) 및 이후 미래 날짜에만 날씨 미니 배지 표시 (과거 날씨 제외)
+    // 오늘(todayKey) 및 이후 미래 날짜에만 날씨 미니 배지 표시 (상단 아이콘, 하단 기온)
     let weatherHtml = "";
     if (dateKey >= todayKey && weatherMap.has(dateKey)) {
       const w = weatherMap.get(dateKey);
       weatherHtml = `
-        <span class="cal-weather-badge" title="${w.name} (최저 ${w.minTemp}° / 최고 ${w.maxTemp}°)">
+        <div class="cal-weather-badge" title="${w.name} (최저 ${w.minTemp}° / 최고 ${w.maxTemp}°)">
           <span class="cal-weather-icon">${w.icon}</span>
           <span class="cal-temp">${w.maxTemp}°</span>
-        </span>
+        </div>
       `;
     }
 
