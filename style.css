@@ -210,7 +210,7 @@ body {
   box-shadow: var(--md-elevation-1);
   display: flex;
   justify-content: center;
-  padding: 12px 16px;
+  padding: 10px 16px;
 }
 
 .top-bar-inner {
@@ -219,21 +219,26 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 14px;
+  gap: 12px;
 }
 
 .top-bar-left {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
   flex: 1;
   min-width: 0;
 }
 
+/* 🌟 상단 타이틀 & 부제목 영역 (마퀴 롤링 지원) */
 .top-bar-title-wrap {
   flex: 1;
   text-align: left;
   min-width: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .brand-title {
@@ -244,6 +249,31 @@ body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  display: block;
+  max-width: 100%;
+}
+
+.brand-title.has-marquee {
+  text-overflow: clip;
+}
+
+.brand-title-text {
+  display: inline-block;
+  white-space: nowrap;
+  will-change: transform;
+}
+
+.brand-title-text.is-marquee {
+  animation: brandTitleMarquee 4.5s ease-in-out infinite alternate;
+}
+
+@keyframes brandTitleMarquee {
+  0%, 20% {
+    transform: translateX(0);
+  }
+  80%, 100% {
+    transform: translateX(var(--title-marquee-dist, -24px));
+  }
 }
 
 .brand-subtitle {
@@ -255,7 +285,83 @@ body {
   text-overflow: ellipsis;
 }
 
-/* 🌟 상단 앱 바 우측에 스크롤 시 부드럽게 나타나는 피드백 버튼 */
+/* ☕ 상단 중앙 백그라운드 루팡 실시간 인디케이터 */
+.top-bar-slack-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: var(--md-shape-corner-full);
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.12), rgba(2, 132, 199, 0.24));
+  border: 1.5px solid #0284c7;
+  color: #0284c7;
+  font-size: 0.75rem;
+  font-weight: 800;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1), opacity 0.25s ease, background-color 0.2s;
+  user-select: none;
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.2);
+}
+
+[data-theme="dark"] .top-bar-slack-indicator {
+  color: #38bdf8;
+  border-color: #38bdf8;
+  background: rgba(2, 132, 199, 0.25);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.top-bar-slack-indicator:hover {
+  transform: scale(1.04);
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.22), rgba(2, 132, 199, 0.36));
+}
+
+.top-bar-slack-indicator.is-hidden {
+  display: none !important;
+}
+
+.slack-pulse-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #0284c7;
+  box-shadow: 0 0 0 rgba(2, 132, 199, 0.7);
+  animation: pulseDotAnim 1.6s infinite cubic-bezier(0.4, 0, 0.6, 1);
+}
+
+[data-theme="dark"] .slack-pulse-dot {
+  background-color: #38bdf8;
+}
+
+@keyframes pulseDotAnim {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(2, 132, 199, 0.7); }
+  70% { transform: scale(1.15); box-shadow: 0 0 0 6px rgba(2, 132, 199, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(2, 132, 199, 0); }
+}
+
+.slack-indicator-text {
+  font-size: 0.75rem;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.slack-indicator-divider {
+  opacity: 0.4;
+  font-weight: 400;
+}
+
+.slack-indicator-amount {
+  color: #0369a1;
+  font-weight: 900;
+}
+
+[data-theme="dark"] .slack-indicator-amount {
+  color: #7dd3fc;
+}
+
+/* 🌟 상단 앱 바 우측 피드백 버튼 */
 .top-bar-feedback-btn {
   display: inline-flex;
   align-items: center;
@@ -289,7 +395,9 @@ body {
   font-size: 16px;
 }
 
-/* ☰ ↔ ← 애니메이션 변형 햄버거 버튼 */
+/* ==========================================
+   🌟 ☰ ↔ ✖️ 완벽한 모핑 애니메이션 햄버거/닫기 버튼
+   ========================================== */
 .hamburger-btn {
   position: relative;
   width: 40px;
@@ -303,7 +411,7 @@ body {
   cursor: pointer;
   padding: 0;
   flex-shrink: 0;
-  transition: background-color 0.2s, border-color 0.2s;
+  transition: background-color 0.2s, border-color 0.2s, transform 0.3s cubic-bezier(0.2, 0, 0, 1);
 }
 
 .hamburger-btn:hover {
@@ -318,6 +426,7 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  align-items: center;
 }
 
 .hamburger-lines span {
@@ -326,23 +435,30 @@ body {
   height: 2px;
   background-color: var(--md-sys-color-on-surface);
   border-radius: 2px;
-  transition: transform 0.3s cubic-bezier(0.2, 0, 0, 1), width 0.3s cubic-bezier(0.2, 0, 0, 1), opacity 0.2s ease;
-  transform-origin: left center;
+  transform-origin: center center !important;
+  transition: transform 0.35s cubic-bezier(0.2, 0, 0, 1), opacity 0.25s ease, width 0.3s ease;
 }
 
-.hamburger-btn.is-arrow .hamburger-lines span:nth-child(1) {
-  width: 11px;
-  transform: translateY(6px) rotate(-45deg);
+/* 닫기(X) 상태 변형: 상/하단선 45도 회전 및 중심 이동, 중간선 축소 페이드아웃 */
+.hamburger-btn.is-close .hamburger-lines span:nth-child(1),
+.nav-drawer.is-open #btn-close-nav-menu .hamburger-lines span:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
 }
 
-.hamburger-btn.is-arrow .hamburger-lines span:nth-child(2) {
-  width: 18px;
-  transform: translateX(0);
+.hamburger-btn.is-close .hamburger-lines span:nth-child(2),
+.nav-drawer.is-open #btn-close-nav-menu .hamburger-lines span:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0);
 }
 
-.hamburger-btn.is-arrow .hamburger-lines span:nth-child(3) {
-  width: 11px;
-  transform: translateY(-6px) rotate(45deg);
+.hamburger-btn.is-close .hamburger-lines span:nth-child(3),
+.nav-drawer.is-open #btn-close-nav-menu .hamburger-lines span:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
+/* 드로어 내부 닫기 버튼 호버 시 회전 인터랙션 */
+#btn-close-nav-menu:hover {
+  transform: rotate(90deg);
 }
 
 .app-layout {
@@ -807,7 +923,7 @@ body {
 .cal-cell.sunday .cal-date-num { color: #b91c1c; }
 .cal-cell.saturday .cal-date-num { color: #0369a1; }
 
-/* 🌟 첨부 사진 매칭: 수직 배치(아이콘 상단, 기온 하단) 날씨 미니 배지 */
+/* 🌟 수직 배치(아이콘 상단, 기온 하단) 날씨 미니 배지 */
 .cal-weather-badge {
   display: flex;
   flex-direction: column;
@@ -1340,6 +1456,9 @@ body {
   pointer-events: none;
 }
 
+/* ==========================================
+   🌟 시뮬레이터 하단 네비게이션 바 & 슬라이드 트랜지션
+   ========================================== */
 .sim-bottom-nav-bar {
   position: relative;
   z-index: 20;
@@ -1386,12 +1505,22 @@ body {
   color: var(--md-sys-color-on-primary-container);
 }
 
+/* 🌟 중앙 래퍼: 오늘 버튼 등장 시 탐색 시점이 자연스럽게 좌측으로 이동 */
+.sim-bottom-center-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+}
+
 .sim-bottom-current-badge {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 2px 10px;
+  padding: 2px 8px;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .sim-bottom-badge-label {
@@ -1400,6 +1529,7 @@ body {
   color: var(--md-sys-color-outline);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  white-space: nowrap;
 }
 
 .sim-bottom-badge-date {
@@ -1407,22 +1537,51 @@ body {
   font-weight: 900;
   color: var(--md-sys-color-primary);
   line-height: 1.2;
-}
-
-.sim-bottom-today-pill {
-  padding: 6px 10px;
-  font-size: 0.75rem;
-  font-weight: 800;
-  border-radius: var(--md-shape-corner-full);
-  background-color: var(--md-sys-color-secondary-container);
-  color: var(--md-sys-color-on-secondary-container);
-  border: 1px solid var(--card-border-color);
-  cursor: pointer;
   white-space: nowrap;
 }
 
+/* 🌟 오늘 버튼: 아래에서 위로 솟아오르는 슬라이드업 & 페이드인 */
+.sim-bottom-today-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 12px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  border-radius: var(--md-shape-corner-full);
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  border: 1.5px solid var(--card-border-color);
+  cursor: pointer;
+  white-space: nowrap;
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  max-width: 90px;
+  overflow: hidden;
+  box-shadow: var(--md-elevation-1);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), 
+              opacity 0.28s ease, 
+              max-width 0.35s cubic-bezier(0.16, 1, 0.3, 1), 
+              padding 0.35s ease, 
+              border-color 0.2s ease,
+              background-color 0.2s ease;
+}
+
+.sim-bottom-today-pill:hover {
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  border-color: var(--md-sys-color-primary);
+  transform: translateY(-1px) scale(1.03);
+}
+
 .sim-bottom-today-pill.is-hidden {
-  display: none !important;
+  opacity: 0 !important;
+  transform: translateY(18px) scale(0.7) !important;
+  max-width: 0 !important;
+  padding: 0 !important;
+  border-width: 0 !important;
+  margin: 0 !important;
+  pointer-events: none !important;
 }
 
 /* ==========================================
@@ -1565,11 +1724,70 @@ body {
   gap: 16px;
 }
 
+.slack-wage-type-toggle {
+  display: flex;
+  gap: 6px;
+  background-color: var(--md-sys-color-surface-container-high);
+  padding: 4px;
+  border-radius: var(--md-shape-corner-medium);
+  border: 1px solid var(--card-border-color);
+  width: fit-content;
+}
+
+.slack-type-btn {
+  border: none;
+  background: transparent;
+  padding: 6px 14px;
+  font-size: 0.8125rem;
+  font-weight: 800;
+  border-radius: var(--md-shape-corner-small);
+  color: var(--md-sys-color-outline);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.slack-type-btn.active {
+  background-color: #0284c7;
+  color: #ffffff;
+  box-shadow: var(--md-elevation-1);
+}
+
 .calculator-inputs {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  align-items: flex-end;
+  gap: 12px;
   flex-wrap: wrap;
+}
+
+.calc-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.input-with-unit {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.input-with-unit .calc-input {
+  padding-right: 48px;
+}
+
+.input-unit {
+  position: absolute;
+  right: 12px;
+  font-size: 0.8125rem;
+  font-weight: 800;
+  color: var(--md-sys-color-outline);
+  pointer-events: none;
+}
+
+.calc-sub-hint {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--md-sys-color-primary);
 }
 
 .calc-label {
@@ -1582,11 +1800,11 @@ body {
   background-color: var(--md-sys-color-surface);
   border: 1.5px solid var(--card-border-color);
   color: var(--md-sys-color-on-surface);
-  padding: 8px 12px;
+  padding: 9px 12px;
   border-radius: var(--md-shape-corner-small);
   font-size: 0.9375rem;
   font-weight: 800;
-  width: 140px;
+  width: 150px;
   outline: none;
 }
 
@@ -1594,7 +1812,7 @@ body {
   background-color: #0284c7;
   color: #ffffff;
   border: none;
-  padding: 9px 18px;
+  padding: 10px 18px;
   border-radius: var(--md-shape-corner-small);
   font-size: 0.875rem;
   font-weight: 800;
@@ -1602,6 +1820,7 @@ body {
   align-items: center;
   gap: 4px;
   cursor: pointer;
+  height: 42px;
 }
 
 .calc-btn.running {
@@ -2047,11 +2266,19 @@ body {
    ========================================== */
 @media (max-width: 767px) {
   body { padding: 76px 12px 72px; }
-  .app-top-bar { padding: 10px 12px; }
-  .brand-title { font-size: 1.15rem; }
+  .app-top-bar { padding: 8px 10px; }
+  .brand-title { font-size: 1.1rem; }
   .brand-subtitle { display: none; }
-  /* 🌟 모바일에서도 피드백 텍스트 항상 표시 */
-  .top-bar-feedback-btn { padding: 6px 12px; }
+  .top-bar-left { gap: 8px; }
+  .hamburger-btn { width: 36px; height: 36px; }
+  
+  .top-bar-slack-indicator {
+    padding: 4px 8px;
+    font-size: 0.6875rem;
+    gap: 4px;
+  }
+  
+  .top-bar-feedback-btn { padding: 5px 10px; font-size: 0.75rem; }
   .md-card { padding: 16px; }
   .flip-text-container { height: 40px; }
   .flip-num { font-size: 2.15rem; }
@@ -2073,6 +2300,11 @@ body {
   .drawer-subtitle { display: none; }
   .fullscreen-drawer-scroll { padding: 16px 12px 0; }
   .sim-nav-btn .btn-text { display: none; }
+  .calc-input { width: 130px; }
+
+  .sim-bottom-current-badge { padding: 2px 4px; }
+  .sim-bottom-badge-date { font-size: 0.9375rem; }
+  .sim-bottom-today-pill { font-size: 0.6875rem; padding: 4px 8px; }
 }
 
 @media (min-width: 1024px) {
