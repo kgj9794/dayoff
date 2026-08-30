@@ -98,6 +98,32 @@ function checkAndApplyTitleMarquee() {
   }
 }
 
+// 🌟 점심 메뉴 추천 텍스트가 길 경우 좌우 롤링(마퀴) 자동 감지 적용
+function checkAndApplyLunchMarquee() {
+  const nameEl = document.getElementById("lunch-result-name");
+  if (!nameEl) return;
+
+  let textEl = nameEl.querySelector(".lunch-name-text");
+  if (!textEl) {
+    nameEl.innerHTML = `<span class="lunch-name-text">${nameEl.innerText}</span>`;
+    textEl = nameEl.querySelector(".lunch-name-text");
+  }
+
+  textEl.classList.remove("is-marquee");
+  nameEl.classList.remove("has-marquee");
+  textEl.style.removeProperty("--lunch-marquee-dist");
+
+  const containerWidth = nameEl.clientWidth;
+  const textWidth = textEl.scrollWidth;
+
+  if (textWidth > containerWidth + 2) {
+    const overflowDistance = textWidth - containerWidth + 14;
+    nameEl.classList.add("has-marquee");
+    textEl.classList.add("is-marquee");
+    textEl.style.setProperty("--lunch-marquee-dist", `-${overflowDistance}px`);
+  }
+}
+
 // 캘린더 내부 서브 라벨 반응형 오버플로우 감지 롤링
 function checkAndApplyMarquees() {
   const subLabels = document.querySelectorAll('.cal-sub-label');
@@ -122,6 +148,7 @@ function checkAndApplyMarquees() {
   });
 
   checkAndApplyTitleMarquee();
+  checkAndApplyLunchMarquee();
 }
 
 // ==========================================
@@ -451,8 +478,18 @@ function initWidgetOrderManager() {
 }
 
 // ==========================================
-// 5. 퇴근 시간 브라우저 스토리지 & 클릭 반응성 강화
+// 5. 출근/퇴근 시간 브라우저 스토리지 & 클릭 반응성 강화
 // ==========================================
+function getStartWorkTime() {
+  const saved = localStorage.getItem("app_start_work_time") || "09:00";
+  const [h, m] = saved.split(":").map(Number);
+  return {
+    hours: isNaN(h) ? 9 : h,
+    minutes: isNaN(m) ? 0 : m,
+    str: saved
+  };
+}
+
 function getOffWorkTime() {
   const saved = localStorage.getItem("app_off_work_time") || "17:00";
   const [h, m] = saved.split(":").map(Number);
@@ -463,33 +500,47 @@ function getOffWorkTime() {
   };
 }
 
-function setupOffWorkTimeInput() {
-  const timeInput = document.getElementById("off-work-time");
-  const chip = document.querySelector(".target-time-chip");
-  const current = getOffWorkTime();
-  timeInput.value = current.str;
+function setupWorkTimeInputs() {
+  const startInput = document.getElementById("start-work-time");
+  const offInput = document.getElementById("off-work-time");
+  const chips = document.querySelectorAll(".target-time-chip");
 
-  timeInput.addEventListener("change", (e) => {
-    if (!e.target.value) return;
-    localStorage.setItem("app_off_work_time", e.target.value);
-    updateCountdown();
-  });
+  const currentStart = getStartWorkTime();
+  if (startInput) {
+    startInput.value = currentStart.str;
+    startInput.addEventListener("change", (e) => {
+      if (!e.target.value) return;
+      localStorage.setItem("app_start_work_time", e.target.value);
+      updateCountdown();
+    });
+  }
 
-  if (chip) {
+  const currentOff = getOffWorkTime();
+  if (offInput) {
+    offInput.value = currentOff.str;
+    offInput.addEventListener("change", (e) => {
+      if (!e.target.value) return;
+      localStorage.setItem("app_off_work_time", e.target.value);
+      updateCountdown();
+    });
+  }
+
+  chips.forEach(chip => {
     chip.addEventListener("click", (e) => {
-      if (e.target !== timeInput) {
+      const input = chip.querySelector(".time-input-inline");
+      if (input && e.target !== input) {
         try {
-          if (typeof timeInput.showPicker === 'function') {
-            timeInput.showPicker();
+          if (typeof input.showPicker === 'function') {
+            input.showPicker();
           } else {
-            timeInput.focus();
+            input.focus();
           }
         } catch (err) {
-          timeInput.focus();
+          input.focus();
         }
       }
     });
-  }
+  });
 }
 
 // ==========================================
@@ -533,7 +584,9 @@ function initNavigationAndDrawers() {
   simBackdrop.addEventListener("click", () => closeModalView("simulation-drawer"));
 
   openLunchBtn.addEventListener("click", () => {
-    transitionModalView("nav-drawer", "lunch-drawer", "lunch-drawer-backdrop");
+    transitionModalView("nav-drawer", "lunch-drawer", "lunch-drawer-backdrop", () => {
+      checkAndApplyLunchMarquee();
+    });
   });
   closeLunchBtn.addEventListener("click", () => closeModalView("lunch-drawer"));
   lunchBackdrop.addEventListener("click", () => closeModalView("lunch-drawer"));
@@ -801,7 +854,7 @@ function getDayOffName(dateObj) {
 }
 
 // ==========================================
-// 11. 클린 플립 카운트다운
+// 11. 클린 플립 카운트다운 & 12시간 전 출근 카운트다운
 // ==========================================
 function updateTextFlip(containerId, nextValue) {
   const container = document.getElementById(containerId);
@@ -841,10 +894,76 @@ function updateCountdown() {
   const isTodayOff = isOffDay(now);
 
   const timerTitleEl = document.getElementById("timer-title");
+  const { hours: startH, minutes: startM } = getStartWorkTime();
   const { hours: offH, minutes: offM } = getOffWorkTime();
 
   const isWorkDoneToday = (now.getHours() > offH) || (now.getHours() === offH && now.getMinutes() >= offM);
+  const workStartToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), startH, startM, 0, 0);
+  const workEndToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), offH, offM, 0, 0);
+  const isWorkingNow = !isTodayOff && (now >= workStartToday && now < workEndToday);
 
+  // 🌟 1. 출근하기 12시간 전 실시간 출근 카운트다운 (동적 출근시간 기준)
+  if (!isWorkingNow) {
+    let nextWorkStart = null;
+
+    if (!isTodayOff && now < workStartToday) {
+      nextWorkStart = workStartToday;
+    } else {
+      let daysAhead = 1;
+      while (true) {
+        const testDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysAhead, startH, startM, 0, 0);
+        if (!isOffDay(testDate)) {
+          nextWorkStart = testDate;
+          break;
+        }
+        daysAhead++;
+      }
+    }
+
+    if (nextWorkStart) {
+      const workDiff = nextWorkStart - now;
+      const twelveHoursMs = 12 * 60 * 60 * 1000;
+
+      if (workDiff > 0 && workDiff <= twelveHoursMs) {
+        ensureCountdownUI();
+
+        const d = Math.floor(workDiff / (1000 * 60 * 60 * 24));
+        const h = Math.floor((workDiff / (1000 * 60 * 60)) % 24);
+        const m = Math.floor((workDiff / 1000 / 60) % 60);
+        const s = Math.floor((workDiff / 1000) % 60);
+
+        let titleText = "출근까지 ";
+        if (h > 0) {
+          titleText += `${h}시간 `;
+        }
+        titleText += `${m}분 남았어요`;
+
+        timerTitleEl.innerText = titleText;
+
+        updateTextFlip("flip-days", String(d));
+        updateTextFlip("flip-hours", String(h).padStart(2, "0"));
+        updateTextFlip("flip-minutes", String(m).padStart(2, "0"));
+        updateTextFlip("flip-seconds", String(s).padStart(2, "0"));
+
+        // 출근 12시간 전 전용 게이지 (12시간 전 = 0% -> 출근시간 = 100%)
+        const elapsed = twelveHoursMs - workDiff;
+        let percent = Math.floor((elapsed / twelveHoursMs) * 100);
+        percent = Math.max(0, Math.min(100, percent));
+
+        const startLabel = document.getElementById("progress-start-label");
+        const endLabel = document.getElementById("progress-end-label");
+        const startStr = `${String(startH).padStart(2, '0')}:${String(startM).padStart(2, '0')}`;
+        if (startLabel) startLabel.innerText = "출근 12시간 전";
+        if (endLabel) endLabel.innerText = `출근 (${startStr})`;
+
+        document.getElementById("progress-bar").style.width = `${percent}%`;
+        document.getElementById("progress-percent").innerText = `${percent}%`;
+        return;
+      }
+    }
+  }
+
+  // 🌟 2. 휴일 및 주말 진행 중 처리
   if (isTodayOff) {
     const offName = getDayOffName(now);
     showBreakMessage(`현재 ${offName} 진행 중입니다.<br>충전의 시간을 가지세요.`);
@@ -861,6 +980,7 @@ function updateCountdown() {
     return;
   }
 
+  // 🌟 3. 다음 쉬는 날(주말/공휴일) 카운트다운
   let targetWorkDay = new Date(now);
   let offDayTarget = new Date(now);
   let daysAhead = isWorkDoneToday ? 1 : 0;
@@ -894,6 +1014,11 @@ function updateCountdown() {
   updateTextFlip("flip-hours", String(h).padStart(2, "0"));
   updateTextFlip("flip-minutes", String(m).padStart(2, "0"));
   updateTextFlip("flip-seconds", String(s).padStart(2, "0"));
+
+  const startLabel = document.getElementById("progress-start-label");
+  const endLabel = document.getElementById("progress-end-label");
+  if (startLabel) startLabel.innerText = "업무 시작";
+  if (endLabel) endLabel.innerText = "휴식 돌입";
 
   updateDynamicProgressBar(now, targetTime);
 }
@@ -952,12 +1077,13 @@ function showBreakMessage(message) {
 }
 
 function updateDynamicProgressBar(now, targetTime) {
+  const { hours: startH, minutes: startM } = getStartWorkTime();
   let blockStart = new Date(now);
   while (!isOffDay(blockStart)) {
     blockStart.setDate(blockStart.getDate() - 1);
   }
   blockStart.setDate(blockStart.getDate() + 1);
-  blockStart.setHours(9, 0, 0, 0);
+  blockStart.setHours(startH, startM, 0, 0);
 
   const totalPeriod = targetTime - blockStart;
   const elapsed = now - blockStart;
@@ -1114,7 +1240,7 @@ function calculateVacationsForBase(baseDay) {
       if (blockLength >= 3) {
         const dayBefore = new Date(blockStart);
         dayBefore.setDate(blockStart.getDate() - 1);
-        if (!isOffDay(dayBefore) && dayBefore >= baseDay) {
+        if (!isOffDay(dayBefore)) {
           rawCandidates.push({
             leaveDate: dayBefore,
             title: `${holidayName} 앞당김 연차`,
@@ -1637,10 +1763,10 @@ function setupSimCalendarControls() {
 }
 
 // ==========================================
-// 16. 점심 메뉴 추천 엔진
+// 16. 점심 메뉴 추천 엔진 (대폭 확장된 메뉴 데이터베이스 & 자동 마퀴)
 // ==========================================
 const lunchDatabase = [
-  // 한식
+  // 1. 한식 (Korean)
   { name: "든든한 돼지국밥 / 순대국", cat: "korean", icon: "🍲", desc: "뜨끈하고 깊은 국물로 오후 에너지를 풀충전하세요!" },
   { name: "얼큰 김치찌개 & 계란말이", cat: "korean", icon: "🥘", desc: "한국인의 소울푸드! 밥 두 공기 순삭 보장 조합입니다." },
   { name: "직화 제육볶음 쌈밥", cat: "korean", icon: "🥩", desc: "불맛 가득한 제육에 신선한 쌈채소로 활력 충전!" },
@@ -1651,16 +1777,31 @@ const lunchDatabase = [
   { name: "노릇노릇 생선구이 백반", cat: "korean", icon: "🐟", desc: "집밥이 그리울 때 바삭하게 구운 고등어/삼치 한 상!" },
   { name: "매콤달콤 닭볶음탕", cat: "korean", icon: "🍗", desc: "동료들과 푸짐하게 국물에 밥 비벼 먹기 좋은 메뉴." },
   { name: "보쌈 정식", cat: "korean", icon: "🥬", desc: "야들야들한 수육과 갓 담근 보쌈김치의 환상 케미." },
+  { name: "얼큰 소고기 육개장", cat: "korean", icon: "🍲", desc: "고사리와 소고기가 듬뿍 들어간 칼칼하고 진한 보양 국물!" },
+  { name: "보글보글 햄가득 부대찌개", cat: "korean", icon: "🥘", desc: "라면 사리 퐁당! 동료들과 함께 끓여먹는 직장인 최애 픽." },
+  { name: "바글바글 해물 순두부찌개", cat: "korean", icon: "🍲", desc: "부드러운 순두부와 매콤 칼칼한 해물 육수의 조화." },
+  { name: "지글지글 돌솥 비빔밥", cat: "korean", icon: "🍚", desc: "눌어붙은 누룽지까지 고소하게 긁어먹는 든든한 한 그릇." },
+  { name: "진한 한우 갈비탕", cat: "korean", icon: "🍖", desc: "당면과 큼직한 갈빗대가 푸짐하게 들어간 기력 충전 한 그릇." },
+  { name: "우렁 강된장 쌈밥정식", cat: "korean", icon: "🥬", desc: "쫄깃한 우렁이와 짭조름한 강된장의 건강하고 맛있는 조합." },
+  { name: "매콤 춘천식 철판 닭갈비", cat: "korean", icon: "🍗", desc: "떡과 고구마, 양배추와 함께 볶아먹고 마지막엔 볶음밥 필수!" },
+  { name: "시원한 황태 콩나물 해장국", cat: "korean", icon: "🥣", desc: "담백하고 개운해서 속이 싹 풀리는 힐링 국밥." },
+  { name: "향긋한 곤드레밥 정식", cat: "korean", icon: "🍚", desc: "달래양념장 쓱쓱 비벼 건강하고 담백하게 즐기는 한 끼." },
 
-  // 중식
+  // 2. 중식 (Chinese)
   { name: "짜장면 & 바삭 탕수육", cat: "chinese", icon: "🥢", desc: "기름진 탄수화물이 당기는 날엔 국민 중식이 진리!" },
   { name: "얼큰 해물 짬뽕 / 짬뽕밥", cat: "chinese", icon: "🍜", desc: "칼칼한 불맛 국물로 오전의 스트레스를 날려보세요." },
   { name: "얼얼한 마라탕 & 꿔바로우", cat: "chinese", icon: "🍲", desc: "취향대로 담아 즐기는 중독성 100% 매콤 얼얼한 맛!" },
   { name: "중화풍 마파두부 덮밥", cat: "chinese", icon: "🍛", desc: "부드러운 두부와 매콤한 소스의 밥도둑 덮밥." },
   { name: "고슬고슬 게살 볶음밥", cat: "chinese", icon: "🍚", desc: "짜장 소스와 짬뽕 국물을 곁들여 알차게 즐기세요." },
   { name: "홍콩식 딤섬 & 우육면", cat: "chinese", icon: "🥟", desc: "육즙 가득 샤오롱바오와 진한 소고기 국수의 조화." },
+  { name: "바삭상큼 유린기", cat: "chinese", icon: "🍗", desc: "바삭한 닭튀김에 새콤매콤한 간장 소스와 청양고추 토핑!" },
+  { name: "불맛 잡채밥 & 계란국", cat: "chinese", icon: "🍛", desc: "탱글한 당면과 불맛 채소를 짜장 소스에 비벼먹는 든든함." },
+  { name: "매콤달콤 깐풍기 정식", cat: "chinese", icon: "🍗", desc: "바삭하게 튀겨 매콤달콤한 소스에 볶아낸 감칠맛 폭발 메뉴." },
+  { name: "고소하고 얼큰한 탄탄면", cat: "chinese", icon: "🍜", desc: "땅콩 소스의 고소함과 고추기름의 칼칼함이 어우러진 별미." },
+  { name: "달콤 짭조름 어향가지 덮밥", cat: "chinese", icon: "🍆", desc: "겉바속촉 튀긴 가지와 특제 어향소스의 놀라운 밥도둑 케미." },
+  { name: "불향 가득 볶음짬뽕", cat: "chinese", icon: "🥢", desc: "국물 없이 진하게 졸여낸 해물과 야채의 자작한 불맛." },
 
-  // 일식
+  // 3. 일식 (Japanese)
   { name: "겉바속촉 등심/안심 돈카츠", cat: "japanese", icon: "🍱", desc: "두툼한 고기와 바삭한 튀김옷! 실패 없는 점심 치트키." },
   { name: "신선한 초밥 세트 (모둠스시)", cat: "japanese", icon: "🍣", desc: "깔끔하고 정갈하게 먹고 속 편하게 일하고 싶을 때." },
   { name: "생연어 덮밥 (사케동)", cat: "japanese", icon: "🐟", desc: "고소한 생연어와 와사비의 부드럽고 산뜻한 조화." },
@@ -1668,31 +1809,58 @@ const lunchDatabase = [
   { name: "바삭바삭 모둠 텐동", cat: "japanese", icon: "🍤", desc: "온천계란을 톡 터뜨려 비벼먹는 튀김 덮밥의 매력!" },
   { name: "소고기 규동 / 가츠동", cat: "japanese", icon: "🍛", desc: "간편하고 빠르게 한 그릇 뚝딱 비우기 좋은 덮밥." },
   { name: "매콤 고소 마제소바", cat: "japanese", icon: "🍜", desc: "다진 고기와 노른자를 쓱쓱 비벼먹고 밥까지 비벼먹는 맛!" },
+  { name: "진한 일본식 카레우동", cat: "japanese", icon: "🍛", desc: "진하고 꾸덕한 카레 국물에 쫄깃한 우동 면발의 만남." },
+  { name: "해산물 가득 카이센동", cat: "japanese", icon: "🍣", desc: "참치, 연어, 단새우 등 신선한 해산물이 듬뿍 올라간 특식." },
+  { name: "시원한 냉모밀 & 유부초밥", cat: "japanese", icon: "🥢", desc: "살얼음 동동 띄운 쯔유에 살짝 담가 먹는 시원한 점심." },
+  { name: "달콤짭짤 스키야키 정식", cat: "japanese", icon: "🍲", desc: "얇게 썬 소고기와 야채를 달걀노른자에 콕 찍어먹는 행복." },
+  { name: "숯불향 야키토리동", cat: "japanese", icon: "🍗", desc: "달콤짭조름한 타레 소스에 구운 닭꼬치를 얹은 덮밥." },
+  { name: "칼칼하고 뽀얀 나가사키 라멘", cat: "japanese", icon: "🍜", desc: "해산물과 숙주가 듬뿍 들어가 시원하고 담백한 백짬뽕 라멘." },
 
-  // 양식
+  // 4. 양식 (Western)
   { name: "수제버거 & 감자튀김 세트", cat: "western", icon: "🍔", desc: "육즙 팡팡 터지는 패티와 시원한 탄산으로 기분 전환!" },
   { name: "매콤 투움바 / 크림 파스타", cat: "western", icon: "🍝", desc: "꾸덕하고 진한 크림 소스로 기분 내고 싶은 점심시간." },
   { name: "화덕 마르게리따 피자", cat: "western", icon: "🍕", desc: "치즈가 쭉 늘어나는 갓 구운 화덕 피자 한 조각!" },
   { name: "깔끔한 알리오 올리오 파스타", cat: "western", icon: "🧄", desc: "마늘과 올리브오일의 풍미 가득한 담백한 선택." },
   { name: "포슬포슬 회오리 오므라이스", cat: "western", icon: "🍳", desc: "부드러운 달걀 이불을 덮은 달콤한 데미그라스 오므라이스." },
+  { name: "경양식 왕돈까스 & 크림스프", cat: "western", icon: "🍽️", desc: "후추 톡톡 뿌린 스프와 추억의 달콤한 소스를 얹은 왕돈까스." },
+  { name: "겹겹이 진한 미트 라자냐", cat: "western", icon: "🧀", desc: "볼로네제 소스와 고소한 치즈가 층층이 녹아든 깊은 풍미." },
+  { name: "향긋한 바질페스토 파스타", cat: "western", icon: "🌿", desc: "신선한 바질 향과 올리브유, 견과류의 건강하고 세련된 맛." },
+  { name: "두툼한 수제 함박스테이크", cat: "western", icon: "🥩", desc: "육즙 가득 패티 위에 반숙 달걀 후라이를 톡 터뜨려 즐기세요." },
+  { name: "고소한 트러플 버섯 리조또", cat: "western", icon: "🍚", desc: "은은한 트러플 오일 향과 크림의 부드러움이 일품인 리조또." },
+  { name: "수란 톡 터뜨리는 에그 베네딕트", cat: "western", icon: "🥪", desc: "잉글리시 머핀 위에 훈제연어와 홀랜다이즈 소스를 얹은 브런치." },
 
-  // 아시안 & 이색
+  // 5. 아시안 & 이색 (Asian & Ethnic)
   { name: "양지 쌀국수 (포) & 스프링롤", cat: "asian", icon: "🍜", desc: "맑고 개운한 육수로 속이 편안해지는 베트남의 맛." },
   { name: "새우 팟타이 & 나시고랭", cat: "asian", icon: "🍤", desc: "달콤 짭조름한 볶음면과 고소한 볶음밥의 동남아 여행 기분!" },
   { name: "인도 커리 & 갓 구운 난", cat: "asian", icon: "🍛", desc: "향긋한 버터치킨 커리에 쫄깃한 난을 푹 찍어드세요." },
   { name: "분짜 (느억맘 숯불고기 국수)", cat: "asian", icon: "🥗", desc: "새콤달콤한 소스에 신선한 야채와 고기를 적셔먹는 별미." },
+  { name: "바삭 든든 베트남 반미 샌드위치", cat: "asian", icon: "🥖", desc: "겉바속촉 쌀바게트에 고기, 채소, 매콤한 스리라차 소스의 조화." },
+  { name: "얼큰 칼칼 똠얌꿍 쌀국수", cat: "asian", icon: "🍲", desc: "새콤 매콤 달콤한 태국 전통 똠얌 육수에 새우가 퐁당!" },
+  { name: "부드럽고 달콤한 푸팟퐁커리", cat: "asian", icon: "🦀", desc: "바삭한 소프트쉘 크랩과 계란, 옐로우 커리의 환상적 조화." },
+  { name: "달콤 짭조름 태국식 족발덮밥 (카오카무)", cat: "asian", icon: "🍖", desc: "푹 삶아 야들야들한 족발 조림을 밥 위에 얹어먹는 이색 별미." },
+  { name: "싱가포르식 칠리크랩 볶음밥", cat: "asian", icon: "🍛", desc: "매콤달콤한 칠리크랩 소스에 밥을 쓱쓱 비벼먹는 동남아 픽." },
 
-  // 분식 & 패스트푸드
+  // 6. 분식 & 패스트푸드 (Snack & Fast Food)
   { name: "매콤 떡볶이 & 바삭 모둠튀김", cat: "snack", icon: "🍢", desc: "동료들과 수다 떨며 스트레스 푸는 국민 분식 파티!" },
   { name: "참치마요 김밥 & 얼큰 라면", cat: "snack", icon: "🍙", desc: "가장 클래식하지만 언제 먹어도 완벽한 직장인 점심 조합." },
   { name: "치킨마요 덮밥 & 미니우동", cat: "snack", icon: "🍗", desc: "단짠 마요 소스와 바삭한 치킨의 마성의 중독성." },
   { name: "이삭토스트 & 달콤한 과일주스", cat: "snack", icon: "🥪", desc: "달콤한 특제 소스와 햄치즈의 달콤바삭한 행복." },
+  { name: "새콤매콤 쫄면 & 군만두", cat: "snack", icon: "🥟", desc: "아삭한 콩나물, 쫄깃한 면발과 기름에 바삭 튀긴 만두의 궁합!" },
+  { name: "치즈 라볶이 & 찰순대", cat: "snack", icon: "🧀", desc: "모짜렐라 치즈가 듬뿍 녹아내린 라볶이와 소금 콕 찍은 순대." },
+  { name: "스팸 김치볶음밥 & 달걀후라이", cat: "snack", icon: "🍳", desc: "노릇하게 볶은 김치와 짭조름한 스팸의 실패 없는 밥도둑." },
+  { name: "진한 멸치칼국수 & 겉절이", cat: "snack", icon: "🍜", desc: "뜨끈하고 깊은 멸치 육수에 갓 무친 매콤 겉절이 한 입!" },
+  { name: "바지락 손수제비", cat: "snack", icon: "🥣", desc: "쫄깃하게 뜯어 넣은 수제비와 시원한 바지락 조개 국물." },
 
-  // 다이어트 & 가벼운 식단
+  // 7. 다이어트 & 가벼운 식단 (Diet & Light)
   { name: "연어 / 닭가슴살 아보카도 포케", cat: "diet", icon: "🥗", desc: "현미밥과 신선한 채소, 단백질로 가볍고 든든한 건강식." },
   { name: "서브웨이 로티세리 치킨 샌드위치", cat: "diet", icon: "🥪", desc: "내 맘대로 조합하는 영양 가득 클린 다이어트 밀." },
   { name: "리코타 치즈 샐러드 & 호밀빵", cat: "diet", icon: "🥑", desc: "오후 식곤증 없이 산뜻하고 쾌적하게 일하고 싶을 때!" },
-  { name: "밥 없는 든든한 키토 김밥", cat: "diet", icon: "🥚", desc: "달걀 지단이 가득 들어가 탄수화물 걱정 없는 건강 김밥." }
+  { name: "밥 없는 든든한 키토 김밥", cat: "diet", icon: "🥚", desc: "달걀 지단이 가득 들어가 탄수화물 걱정 없는 건강 김밥." },
+  { name: "수비드 닭가슴살 & 현미 웜볼", cat: "diet", icon: "🥗", desc: "촉촉한 수비드 치킨과 구운 채소, 귀리현미밥의 든든한 조화." },
+  { name: "꾸덕한 그릭요거트 & 그래놀라 볼", cat: "diet", icon: "🥣", desc: "블루베리, 바나나, 꿀을 듬뿍 얹어 가볍고 건강하게 즐기는 픽." },
+  { name: "순메밀 100% 들기름 메밀면", cat: "diet", icon: "🥢", desc: "고소한 들기름과 김가루, 순메밀의 속 편하고 향긋한 한 끼." },
+  { name: "새우 두부면 팟타이", cat: "diet", icon: "🍤", desc: "밀가루 면 대신 단백질 두부면으로 칼로리를 쏙 뺀 건강 다이어트식." },
+  { name: "신선한 야채 가득 월남쌈 세트", cat: "diet", icon: "🥬", desc: "라이스페이퍼에 알록달록 채소와 닭가슴살을 싸먹는 클린 밀." }
 ];
 
 let currentLunchCategory = "all";
@@ -1700,6 +1868,7 @@ let currentLunchCategory = "all";
 function setupLunchEngine() {
   const chips = document.querySelectorAll(".filter-chip");
   const spinBtn = document.getElementById("btn-spin-lunch");
+  const displayBox = document.querySelector(".lunch-display-box");
   const iconEl = document.getElementById("lunch-result-icon");
   const nameEl = document.getElementById("lunch-result-name");
   const descEl = document.getElementById("lunch-result-desc");
@@ -1709,6 +1878,13 @@ function setupLunchEngine() {
       chips.forEach(c => c.classList.remove("active"));
       chip.classList.add("active");
       currentLunchCategory = chip.dataset.cat;
+      if (displayBox) displayBox.classList.remove("highlight");
+      if (nameEl) {
+        nameEl.innerHTML = `<span class="lunch-name-text">무엇을 먹을까요?</span>`;
+        checkAndApplyLunchMarquee();
+      }
+      if (descEl) descEl.innerText = "카테고리를 고르고 아래 추천 버튼을 눌러보세요!";
+      if (iconEl) iconEl.innerText = "🍽️";
     });
   });
 
@@ -1719,8 +1895,13 @@ function setupLunchEngine() {
 
     if (filtered.length === 0) return;
 
+    if (displayBox) {
+      displayBox.classList.remove("highlight");
+    }
+
     iconEl.classList.add("spinning");
-    nameEl.innerText = "룰렛 돌아가는 중...";
+    nameEl.innerHTML = `<span class="lunch-name-text">룰렛 돌아가는 중...</span>`;
+    checkAndApplyLunchMarquee();
     descEl.innerText = "오늘의 최고 메뉴를 고르는 중입니다!";
     spinBtn.disabled = true;
 
@@ -1728,18 +1909,27 @@ function setupLunchEngine() {
     const interval = setInterval(() => {
       const randomTemp = filtered[Math.floor(Math.random() * filtered.length)];
       iconEl.innerText = randomTemp.icon;
-      nameEl.innerText = randomTemp.name;
+      nameEl.innerHTML = `<span class="lunch-name-text">${randomTemp.name}</span>`;
       counter++;
-      if (counter > 12) {
+
+      if (counter > 14) {
         clearInterval(interval);
         const finalPick = filtered[Math.floor(Math.random() * filtered.length)];
         iconEl.innerText = finalPick.icon;
-        nameEl.innerText = finalPick.name;
+        nameEl.innerHTML = `<span class="lunch-name-text">${finalPick.name}</span>`;
         descEl.innerText = finalPick.desc;
         iconEl.classList.remove("spinning");
         spinBtn.disabled = false;
+
+        // 🌟 하이라이트 애니메이션 & 좌우 롤링(마퀴) 동시 적용
+        if (displayBox) {
+          displayBox.classList.remove("highlight");
+          void displayBox.offsetWidth; // Reflow 트리거
+          displayBox.classList.add("highlight");
+        }
+        checkAndApplyLunchMarquee();
       }
-    }, 85);
+    }, 80);
   });
 }
 
@@ -1913,7 +2103,7 @@ async function init() {
   initNavigationAndDrawers();
   initCalendarDetailModal();
   initFeedbackSystem();
-  setupOffWorkTimeInput();
+  setupWorkTimeInputs();
   setupSimCalendarControls();
   setupLunchEngine();
   setupSlackingEngine();
