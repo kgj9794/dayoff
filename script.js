@@ -64,18 +64,41 @@ function hideLoadingScreen() {
   }
 }
 
-// 햄버거 버튼 아이콘 상태 동기화 (☰ <-> ←)
+// 🌟 햄버거 버튼 아이콘 상태 동기화 (☰ ↔ ✖️)
 function updateHamburgerIconState() {
   const navDrawer = document.getElementById("nav-drawer");
   const hamburgerBtn = document.getElementById("btn-open-nav-menu");
   if (hamburgerBtn && navDrawer) {
     const isOpen = navDrawer.classList.contains("is-open");
-    hamburgerBtn.classList.toggle("is-arrow", isOpen);
+    hamburgerBtn.classList.toggle("is-close", isOpen);
     hamburgerBtn.setAttribute("aria-label", isOpen ? "메뉴 닫기" : "메뉴 열기");
   }
 }
 
-// 반응형 오버플로우 감지 롤링
+// 🌟 상단 타이틀이 화면 폭에 의해 잘릴 경우 마퀴 롤링 애니메이션 적용
+function checkAndApplyTitleMarquee() {
+  const titleWrap = document.getElementById("top-bar-title-wrap");
+  const brandTitle = document.getElementById("brand-title");
+  const titleText = document.getElementById("brand-title-text");
+
+  if (!titleWrap || !brandTitle || !titleText) return;
+
+  titleText.classList.remove("is-marquee");
+  brandTitle.classList.remove("has-marquee");
+  titleText.style.removeProperty("--title-marquee-dist");
+
+  const containerWidth = brandTitle.clientWidth;
+  const textWidth = titleText.scrollWidth;
+
+  if (textWidth > containerWidth + 2) {
+    const overflowDistance = textWidth - containerWidth + 8;
+    brandTitle.classList.add("has-marquee");
+    titleText.classList.add("is-marquee");
+    titleText.style.setProperty("--title-marquee-dist", `-${overflowDistance}px`);
+  }
+}
+
+// 캘린더 내부 서브 라벨 반응형 오버플로우 감지 롤링
 function checkAndApplyMarquees() {
   const subLabels = document.querySelectorAll('.cal-sub-label');
   subLabels.forEach(label => {
@@ -97,6 +120,8 @@ function checkAndApplyMarquees() {
       textEl.style.removeProperty('--marquee-dist');
     }
   });
+
+  checkAndApplyTitleMarquee();
 }
 
 // ==========================================
@@ -583,7 +608,7 @@ function openCalendarDetailModal(cellDate, dateKey, isHoliday, isLeave, isToday,
 }
 
 // ==========================================
-// 8. 🌟 피드백 제출 & 스크롤 연동 매니저 (최상단=하단FAB / 스크롤=상단버튼)
+// 8. 🌟 피드백 제출 & 스크롤 연동 매니저
 // ==========================================
 function initFeedbackSystem() {
   const fabBtn = document.getElementById("btn-feedback-fab");
@@ -594,14 +619,12 @@ function initFeedbackSystem() {
   const submitBtn = document.getElementById("fb-submit-btn");
   const btnText = document.getElementById("fb-btn-text");
 
-  // 하단 플로팅 버튼 클릭
   if (fabBtn) {
     fabBtn.addEventListener("click", () => {
       openModalView("feedback-modal", "feedback-modal-backdrop");
     });
   }
 
-  // 🌟 상단 헤더 피드백 버튼 클릭
   if (topFeedbackBtn) {
     topFeedbackBtn.addEventListener("click", () => {
       openModalView("feedback-modal", "feedback-modal-backdrop");
@@ -611,7 +634,6 @@ function initFeedbackSystem() {
   if (closeBtn) closeBtn.addEventListener("click", () => closeModalView("feedback-modal"));
   if (backdrop) backdrop.addEventListener("click", () => closeModalView("feedback-modal"));
 
-  // 🌟 스크롤 상태에 따른 상단/하단 버튼 상호 전환
   const handleScrollFeedback = () => {
     const scrollY = window.scrollY;
     if (scrollY <= 20) {
@@ -624,9 +646,8 @@ function initFeedbackSystem() {
   };
 
   window.addEventListener("scroll", handleScrollFeedback, { passive: true });
-  handleScrollFeedback(); // 초기 상태 실행
+  handleScrollFeedback();
 
-  // 피드백 전송 처리
   if (form) {
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -1723,11 +1744,28 @@ function setupLunchEngine() {
 }
 
 // ==========================================
-// 17. 루팡 급여 계산기 & 시간때우기 모듈
+// 17. 루팡 급여 계산기 & 백그라운드 인디케이터 모듈
 // ==========================================
 let slackTimerInterval = null;
 let slackSeconds = 0;
 let isSlackTimerRunning = false;
+
+function calculateHourlyWageFromAnnual(annualManwon) {
+  // 대한민국 통상 근로시간 기준: 주 40시간(월 209시간, 연 2,508시간)
+  // 세전 시급 = (세전 연봉(만원) * 10,000) / 2508
+  const annualTotal = Number(annualManwon) * 10000;
+  return Math.round(annualTotal / 2508);
+}
+
+function getEffectiveHourlyWage() {
+  const wageType = localStorage.getItem("app_slack_wage_type") || "annual";
+  if (wageType === "annual") {
+    const annual = Number(localStorage.getItem("app_slack_annual_salary")) || 3200;
+    return calculateHourlyWageFromAnnual(annual);
+  } else {
+    return Number(localStorage.getItem("app_slack_hourly_wage")) || 12759;
+  }
+}
 
 function setupSlackingEngine() {
   const toggleBtn = document.getElementById("btn-toggle-slack-timer");
@@ -1735,8 +1773,70 @@ function setupSlackingEngine() {
   const textEl = document.getElementById("slack-btn-text");
   const timeEl = document.getElementById("slack-elapsed-time");
   const amountEl = document.getElementById("slack-earned-amount");
-  const wageInput = document.getElementById("user-hourly-wage");
   const cheerEl = document.getElementById("slack-cheer-text");
+
+  const annualSalaryInput = document.getElementById("user-annual-salary");
+  const hourlyWageInput = document.getElementById("user-hourly-wage");
+  const convertedHintEl = document.getElementById("calc-converted-hourly");
+
+  const groupAnnual = document.getElementById("group-annual-salary");
+  const groupHourly = document.getElementById("group-hourly-wage");
+  const typeBtns = document.querySelectorAll(".slack-type-btn");
+
+  const topSlackIndicator = document.getElementById("btn-top-slack-indicator");
+  const topSlackTime = document.getElementById("top-slack-time");
+  const topSlackAmount = document.getElementById("top-slack-amount");
+
+  // 저장된 연봉/시급 불러오기
+  const savedType = localStorage.getItem("app_slack_wage_type") || "annual";
+  const savedAnnual = localStorage.getItem("app_slack_annual_salary") || "3200";
+  const savedHourly = localStorage.getItem("app_slack_hourly_wage") || "12759";
+
+  if (annualSalaryInput) annualSalaryInput.value = savedAnnual;
+  if (hourlyWageInput) hourlyWageInput.value = savedHourly;
+
+  const updateConvertedHint = () => {
+    const annualVal = Number(annualSalaryInput.value) || 0;
+    const hourly = calculateHourlyWageFromAnnual(annualVal);
+    if (convertedHintEl) {
+      convertedHintEl.innerText = `환산 시급: 약 ${hourly.toLocaleString()}원`;
+    }
+  };
+
+  const applyWageTypeUI = (type) => {
+    localStorage.setItem("app_slack_wage_type", type);
+    typeBtns.forEach(btn => btn.classList.toggle("active", btn.dataset.type === type));
+
+    if (type === "annual") {
+      groupAnnual.style.display = "flex";
+      groupHourly.style.display = "none";
+      updateConvertedHint();
+    } else {
+      groupAnnual.style.display = "none";
+      groupHourly.style.display = "flex";
+    }
+  };
+
+  applyWageTypeUI(savedType);
+
+  typeBtns.forEach(btn => {
+    btn.addEventListener("click", () => {
+      applyWageTypeUI(btn.dataset.type);
+    });
+  });
+
+  if (annualSalaryInput) {
+    annualSalaryInput.addEventListener("input", () => {
+      localStorage.setItem("app_slack_annual_salary", annualSalaryInput.value);
+      updateConvertedHint();
+    });
+  }
+
+  if (hourlyWageInput) {
+    hourlyWageInput.addEventListener("input", () => {
+      localStorage.setItem("app_slack_hourly_wage", hourlyWageInput.value);
+    });
+  }
 
   const cheers = [
     "화장실에서 10분만 쉬어도 커피 한 잔 값 획득!",
@@ -1744,6 +1844,25 @@ function setupSlackingEngine() {
     "키보드를 타닥타닥 치며 합법적으로 숨을 돌리세요.",
     "일도 휴식도 프로페셔널하게! 멘탈을 회복 중입니다."
   ];
+
+  const updateDisplay = () => {
+    const hh = String(Math.floor(slackSeconds / 3600)).padStart(2, "0");
+    const mm = String(Math.floor((slackSeconds % 3600) / 60)).padStart(2, "0");
+    const ss = String(slackSeconds % 60).padStart(2, "0");
+    const timeFormatted = `${hh}:${mm}:${ss}`;
+
+    const currentHourlyWage = getEffectiveHourlyWage();
+    const earned = Math.floor((currentHourlyWage / 3600) * slackSeconds);
+    const amountFormatted = earned.toLocaleString();
+
+    // 모달 내부 갱신
+    if (timeEl) timeEl.innerText = timeFormatted;
+    if (amountEl) amountEl.innerText = amountFormatted;
+
+    // 상단 백그라운드 인디케이터 갱신
+    if (topSlackTime) topSlackTime.innerText = timeFormatted;
+    if (topSlackAmount) topSlackAmount.innerText = amountFormatted;
+  };
 
   toggleBtn.addEventListener("click", () => {
     if (!isSlackTimerRunning) {
@@ -1753,16 +1872,14 @@ function setupSlackingEngine() {
       textEl.innerText = "루팡 종료";
       cheerEl.innerText = cheers[Math.floor(Math.random() * cheers.length)];
 
+      if (topSlackIndicator) {
+        topSlackIndicator.classList.remove("is-hidden");
+        setTimeout(checkAndApplyTitleMarquee, 50);
+      }
+
       slackTimerInterval = setInterval(() => {
         slackSeconds++;
-        const hh = String(Math.floor(slackSeconds / 3600)).padStart(2, "0");
-        const mm = String(Math.floor((slackSeconds % 3600) / 60)).padStart(2, "0");
-        const ss = String(slackSeconds % 60).padStart(2, "0");
-        timeEl.innerText = `${hh}:${mm}:${ss}`;
-
-        const wage = Number(wageInput.value) || 15000;
-        const earned = Math.floor((wage / 3600) * slackSeconds);
-        amountEl.innerText = earned.toLocaleString();
+        updateDisplay();
       }, 1000);
     } else {
       isSlackTimerRunning = false;
@@ -1771,8 +1888,20 @@ function setupSlackingEngine() {
       iconEl.innerText = "play_arrow";
       textEl.innerText = "루팡 재개";
       cheerEl.innerText = "수고하셨습니다! 소중한 멘탈 충전 완료 ✨";
+
+      if (topSlackIndicator) {
+        topSlackIndicator.classList.add("is-hidden");
+        setTimeout(checkAndApplyTitleMarquee, 50);
+      }
     }
   });
+
+  // 🌟 상단 루팡 인디케이터 터치 시 루팡 가이드 모달 즉시 열기
+  if (topSlackIndicator) {
+    topSlackIndicator.addEventListener("click", () => {
+      openModalView("slacking-drawer", "slacking-drawer-backdrop");
+    });
+  }
 }
 
 // ==========================================
@@ -1783,7 +1912,7 @@ async function init() {
   initGlobalHistoryAndEscListener();
   initNavigationAndDrawers();
   initCalendarDetailModal();
-  initFeedbackSystem(); // 피드백 시스템 초기화
+  initFeedbackSystem();
   setupOffWorkTimeInput();
   setupSimCalendarControls();
   setupLunchEngine();
@@ -1795,6 +1924,7 @@ async function init() {
   setInterval(updateCountdown, 1000);
 
   hideLoadingScreen();
+  setTimeout(checkAndApplyTitleMarquee, 200);
 }
 
 document.addEventListener("DOMContentLoaded", init);
