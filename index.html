@@ -378,7 +378,7 @@
     <header class="fullscreen-drawer-header">
       <div class="fullscreen-header-inner">
         <div class="fullscreen-title-wrap">
-          <h2 class="drawer-title">📆 미래 연차 시뮬레이터</h2>
+          <h2 class="drawer-title">🗓️ 미래 연차 시뮬레이터</h2>
           <p class="drawer-subtitle">원하는 달을 탐색하며 미래 시점의 연차와 휴일을 분석합니다.</p>
         </div>
         <button type="button" class="md-icon-button btn-close-sim" id="btn-close-sim" aria-label="시뮬레이터 닫기" title="닫기">
@@ -389,24 +389,15 @@
 
     <div class="fullscreen-drawer-scroll">
       <div class="fullscreen-content-container">
-        <!-- 1. 상단 캘린더 -->
+        <!-- 1. 상단 캘린더 (상단 버튼 제거하고 타이틀만 정갈하게 배치) -->
         <section class="md-card">
           <div class="cal-nav-bar">
             <div class="cal-title-area">
               <span class="card-overline">SIMULATION CALENDAR</span>
               <div class="cal-title-row">
                 <h2 id="sim-cal-month-year" class="title-medium">2026년 9월</h2>
-                <!--<button type="button" id="sim-cal-btn-today" class="md-button md-button-text sim-today-btn">오늘로 이동하기</button>-->
               </div>
             </div>
-            <!--<div class="cal-nav-buttons">
-              <button type="button" id="sim-cal-prev" class="md-icon-button" aria-label="이전 달">
-                <span class="material-symbols-outlined">chevron_left</span>
-              </button>
-              <button type="button" id="sim-cal-next" class="md-icon-button" aria-label="다음 달">
-                <span class="material-symbols-outlined">chevron_right</span>
-              </button>
-            </div>-->
           </div>
 
           <div class="calendar-grid-header">
@@ -535,7 +526,7 @@
       </div>
     </div>
 
-    <!-- 🌟 시뮬레이터 하단 고정 네비게이션 바 (자연스러운 슬라이드 애니메이션 래퍼 적용) -->
+    <!-- 🌟 시뮬레이터 하단 고정 네비게이션 바 -->
     <div class="sim-bottom-nav-bar" id="sim-bottom-nav-bar">
       <div class="sim-bottom-nav-inner">
         <button type="button" id="sim-bottom-prev" class="sim-nav-btn prev-btn" aria-label="이전 달 이동">
