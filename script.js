@@ -373,7 +373,6 @@ function applyWidgetOrderToDOM(order) {
     colPrimary.prepend(topBar);
   }
 
-  // 상위 4개(카운트다운, 달력, 브리핑, 통계)는 좌측, 나머지 3개(공휴일, 연차, 여행)는 우측으로 균등 배분
   order.forEach((widgetId, idx) => {
     const widgetEl = document.getElementById(`widget-${widgetId}`);
     if (widgetEl) {
@@ -622,7 +621,6 @@ function openCalendarDetailModal(cellDate, dateKey, isHoliday, isLeave, isToday,
   const dayName = ['일', '월', '화', '수', '목', '금', '토'][cellDate.getDay()];
   dateTextEl.innerText = `${cellDate.getFullYear()}년 ${cellDate.getMonth() + 1}월 ${cellDate.getDate()}일 (${dayName})`;
 
-  // 오늘 및 미래 날씨 예보만 표기
   if (dateKey >= todayKey && weatherMap.has(dateKey)) {
     const w = weatherMap.get(dateKey);
     weatherBox.style.display = "flex";
@@ -661,7 +659,7 @@ function openCalendarDetailModal(cellDate, dateKey, isHoliday, isLeave, isToday,
 }
 
 // ==========================================
-// 8. 🌟 피드백 제출 & 스크롤 연동 매니저
+// 8. 피드백 제출 & 스크롤 연동 매니저
 // ==========================================
 function initFeedbackSystem() {
   const fabBtn = document.getElementById("btn-feedback-fab");
@@ -902,7 +900,6 @@ function updateCountdown() {
   const workEndToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), offH, offM, 0, 0);
   const isWorkingNow = !isTodayOff && (now >= workStartToday && now < workEndToday);
 
-  // 🌟 1. 출근하기 12시간 전 실시간 출근 카운트다운 (동적 출근시간 기준)
   if (!isWorkingNow) {
     let nextWorkStart = null;
 
@@ -945,7 +942,6 @@ function updateCountdown() {
         updateTextFlip("flip-minutes", String(m).padStart(2, "0"));
         updateTextFlip("flip-seconds", String(s).padStart(2, "0"));
 
-        // 출근 12시간 전 전용 게이지 (12시간 전 = 0% -> 출근시간 = 100%)
         const elapsed = twelveHoursMs - workDiff;
         let percent = Math.floor((elapsed / twelveHoursMs) * 100);
         percent = Math.max(0, Math.min(100, percent));
@@ -963,7 +959,6 @@ function updateCountdown() {
     }
   }
 
-  // 🌟 2. 휴일 및 주말 진행 중 처리
   if (isTodayOff) {
     const offName = getDayOffName(now);
     showBreakMessage(`현재 ${offName} 진행 중입니다.<br>충전의 시간을 가지세요.`);
@@ -980,7 +975,6 @@ function updateCountdown() {
     return;
   }
 
-  // 🌟 3. 다음 쉬는 날(주말/공휴일) 카운트다운
   let targetWorkDay = new Date(now);
   let offDayTarget = new Date(now);
   let daysAhead = isWorkDoneToday ? 1 : 0;
@@ -1392,7 +1386,6 @@ function createCalendarGridFragment(year, month) {
       subText = "연차 추천";
     }
 
-    // 오늘(todayKey) 및 이후 미래 날짜에만 날씨 미니 배지 표시 (상단 아이콘, 하단 기온)
     let weatherHtml = "";
     if (dateKey >= todayKey && weatherMap.has(dateKey)) {
       const w = weatherMap.get(dateKey);
@@ -1449,7 +1442,7 @@ function createCalendarGridFragment(year, month) {
 async function renderMainRealtimeSpace() {
   await Promise.all([
     ensureHolidaysForYear(currentRealYear),
-    ensureWeatherForecast() // 날씨 예보 수집
+    ensureWeatherForecast()
   ]);
 
   document.getElementById("main-cal-month-year").innerText = `${currentRealYear}년 ${currentRealMonth + 1}월`;
@@ -1578,9 +1571,6 @@ async function renderSimulatedSpace(direction = "none") {
 
   const isCurrentMonthView = (simViewYear === currentRealYear && simViewMonth === currentRealMonth);
   
-  const todayBtn = document.getElementById("sim-cal-btn-today");
-  if (todayBtn) todayBtn.classList.toggle("is-hidden", isCurrentMonthView);
-
   const bottomTodayBtn = document.getElementById("sim-bottom-btn-today");
   if (bottomTodayBtn) bottomTodayBtn.classList.toggle("is-hidden", isCurrentMonthView);
 
@@ -1670,7 +1660,6 @@ async function renderSimulatedSpace(direction = "none") {
 
   const simBaseDate = new Date(simViewYear, simViewMonth, 1);
   
-  // 공휴일 일정 먼저 렌더링
   const simHolListEl = document.getElementById("sim-holiday-list");
   document.getElementById("sim-holiday-desc").innerText = `${simViewYear}년 ${simViewMonth + 1}월 이후 예정된 휴일`;
   
@@ -1700,7 +1689,6 @@ async function renderSimulatedSpace(direction = "none") {
     }).join("");
   }
 
-  // 가성비 연차 추천 렌더링
   const simRecs = calculateVacationsForBase(simBaseDate).slice(0, 4);
   const simVacListEl = document.getElementById("sim-vacation-recommendations");
   document.getElementById("sim-vacation-desc").innerText = `${simViewYear}년 ${simViewMonth + 1}월부터 6개월간의 황금 루트`;
@@ -1755,10 +1743,6 @@ function setupSimCalendarControls() {
     simViewMonth = currentRealMonth;
     await renderSimulatedSpace(isMovingForward ? "next" : "prev");
   };
-
-  document.getElementById("sim-cal-prev").addEventListener("click", handlePrev);
-  document.getElementById("sim-cal-next").addEventListener("click", handleNext);
-  document.getElementById("sim-cal-btn-today").addEventListener("click", handleToday);
 
   document.getElementById("sim-bottom-prev").addEventListener("click", handlePrev);
   document.getElementById("sim-bottom-next").addEventListener("click", handleNext);
@@ -1924,10 +1908,9 @@ function setupLunchEngine() {
         iconEl.classList.remove("spinning");
         spinBtn.disabled = false;
 
-        // 🌟 하이라이트 애니메이션 & 좌우 롤링(마퀴) 동시 적용
         if (displayBox) {
           displayBox.classList.remove("highlight");
-          void displayBox.offsetWidth; // Reflow 트리거
+          void displayBox.offsetWidth;
           displayBox.classList.add("highlight");
         }
         checkAndApplyLunchMarquee();
@@ -1944,8 +1927,6 @@ let slackSeconds = 0;
 let isSlackTimerRunning = false;
 
 function calculateHourlyWageFromAnnual(annualManwon) {
-  // 대한민국 통상 근로시간 기준: 주 40시간(월 209시간, 연 2,508시간)
-  // 세전 시급 = (세전 연봉(만원) * 10,000) / 2508
   const annualTotal = Number(annualManwon) * 10000;
   return Math.round(annualTotal / 2508);
 }
@@ -1980,7 +1961,6 @@ function setupSlackingEngine() {
   const topSlackTime = document.getElementById("top-slack-time");
   const topSlackAmount = document.getElementById("top-slack-amount");
 
-  // 저장된 연봉/시급 불러오기
   const savedType = localStorage.getItem("app_slack_wage_type") || "annual";
   const savedAnnual = localStorage.getItem("app_slack_annual_salary") || "3200";
   const savedHourly = localStorage.getItem("app_slack_hourly_wage") || "12759";
@@ -2048,11 +2028,9 @@ function setupSlackingEngine() {
     const earned = Math.floor((currentHourlyWage / 3600) * slackSeconds);
     const amountFormatted = earned.toLocaleString();
 
-    // 모달 내부 갱신
     if (timeEl) timeEl.innerText = timeFormatted;
     if (amountEl) amountEl.innerText = amountFormatted;
 
-    // 상단 백그라운드 인디케이터 갱신
     if (topSlackTime) topSlackTime.innerText = timeFormatted;
     if (topSlackAmount) topSlackAmount.innerText = amountFormatted;
   };
@@ -2089,7 +2067,6 @@ function setupSlackingEngine() {
     }
   });
 
-  // 🌟 상단 루팡 인디케이터 터치 시 루팡 가이드 모달 즉시 열기
   if (topSlackIndicator) {
     topSlackIndicator.addEventListener("click", () => {
       openModalView("slacking-drawer", "slacking-drawer-backdrop");
