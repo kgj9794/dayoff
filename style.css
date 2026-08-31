@@ -439,7 +439,7 @@ body {
   transition: transform 0.35s cubic-bezier(0.2, 0, 0, 1), opacity 0.25s ease, width 0.3s ease;
 }
 
-/* 닫기(X) 상태 변형: 상/하단선 45도 회전 및 중심 이동, 중간선 축소 페이드아웃 */
+/* 닫기(X) 상태 변형 */
 .hamburger-btn.is-close .hamburger-lines span:nth-child(1),
 .nav-drawer.is-open #btn-close-nav-menu .hamburger-lines span:nth-child(1) {
   transform: translateY(6px) rotate(45deg);
@@ -456,7 +456,6 @@ body {
   transform: translateY(-6px) rotate(-45deg);
 }
 
-/* 드로어 내부 닫기 버튼 호버 시 회전 인터랙션 */
 #btn-close-nav-menu:hover {
   transform: rotate(90deg);
 }
@@ -558,13 +557,14 @@ body {
   font-size: 20px;
 }
 
-/* 🌟 게이지 밑 출근시간 / 퇴근시간 50:50 반반 정렬 행 */
+/* 🌟 게이지 밑 출근시간 / 퇴근시간 50:50 정렬 행 (오버플로우 방지) */
 .progress-bottom-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
   width: 100%;
   margin-top: 8px;
+  box-sizing: border-box;
 }
 
 .target-time-chip.compact-chip {
@@ -573,6 +573,7 @@ body {
   justify-content: center;
   gap: 6px;
   width: 100%;
+  min-width: 0;
   padding: 6px 10px;
   border-radius: var(--md-shape-corner-small);
   background-color: var(--md-sys-color-surface-container-high);
@@ -581,6 +582,7 @@ body {
   cursor: pointer;
   user-select: none;
   box-sizing: border-box;
+  overflow: hidden;
   transition: background-color 0.2s, border-color 0.2s;
 }
 
@@ -589,7 +591,6 @@ body {
   background-color: var(--md-sys-color-primary-container);
 }
 
-/* 🌟 PC 및 모바일 전 화면에서 시계 아이콘 제거 */
 .chip-icon {
   display: none !important;
 }
@@ -600,6 +601,7 @@ body {
   color: var(--md-sys-color-outline);
   cursor: pointer;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .time-input-inline {
@@ -611,6 +613,11 @@ body {
   outline: none;
   cursor: pointer;
   padding: 0;
+  width: auto;
+  min-width: 0;
+  max-width: 100%;
+  font-family: inherit;
+  text-align: center;
 }
 
 .time-input-inline::-webkit-calendar-picker-indicator {
@@ -787,7 +794,7 @@ body {
 }
 
 /* ==========================================
-   5. 캘린더 그리드 & 이미지 맞춤 수직 날씨 배지 스타일
+   5. 캘린더 그리드 & 수직 날씨 배지 스타일
    ========================================== */
 .cal-nav-bar {
   display: flex;
@@ -907,7 +914,6 @@ body {
   border-style: dashed;
 }
 
-/* 날짜 숫자 + 날씨 배지 상단 행 */
 .cal-cell-top {
   display: flex;
   justify-content: space-between;
@@ -927,7 +933,6 @@ body {
 .cal-cell.sunday .cal-date-num { color: #b91c1c; }
 .cal-cell.saturday .cal-date-num { color: #0369a1; }
 
-/* 🌟 수직 배치(아이콘 상단, 기온 하단) 날씨 미니 배지 */
 .cal-weather-badge {
   display: flex;
   flex-direction: column;
@@ -965,7 +970,6 @@ body {
 }
 .cal-cell.leave-rec .cal-date-num { color: #065f46; font-weight: 900; }
 
-/* 오늘(Today) 셀 */
 .cal-cell.today {
   border: 2px solid var(--md-sys-color-primary);
   background-color: #e0f2fe;
@@ -974,7 +978,6 @@ body {
 }
 .cal-cell.today .cal-date-num { color: var(--md-sys-color-primary); font-weight: 900; }
 
-/* 반응형 오버플로우 롤링 라벨 */
 .cal-sub-label {
   font-size: 0.625rem;
   line-height: 1.2;
@@ -1029,7 +1032,6 @@ body {
   background: rgba(16, 185, 129, 0.28);
 }
 
-/* 다크모드 직접 선택 시 색상 */
 [data-theme="dark"] .cal-cell.holiday {
   background-color: #450a0a;
   border-color: #991b1b;
@@ -1361,7 +1363,7 @@ body {
 }
 
 /* ==========================================
-   8. 풀스크린 모달 (Fixed 고정 & dvh/Safe-area 하단바 최적화)
+   8. 풀스크린 모달
    ========================================== */
 .drawer-backdrop {
   position: fixed;
@@ -1509,7 +1511,6 @@ body {
   color: var(--md-sys-color-on-primary-container);
 }
 
-/* 🌟 중앙 래퍼: 오늘 버튼 등장 시 탐색 시점이 자연스럽게 좌측으로 이동 */
 .sim-bottom-center-wrap {
   display: flex;
   align-items: center;
@@ -1544,7 +1545,6 @@ body {
   white-space: nowrap;
 }
 
-/* 🌟 오늘 버튼: 아래에서 위로 솟아오르는 슬라이드업 & 페이드인 */
 .sim-bottom-today-pill {
   display: inline-flex;
   align-items: center;
@@ -1589,7 +1589,7 @@ body {
 }
 
 /* ==========================================
-   9. 점심 메뉴 추천 모달 스타일 & 마퀴/하이라이트 애니메이션
+   9. 점심 메뉴 추천 모달 스타일
    ========================================== */
 .lunch-hero-card {
   display: flex;
@@ -1641,7 +1641,6 @@ body {
   transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
 }
 
-/* 🌟 추천 완료 시 하이라이트 강조 애니메이션 */
 .lunch-display-box.highlight {
   border-color: #ea580c;
   border-style: solid;
@@ -1688,7 +1687,6 @@ body {
   100% { transform: scale(1.1) rotate(0deg); }
 }
 
-/* 🌟 음식 이름 영역 및 좌우 롤링(마퀴) 지원 */
 .lunch-name-display {
   font-size: 1.6rem;
   font-weight: 900;
@@ -2380,20 +2378,25 @@ body {
   .countdown-display { gap: 8px; }
   .countdown-separator { font-size: 1.4rem; margin-bottom: 20px; }
 
-  /* 모바일 출근/퇴근 칩 최적화 */
+  /* 🌟 모바일 출근/퇴근 칩 오버플로우 방지 및 여백 최적화 */
   .progress-bottom-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 6px;
     margin-top: 6px;
+    width: 100%;
   }
   .target-time-chip.compact-chip {
-    padding: 5px 6px;
-    gap: 3px;
+    padding: 5px 4px;
+    gap: 4px;
+    min-width: 0;
   }
   .target-time-chip .chip-label {
     font-size: 0.6875rem;
+    flex-shrink: 0;
   }
   .target-time-chip .time-input-inline {
     font-size: 0.6875rem;
+    min-width: 0;
   }
 
   .stats-grid, .situation-grid { grid-template-columns: 1fr; }
@@ -2422,7 +2425,6 @@ body {
   body { padding: 92px 24px 80px; }
   .app-layout { max-width: 1160px; gap: 28px; }
   .brand-title { font-size: 1.5rem; }
-  /* PC 화면 50:50 대칭 2열 그리드 */
   .responsive-dashboard-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
