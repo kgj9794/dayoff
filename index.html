@@ -252,21 +252,9 @@
         </section>
       </div>
 
-      <!-- 우측 칼럼 영역 (3개 위젯) -->
+      <!-- 우측 칼럼 영역 (3개 위젯: 다가오는 공휴일 -> 가성비 연차 추천 -> 해외여행 추천) -->
       <div class="grid-col secondary-col" id="col-secondary">
-        <!-- 위젯 5: 실시간 가성비 연차 추천 -->
-        <section class="md-card dashboard-widget" data-widget-id="vacation" id="widget-vacation">
-          <div class="card-headline">
-            <div>
-              <span class="card-overline">VACATION PLANNER</span>
-              <h2 class="title-medium">가성비 연차 추천</h2>
-              <p class="body-small">오늘부터 6개월 내 최적의 연속 휴식 루트</p>
-            </div>
-          </div>
-          <div class="recommendation-list" id="main-vacation-recommendations"></div>
-        </section>
-
-        <!-- 위젯 6: 실시간 다가오는 공휴일 일정 -->
+        <!-- 위젯 5: 실시간 다가오는 공휴일 일정 -->
         <section class="md-card dashboard-widget" data-widget-id="holidays" id="widget-holidays">
           <div class="card-headline">
             <div>
@@ -276,6 +264,18 @@
             </div>
           </div>
           <ul class="md-list" id="main-holiday-list"></ul>
+        </section>
+
+        <!-- 위젯 6: 실시간 가성비 연차 추천 -->
+        <section class="md-card dashboard-widget" data-widget-id="vacation" id="widget-vacation">
+          <div class="card-headline">
+            <div>
+              <span class="card-overline">VACATION PLANNER</span>
+              <h2 class="title-medium">가성비 연차 추천</h2>
+              <p class="body-small">오늘부터 6개월 내 최적의 연속 휴식 루트</p>
+            </div>
+          </div>
+          <div class="recommendation-list" id="main-vacation-recommendations"></div>
         </section>
 
         <!-- 위젯 7: 해외여행 황금 연휴 추천 -->
@@ -494,19 +494,7 @@
           </div>
         </section>
 
-        <!-- 4. 연차 추천 -->
-        <section class="md-card">
-          <div class="card-headline">
-            <div>
-              <span class="card-overline">VACATION PLANNER (SIMULATED)</span>
-              <h2 class="title-medium">가성비 연차 추천</h2>
-              <p class="body-small" id="sim-vacation-desc">선택된 달 이후 6개월간의 황금 루트</p>
-            </div>
-          </div>
-          <div class="recommendation-list" id="sim-vacation-recommendations"></div>
-        </section>
-
-        <!-- 5. 공휴일 일정 -->
+        <!-- 4. 공휴일 일정 -->
         <section class="md-card">
           <div class="card-headline">
             <div>
@@ -516,6 +504,18 @@
             </div>
           </div>
           <ul class="md-list" id="sim-holiday-list"></ul>
+        </section>
+
+        <!-- 5. 연차 추천 -->
+        <section class="md-card">
+          <div class="card-headline">
+            <div>
+              <span class="card-overline">VACATION PLANNER (SIMULATED)</span>
+              <h2 class="title-medium">가성비 연차 추천</h2>
+              <p class="body-small" id="sim-vacation-desc">선택된 달 이후 6개월간의 황금 루트</p>
+            </div>
+          </div>
+          <div class="recommendation-list" id="sim-vacation-recommendations"></div>
         </section>
 
         <!-- 6. 시뮬레이터 전용 TRAVEL PLANNER 위젯 -->
