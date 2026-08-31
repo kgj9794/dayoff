@@ -58,6 +58,7 @@ function hideLoadingScreen() {
   const loadingScreen = document.getElementById("app-loading-screen");
   if (loadingScreen) {
     loadingScreen.classList.add("is-hidden");
+    document.body.classList.remove("is-loading");
     setTimeout(() => {
       loadingScreen.remove();
     }, 400);
@@ -200,8 +201,8 @@ function getWmoWeatherInfo(code) {
 
 async function ensureWeatherForecast() {
   try {
-    const lat = 37.5665; // 서울 기준 위도
-    const lon = 126.9780; // 서울 기준 경도
+    const lat = 37.5665;
+    const lon = 126.9780;
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=Asia%2FSeoul&forecast_days=14`;
     
     const res = await fetch(url);
@@ -852,7 +853,7 @@ function getDayOffName(dateObj) {
 }
 
 // ==========================================
-// 11. 클린 플립 카운트다운 & 12시간 전 출근 카운트다운
+// 11. 클린 플립 카운트다운 & 완벽한 휴일/출근 분기 엔진
 // ==========================================
 function updateTextFlip(containerId, nextValue) {
   const container = document.getElementById(containerId);
@@ -885,136 +886,6 @@ function updateTextFlip(containerId, nextValue) {
       container.classList.remove("flipping-down");
     }, 420);
   }
-}
-
-function updateCountdown() {
-  const now = new Date();
-  const isTodayOff = isOffDay(now);
-
-  const timerTitleEl = document.getElementById("timer-title");
-  const { hours: startH, minutes: startM } = getStartWorkTime();
-  const { hours: offH, minutes: offM } = getOffWorkTime();
-
-  const isWorkDoneToday = (now.getHours() > offH) || (now.getHours() === offH && now.getMinutes() >= offM);
-  const workStartToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), startH, startM, 0, 0);
-  const workEndToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), offH, offM, 0, 0);
-  const isWorkingNow = !isTodayOff && (now >= workStartToday && now < workEndToday);
-
-  if (!isWorkingNow) {
-    let nextWorkStart = null;
-
-    if (!isTodayOff && now < workStartToday) {
-      nextWorkStart = workStartToday;
-    } else {
-      let daysAhead = 1;
-      while (true) {
-        const testDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysAhead, startH, startM, 0, 0);
-        if (!isOffDay(testDate)) {
-          nextWorkStart = testDate;
-          break;
-        }
-        daysAhead++;
-      }
-    }
-
-    if (nextWorkStart) {
-      const workDiff = nextWorkStart - now;
-      const twelveHoursMs = 12 * 60 * 60 * 1000;
-
-      if (workDiff > 0 && workDiff <= twelveHoursMs) {
-        ensureCountdownUI();
-
-        const d = Math.floor(workDiff / (1000 * 60 * 60 * 24));
-        const h = Math.floor((workDiff / (1000 * 60 * 60)) % 24);
-        const m = Math.floor((workDiff / 1000 / 60) % 60);
-        const s = Math.floor((workDiff / 1000) % 60);
-
-        let titleText = "출근까지 ";
-        if (h > 0) {
-          titleText += `${h}시간 `;
-        }
-        titleText += `${m}분 남았어요`;
-
-        timerTitleEl.innerText = titleText;
-
-        updateTextFlip("flip-days", String(d));
-        updateTextFlip("flip-hours", String(h).padStart(2, "0"));
-        updateTextFlip("flip-minutes", String(m).padStart(2, "0"));
-        updateTextFlip("flip-seconds", String(s).padStart(2, "0"));
-
-        const elapsed = twelveHoursMs - workDiff;
-        let percent = Math.floor((elapsed / twelveHoursMs) * 100);
-        percent = Math.max(0, Math.min(100, percent));
-
-        const startLabel = document.getElementById("progress-start-label");
-        const endLabel = document.getElementById("progress-end-label");
-        const startStr = `${String(startH).padStart(2, '0')}:${String(startM).padStart(2, '0')}`;
-        if (startLabel) startLabel.innerText = "출근 12시간 전";
-        if (endLabel) endLabel.innerText = `출근 (${startStr})`;
-
-        document.getElementById("progress-bar").style.width = `${percent}%`;
-        document.getElementById("progress-percent").innerText = `${percent}%`;
-        return;
-      }
-    }
-  }
-
-  if (isTodayOff) {
-    const offName = getDayOffName(now);
-    showBreakMessage(`현재 ${offName} 진행 중입니다.<br>충전의 시간을 가지세요.`);
-    timerTitleEl.innerText = `${offName} 진행 중`;
-    return;
-  }
-
-  const tomorrow = new Date(now);
-  tomorrow.setDate(now.getDate() + 1);
-  if (isWorkDoneToday && isOffDay(tomorrow)) {
-    const offName = getDayOffName(tomorrow);
-    showBreakMessage(`업무 종료. 내일부터 ${offName}입니다.`);
-    timerTitleEl.innerText = `${offName} 휴식 진입`;
-    return;
-  }
-
-  let targetWorkDay = new Date(now);
-  let offDayTarget = new Date(now);
-  let daysAhead = isWorkDoneToday ? 1 : 0;
-
-  while (true) {
-    const testDate = new Date(now);
-    testDate.setDate(now.getDate() + daysAhead + 1);
-    if (isOffDay(testDate)) {
-      offDayTarget = testDate;
-      targetWorkDay = new Date(now);
-      targetWorkDay.setDate(now.getDate() + daysAhead);
-      break;
-    }
-    daysAhead++;
-  }
-
-  const targetTime = new Date(targetWorkDay.getFullYear(), targetWorkDay.getMonth(), targetWorkDay.getDate(), offH, offM, 0);
-  const diff = targetTime - now;
-
-  ensureCountdownUI();
-
-  const offName = getDayOffName(offDayTarget);
-  timerTitleEl.innerText = `다음 쉬는 날(${offName})까지`;
-
-  const d = Math.floor(diff / (1000 * 60 * 60 * 24));
-  const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
-  const m = Math.floor((diff / 1000 / 60) % 60);
-  const s = Math.floor((diff / 1000) % 60);
-
-  updateTextFlip("flip-days", String(d));
-  updateTextFlip("flip-hours", String(h).padStart(2, "0"));
-  updateTextFlip("flip-minutes", String(m).padStart(2, "0"));
-  updateTextFlip("flip-seconds", String(s).padStart(2, "0"));
-
-  const startLabel = document.getElementById("progress-start-label");
-  const endLabel = document.getElementById("progress-end-label");
-  if (startLabel) startLabel.innerText = "업무 시작";
-  if (endLabel) endLabel.innerText = "휴식 돌입";
-
-  updateDynamicProgressBar(now, targetTime);
 }
 
 function ensureCountdownUI() {
@@ -1060,33 +931,155 @@ function ensureCountdownUI() {
   }
 }
 
-function showBreakMessage(message) {
-  document.getElementById("countdown").innerHTML = `
-    <div style="font-size: 1.15rem; font-weight: 800; color: var(--md-sys-color-primary); padding: 18px 0; text-align: center;">
-      ${message}
-    </div>
-  `;
-  document.getElementById("progress-bar").style.width = "100%";
-  document.getElementById("progress-percent").innerText = "100%";
+// 🌟 다음 출근일 및 출근 시간 탐색
+function getNextWorkStartDate(now, startH, startM) {
+  const todayWorkStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), startH, startM, 0, 0);
+  if (!isOffDay(now) && now < todayWorkStart) {
+    return todayWorkStart;
+  }
+  let daysAhead = 1;
+  while (true) {
+    const testDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysAhead, startH, startM, 0, 0);
+    if (!isOffDay(testDate)) {
+      return testDate;
+    }
+    daysAhead++;
+  }
 }
 
-function updateDynamicProgressBar(now, targetTime) {
-  const { hours: startH, minutes: startM } = getStartWorkTime();
-  let blockStart = new Date(now);
-  while (!isOffDay(blockStart)) {
-    blockStart.setDate(blockStart.getDate() - 1);
+// 🌟 현재 휴식 구간이 시작된 직전 퇴근 시점 탐색
+function getBreakStartDate(now, offH, offM) {
+  let daysBack = 0;
+  while (daysBack < 40) {
+    const testDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - daysBack, offH, offM, 0, 0);
+    if (!isOffDay(testDate)) {
+      return testDate;
+    }
+    daysBack++;
   }
-  blockStart.setDate(blockStart.getDate() + 1);
-  blockStart.setHours(startH, startM, 0, 0);
+  return new Date(now.getTime() - 24 * 60 * 60 * 1000);
+}
 
-  const totalPeriod = targetTime - blockStart;
-  const elapsed = now - blockStart;
+function updateCountdown() {
+  const now = new Date();
+  const timerTitleEl = document.getElementById("timer-title");
+  if (!timerTitleEl) return;
 
-  let percent = Math.floor((elapsed / totalPeriod) * 100);
-  percent = Math.max(0, Math.min(100, percent));
+  const { hours: startH, minutes: startM } = getStartWorkTime();
+  const { hours: offH, minutes: offM } = getOffWorkTime();
 
-  document.getElementById("progress-bar").style.width = `${percent}%`;
-  document.getElementById("progress-percent").innerText = `${percent}%`;
+  const isTodayOff = isOffDay(now);
+  const workEndToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), offH, offM, 0, 0);
+  const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+  const isTomorrowOff = isOffDay(tomorrow);
+
+  // 휴식 상태 판별 (주말/공휴일 당일이거나, 평일이지만 오늘 퇴근 시간이 지났고 내일이 휴일/주말인 경우)
+  const isBreakMode = isTodayOff || (now >= workEndToday && isTomorrowOff);
+
+  ensureCountdownUI();
+
+  if (isBreakMode) {
+    // 🌟 1. 주말 / 공휴일 / 연휴 시작 후: 다음 출근 시간까지 카운트다운
+    const nextWorkStart = getNextWorkStartDate(now, startH, startM);
+    const diff = Math.max(0, nextWorkStart - now);
+
+    timerTitleEl.innerText = "다음 출근까지";
+
+    const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    const m = Math.floor((diff / 1000 / 60) % 60);
+    const s = Math.floor((diff / 1000) % 60);
+
+    updateTextFlip("flip-days", String(d));
+    updateTextFlip("flip-hours", String(h).padStart(2, "0"));
+    updateTextFlip("flip-minutes", String(m).padStart(2, "0"));
+    updateTextFlip("flip-seconds", String(s).padStart(2, "0"));
+
+    // 휴식 프로그레스 바 (휴식 시작 시점 ~ 다음 출근 시점)
+    const breakStart = getBreakStartDate(now, offH, offM);
+    const totalPeriod = nextWorkStart - breakStart;
+    const elapsed = now - breakStart;
+
+    let percent = totalPeriod > 0 ? Math.floor((elapsed / totalPeriod) * 100) : 100;
+    percent = Math.max(0, Math.min(100, percent));
+
+    const startLabel = document.getElementById("progress-start-label");
+    const endLabel = document.getElementById("progress-end-label");
+    const startStr = `${String(startH).padStart(2, '0')}:${String(startM).padStart(2, '0')}`;
+
+    if (startLabel) startLabel.innerText = "휴식 시작";
+    if (endLabel) endLabel.innerText = `출근 (${startStr})`;
+
+    const progressBar = document.getElementById("progress-bar");
+    const progressPercent = document.getElementById("progress-percent");
+    if (progressBar) progressBar.style.width = `${percent}%`;
+    if (progressPercent) progressPercent.innerText = `${percent}%`;
+
+  } else {
+    // 🌟 2. 평일: 다가오는 다음 쉬는 날(주말 또는 공휴일) 직전 퇴근 시간까지 카운트다운
+    let daysAhead = 1;
+    let firstOffDay = null;
+    let lastWorkDayBeforeOff = null;
+
+    while (true) {
+      const testDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysAhead);
+      if (isOffDay(testDate)) {
+        firstOffDay = testDate;
+        lastWorkDayBeforeOff = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysAhead - 1);
+        break;
+      }
+      daysAhead++;
+    }
+
+    const targetRestStartTime = new Date(
+      lastWorkDayBeforeOff.getFullYear(),
+      lastWorkDayBeforeOff.getMonth(),
+      lastWorkDayBeforeOff.getDate(),
+      offH,
+      offM,
+      0,
+      0
+    );
+
+    const diff = Math.max(0, targetRestStartTime - now);
+    const offName = getDayOffName(firstOffDay);
+    timerTitleEl.innerText = `다음 쉬는 날(${offName})까지`;
+
+    const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    const m = Math.floor((diff / 1000 / 60) % 60);
+    const s = Math.floor((diff / 1000) % 60);
+
+    updateTextFlip("flip-days", String(d));
+    updateTextFlip("flip-hours", String(h).padStart(2, "0"));
+    updateTextFlip("flip-minutes", String(m).padStart(2, "0"));
+    updateTextFlip("flip-seconds", String(s).padStart(2, "0"));
+
+    // 평일 근무 프로그레스 바 (이번 주/블록 근무 시작 시점 ~ 목표 퇴근 시점)
+    let blockStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), startH, startM, 0, 0);
+    while (!isOffDay(blockStart)) {
+      blockStart.setDate(blockStart.getDate() - 1);
+    }
+    blockStart.setDate(blockStart.getDate() + 1);
+    blockStart.setHours(startH, startM, 0, 0);
+
+    const totalPeriod = targetRestStartTime - blockStart;
+    const elapsed = now - blockStart;
+
+    let percent = totalPeriod > 0 ? Math.floor((elapsed / totalPeriod) * 100) : 0;
+    percent = Math.max(0, Math.min(100, percent));
+
+    const startLabel = document.getElementById("progress-start-label");
+    const endLabel = document.getElementById("progress-end-label");
+
+    if (startLabel) startLabel.innerText = "업무 시작";
+    if (endLabel) endLabel.innerText = "휴식 돌입";
+
+    const progressBar = document.getElementById("progress-bar");
+    const progressPercent = document.getElementById("progress-percent");
+    if (progressBar) progressBar.style.width = `${percent}%`;
+    if (progressPercent) progressPercent.innerText = `${percent}%`;
+  }
 }
 
 // ==========================================
