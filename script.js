@@ -21,14 +21,14 @@ const flipState = {
   "flip-seconds": null
 };
 
-// 위젯 기본 순서 (PC 2열 기준: 좌 4개, 우 3개로 균등 배분)
+// 위젯 기본 순서 (PC 2열 기준: 좌 4개, 우 3개로 균등 배분 / 다가오는 공휴일 -> 연차 추천 순)
 const DEFAULT_WIDGET_ORDER = [
   "countdown",
   "calendar",
   "insight",
   "stats",
-  "vacation",
   "holidays",
+  "vacation",
   "travel"
 ];
 
@@ -37,8 +37,8 @@ const WIDGET_META = {
   calendar: { name: "📅 이번 달 달력" },
   insight: { name: "💡 이번 달 휴일 브리핑" },
   stats: { name: "📊 이번 달 휴일 현황" },
-  vacation: { name: "🌴 가성비 연차 추천" },
   holidays: { name: "🚩 다가오는 공휴일 일정" },
+  vacation: { name: "🌴 가성비 연차 추천" },
   travel: { name: "✈️ 황금연휴 해외여행 추천" }
 };
 
@@ -373,7 +373,7 @@ function applyWidgetOrderToDOM(order) {
     colPrimary.prepend(topBar);
   }
 
-  // 상위 4개(카운트다운, 달력, 브리핑, 통계)는 좌측, 나머지 3개(연차, 공휴일, 여행)는 우측으로 균등 배분
+  // 상위 4개(카운트다운, 달력, 브리핑, 통계)는 좌측, 나머지 3개(공휴일, 연차, 여행)는 우측으로 균등 배분
   order.forEach((widgetId, idx) => {
     const widgetEl = document.getElementById(`widget-${widgetId}`);
     if (widgetEl) {
@@ -1510,26 +1510,6 @@ async function renderMainRealtimeSpace() {
   }
 
   const today = new Date();
-  const mainRecs = calculateVacationsForBase(today).slice(0, 4);
-  const vacListEl = document.getElementById("main-vacation-recommendations");
-
-  if (mainRecs.length === 0) {
-    vacListEl.innerHTML = `<div class="recommendation-item"><div class="item-content"><h3>추천 가능한 연차 일정이 없습니다.</h3><p>상단 메뉴에서 미래 연차를 탐색해보세요.</p></div></div>`;
-  } else {
-    vacListEl.innerHTML = mainRecs.map(rec => `
-      <div class="recommendation-item">
-        <div class="item-content">
-          <h3>${rec.title}</h3>
-          <p>권장: <strong>${rec.leave}</strong></p>
-          <p style="font-size: 0.75rem; margin-top: 2px;">${rec.benefit}</p>
-        </div>
-        <div class="badge-benefit">${rec.badge}</div>
-      </div>
-    `).join("");
-  }
-
-  renderTravelWidget(today, "main-travel-recommendations");
-
   const holListEl = document.getElementById("main-holiday-list");
   const baseDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
   const holidays = Array.from(holidayMap.entries()).map(([dateStr, name]) => {
@@ -1558,6 +1538,26 @@ async function renderMainRealtimeSpace() {
       `;
     }).join("");
   }
+
+  const mainRecs = calculateVacationsForBase(today).slice(0, 4);
+  const vacListEl = document.getElementById("main-vacation-recommendations");
+
+  if (mainRecs.length === 0) {
+    vacListEl.innerHTML = `<div class="recommendation-item"><div class="item-content"><h3>추천 가능한 연차 일정이 없습니다.</h3><p>상단 메뉴에서 미래 연차를 탐색해보세요.</p></div></div>`;
+  } else {
+    vacListEl.innerHTML = mainRecs.map(rec => `
+      <div class="recommendation-item">
+        <div class="item-content">
+          <h3>${rec.title}</h3>
+          <p>권장: <strong>${rec.leave}</strong></p>
+          <p style="font-size: 0.75rem; margin-top: 2px;">${rec.benefit}</p>
+        </div>
+        <div class="badge-benefit">${rec.badge}</div>
+      </div>
+    `).join("");
+  }
+
+  renderTravelWidget(today, "main-travel-recommendations");
 
   checkAndApplyMarquees();
 }
@@ -1669,27 +1669,8 @@ async function renderSimulatedSpace(direction = "none") {
   }
 
   const simBaseDate = new Date(simViewYear, simViewMonth, 1);
-  const simRecs = calculateVacationsForBase(simBaseDate).slice(0, 4);
-  const simVacListEl = document.getElementById("sim-vacation-recommendations");
-  document.getElementById("sim-vacation-desc").innerText = `${simViewYear}년 ${simViewMonth + 1}월부터 6개월간의 황금 루트`;
-
-  if (simRecs.length === 0) {
-    simVacListEl.innerHTML = `<div class="recommendation-item"><div class="item-content"><h3>추천 가능한 연차 일정이 없습니다.</h3><p>다른 달로 이동하여 일정을 탐색해보세요.</p></div></div>`;
-  } else {
-    simVacListEl.innerHTML = simRecs.map(rec => `
-      <div class="recommendation-item">
-        <div class="item-content">
-          <h3>${rec.title}</h3>
-          <p>권장: <strong>${rec.leave}</strong></p>
-          <p style="font-size: 0.75rem; margin-top: 2px;">${rec.benefit}</p>
-        </div>
-        <div class="badge-benefit">${rec.badge}</div>
-      </div>
-    `).join("");
-  }
-
-  renderTravelWidget(simBaseDate, "sim-travel-recommendations", "sim-travel-desc");
-
+  
+  // 공휴일 일정 먼저 렌더링
   const simHolListEl = document.getElementById("sim-holiday-list");
   document.getElementById("sim-holiday-desc").innerText = `${simViewYear}년 ${simViewMonth + 1}월 이후 예정된 휴일`;
   
@@ -1718,6 +1699,28 @@ async function renderSimulatedSpace(direction = "none") {
       `;
     }).join("");
   }
+
+  // 가성비 연차 추천 렌더링
+  const simRecs = calculateVacationsForBase(simBaseDate).slice(0, 4);
+  const simVacListEl = document.getElementById("sim-vacation-recommendations");
+  document.getElementById("sim-vacation-desc").innerText = `${simViewYear}년 ${simViewMonth + 1}월부터 6개월간의 황금 루트`;
+
+  if (simRecs.length === 0) {
+    simVacListEl.innerHTML = `<div class="recommendation-item"><div class="item-content"><h3>추천 가능한 연차 일정이 없습니다.</h3><p>다른 달로 이동하여 일정을 탐색해보세요.</p></div></div>`;
+  } else {
+    simVacListEl.innerHTML = simRecs.map(rec => `
+      <div class="recommendation-item">
+        <div class="item-content">
+          <h3>${rec.title}</h3>
+          <p>권장: <strong>${rec.leave}</strong></p>
+          <p style="font-size: 0.75rem; margin-top: 2px;">${rec.benefit}</p>
+        </div>
+        <div class="badge-benefit">${rec.badge}</div>
+      </div>
+    `).join("");
+  }
+
+  renderTravelWidget(simBaseDate, "sim-travel-recommendations", "sim-travel-desc");
 
   checkAndApplyMarquees();
 }
