@@ -156,6 +156,12 @@ body {
   overflow-x: hidden;
 }
 
+/* 🌟 초기 로딩 중 스크롤 및 터치 잠금 */
+body.is-loading {
+  overflow: hidden !important;
+  touch-action: none;
+}
+
 .app-loading-screen {
   position: fixed;
   inset: 0;
@@ -230,7 +236,6 @@ body {
   min-width: 0;
 }
 
-/* 🌟 상단 타이틀 & 부제목 영역 (마퀴 롤링 지원) */
 .top-bar-title-wrap {
   flex: 1;
   text-align: left;
@@ -285,7 +290,6 @@ body {
   text-overflow: ellipsis;
 }
 
-/* ☕ 상단 중앙 백그라운드 루팡 실시간 인디케이터 */
 .top-bar-slack-indicator {
   display: inline-flex;
   align-items: center;
@@ -361,7 +365,6 @@ body {
   color: #7dd3fc;
 }
 
-/* 🌟 상단 앱 바 우측 피드백 버튼 */
 .top-bar-feedback-btn {
   display: inline-flex;
   align-items: center;
@@ -439,7 +442,6 @@ body {
   transition: transform 0.35s cubic-bezier(0.2, 0, 0, 1), opacity 0.25s ease, width 0.3s ease;
 }
 
-/* 닫기(X) 상태 변형 */
 .hamburger-btn.is-close .hamburger-lines span:nth-child(1),
 .nav-drawer.is-open #btn-close-nav-menu .hamburger-lines span:nth-child(1) {
   transform: translateY(6px) rotate(45deg);
@@ -520,7 +522,6 @@ body {
   text-transform: uppercase;
 }
 
-/* REALTIME COUNTDOWN 상단 위젯 순서 변경 버튼 */
 .widget-order-top-bar {
   display: flex;
   width: 100%;
@@ -557,7 +558,6 @@ body {
   font-size: 20px;
 }
 
-/* 🌟 게이지 밑 출근시간 / 퇴근시간 50:50 정렬 행 (오버플로우 방지) */
 .progress-bottom-row {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1367,7 +1367,7 @@ body {
 }
 
 /* ==========================================
-   8. 풀스크린 모달 (모바일 주소창 높이 변화 잔상 제거)
+   8. 풀스크린 모달
    ========================================== */
 .drawer-backdrop {
   position: fixed;
@@ -1568,7 +1568,7 @@ body {
   white-space: nowrap;
   opacity: 1;
   transform: translateY(0) scale(1);
-  max-width: 90px;
+  max-width: 110px;
   overflow: hidden;
   box-shadow: var(--md-elevation-1);
   transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), 
@@ -2386,7 +2386,6 @@ body {
   .countdown-display { gap: 8px; }
   .countdown-separator { font-size: 1.4rem; margin-bottom: 20px; }
 
-  /* 🌟 모바일 출근/퇴근 칩 오버플로우 방지 및 여백 최적화 */
   .progress-bottom-row {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 6px;
