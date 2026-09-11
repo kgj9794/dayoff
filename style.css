@@ -239,6 +239,7 @@ body.is-loading {
   font-weight: 800;
   pointer-events: auto;
   user-select: none;
+  -webkit-user-select: none;
   animation: toastSlideUpAnim 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   transition: opacity 0.25s ease, transform 0.25s ease;
 }
@@ -367,6 +368,7 @@ body.is-loading {
   flex-shrink: 0;
   transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1), opacity 0.25s ease, background-color 0.2s;
   user-select: none;
+  -webkit-user-select: none;
   box-shadow: 0 1px 6px rgba(2, 132, 199, 0.15);
 }
 
@@ -818,7 +820,7 @@ body.is-loading {
 }
 
 /* ==========================================
-   5. 클린 텍스트 플립다운 시계
+   5. 클린 텍스트 플립다운 시계 (Safari 호환 완화)
    ========================================== */
 .countdown-display {
   display: flex;
@@ -842,8 +844,8 @@ body.is-loading {
   display: flex;
   align-items: center;
   justify-content: center;
-  perspective: 250px;
-  -webkit-perspective: 250px;
+  overflow: hidden;
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
 }
 
 .flip-num {
@@ -861,37 +863,55 @@ body.is-loading {
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.04em;
   line-height: 1;
-  backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  will-change: transform, opacity;
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
 }
 
 .flip-num.active {
-  transform: translateY(0) rotateX(0deg);
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
   opacity: 1;
+  z-index: 2;
 }
 
 .flip-num.incoming {
-  transform: translateY(-50%) rotateX(90deg);
+  -webkit-transform: translate3d(0, 100%, 0);
+  transform: translate3d(0, 100%, 0);
   opacity: 0;
+  z-index: 1;
 }
 
 .flip-text-container.flipping-down .flip-num.active {
+  -webkit-animation: flipTextOutDown 0.42s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   animation: flipTextOutDown 0.42s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 .flip-text-container.flipping-down .flip-num.incoming {
+  -webkit-animation: flipTextInDown 0.42s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   animation: flipTextInDown 0.42s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
+@-webkit-keyframes flipTextOutDown {
+  0% { -webkit-transform: translate3d(0, 0, 0); opacity: 1; }
+  100% { -webkit-transform: translate3d(0, -100%, 0); opacity: 0; }
+}
+
 @keyframes flipTextOutDown {
-  0% { transform: translateY(0); opacity: 1; }
-  100% { transform: translateY(-100%); opacity: 0; }
+  0% { transform: translate3d(0, 0, 0); opacity: 1; }
+  100% { transform: translate3d(0, -100%, 0); opacity: 0; }
+}
+
+@-webkit-keyframes flipTextInDown {
+  0% { -webkit-transform: translate3d(0, 100%, 0); opacity: 0; }
+  100% { -webkit-transform: translate3d(0, 0, 0); opacity: 1; }
 }
 
 @keyframes flipTextInDown {
-  0% { transform: translateY(100%); opacity: 0; }
-  100% { transform: translateY(0); opacity: 1; }
+  0% { transform: translate3d(0, 100%, 0); opacity: 0; }
+  100% { transform: translate3d(0, 0, 0); opacity: 1; }
 }
 
 .countdown-separator {
@@ -931,7 +951,7 @@ body.is-loading {
   transition: width 0.4s ease;
 }
 
-/* 🌟 카운트다운 하단 출퇴근 시간 단정 표시 배지 */
+/* 카운트다운 하단 출퇴근 시간 표시 배지 */
 .countdown-work-time-display {
   display: inline-flex;
   align-items: center;
@@ -948,6 +968,7 @@ body.is-loading {
   width: fit-content;
   align-self: center;
   user-select: none;
+  -webkit-user-select: none;
 }
 
 .countdown-work-time-display .material-symbols-outlined {
@@ -1127,6 +1148,7 @@ body.is-loading {
   justify-content: space-between;
   cursor: pointer;
   user-select: none;
+  -webkit-user-select: none;
   overflow: hidden;
   transition: transform 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
 }
