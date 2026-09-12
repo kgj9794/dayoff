@@ -424,6 +424,7 @@ body.is-loading {
   position: relative;
 }
 
+/* 👤 로그인/게스트 버튼 */
 .top-bar-user-btn {
   display: inline-flex;
   align-items: center;
@@ -454,38 +455,80 @@ body.is-loading {
   white-space: nowrap;
 }
 
+/* 🌟 상단 피드백 버튼: 게스트 버튼과 완벽히 동일한 규격 (패딩, 테두리, 아이콘 18px)
+      등장 시 아래로 뿅(바운스 낙하), 사라질 때 위로 쏙! */
 .top-bar-feedback-btn {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 6px 14px;
+  gap: 6px;
+  padding: 6px 12px; /* 게스트 버튼과 100% 동일 */
   border-radius: var(--md-shape-corner-full);
   background-color: var(--md-sys-color-primary-container);
   color: var(--md-sys-color-on-primary-container);
-  border: 1px solid var(--card-border-color);
+  border: 1.5px solid var(--card-border-color); /* 게스트 버튼과 100% 동일 */
   font-size: 0.8125rem;
   font-weight: 800;
   cursor: pointer;
   flex-shrink: 0;
-  transition: opacity 0.25s ease, transform 0.25s ease, background-color 0.2s;
+  white-space: nowrap;
+
+  /* 정상 표시 상태 */
+  max-width: 130px;
   opacity: 1;
-  transform: scale(1);
+  transform: translateY(0) scale(1);
+  margin-left: 0;
+  pointer-events: auto;
+  visibility: visible;
+
+  /* 🌟 등장 애니메이션: 위에서 아래로 뿅! 통통 튀며 안착 */
+  transition: 
+    transform 0.36s cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 0.22s ease,
+    max-width 0.28s cubic-bezier(0.2, 0, 0, 1),
+    padding 0.28s ease,
+    margin-left 0.28s cubic-bezier(0.2, 0, 0, 1),
+    background-color 0.2s,
+    color 0.2s;
+  will-change: transform, opacity, max-width;
 }
 
 .top-bar-feedback-btn:hover {
   background-color: var(--md-sys-color-primary);
   color: var(--md-sys-color-on-primary);
+  transform: translateY(-1px) scale(1.03);
 }
 
+/* 🌟 숨김 상태: 찌그러짐 없이 위쪽 천장으로 쏙! 빨려 올라가며 사라짐 */
 .top-bar-feedback-btn.is-hidden {
-  display: none !important;
-  opacity: 0;
-  pointer-events: none;
-  transform: scale(0.85);
+  opacity: 0 !important;
+  transform: translateY(-34px) scale(0.82) !important;
+  max-width: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  border-color: transparent !important;
+  margin-left: -8px !important; /* flex gap 상쇄 */
+  pointer-events: none !important;
+  visibility: hidden;
+
+  /* 🌟 퇴장 애니메이션: 위로 먼저 빠르게 쏙 올라간 뒤 공간 정리 */
+  transition: 
+    transform 0.24s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.18s ease-in,
+    max-width 0.22s cubic-bezier(0.4, 0, 0.2, 1) 0.05s,
+    padding 0.22s cubic-bezier(0.4, 0, 0.2, 1) 0.05s,
+    margin-left 0.22s cubic-bezier(0.4, 0, 0.2, 1) 0.05s,
+    border-color 0.15s ease,
+    visibility 0s 0.28s;
 }
 
 .top-bar-feedback-btn .material-symbols-outlined {
-  font-size: 16px;
+  font-size: 18px; /* 게스트 버튼의 아이콘(18px)과 동일하게 조정 */
+  flex-shrink: 0;
+}
+
+.top-bar-feedback-btn .btn-text {
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 /* 우측 상단 확대 애니메이션 프로필 팝업 */
@@ -2632,12 +2675,16 @@ body.is-loading {
   display: flex;
   flex-direction: column;
   gap: 14px;
+  width: 100%;
+  min-width: 0;
 }
 
 .form-group-item {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  width: 100%;
+  min-width: 0;
 }
 
 .fb-label {
@@ -2648,6 +2695,8 @@ body.is-loading {
 
 .fb-select, .fb-textarea {
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   background-color: var(--md-sys-color-surface-container-high);
   border: 1.5px solid var(--card-border-color);
   color: var(--md-sys-color-on-surface);
@@ -2657,6 +2706,26 @@ body.is-loading {
   font-family: inherit;
   outline: none;
   box-sizing: border-box;
+  display: block;
+}
+
+/* Safari/iOS input[type="time"] 전용 크로스 브라우징 보정 */
+input[type="time"].fb-select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  display: block;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+}
+
+input[type="time"].fb-select::-webkit-date-and-time-value {
+  text-align: left;
+  min-height: 1.25em;
+  display: flex;
+  align-items: center;
 }
 
 .fb-select:focus, .fb-textarea:focus {
@@ -2709,6 +2778,10 @@ body.is-loading {
 .auth-modal-card .fb-select {
   padding: 10px 12px;
   font-size: 0.9375rem;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .auth-bottom-links {
@@ -2845,7 +2918,16 @@ body.is-loading {
     max-width: 55px;
   }
   
-  .top-bar-feedback-btn { padding: 5px 10px; font-size: 0.75rem; }
+  /* 모바일에서도 게스트 버튼과 100% 동일 규격 */
+  .top-bar-feedback-btn { 
+    padding: 5px 8px; 
+    font-size: 0.75rem; 
+    gap: 4px; 
+  }
+  .top-bar-feedback-btn .material-symbols-outlined {
+    font-size: 16px;
+  }
+
   .profile-popup { width: 220px; right: 0; }
 
   .md-card { padding: 16px; }
