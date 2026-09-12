@@ -100,6 +100,11 @@ function formatDateMD(d) {
   return `${d.getMonth() + 1}월 ${d.getDate()}일(${dayName})`;
 }
 
+function safeSetInnerText(id, text) {
+  const el = document.getElementById(id);
+  if (el) el.innerText = text;
+}
+
 function hideLoadingScreen() {
   const loadingScreen = document.getElementById("app-loading-screen");
   if (loadingScreen) {
@@ -692,9 +697,8 @@ function initNavigationAndDrawers() {
   const closeNavBtn = document.getElementById("btn-close-nav-menu");
   const navBackdrop = document.getElementById("nav-drawer-backdrop");
 
-  const openMyLeaveBtn = document.getElementById("menu-open-my-leaves");
-  const mainAddLeaveBtn = document.getElementById("btn-main-add-leave");
-  const editWorkTimeBtn = document.getElementById("btn-edit-work-time"); // 🌟 카운트다운 연필 버튼
+  const mainAddLeaveBtn = document.getElementById("btn-main-add-leave"); // 메인 화면 달력의 '+' 버튼
+  const editWorkTimeBtn = document.getElementById("btn-edit-work-time"); // 카운트다운 연필 버튼
   const closeMyLeaveBtn = document.getElementById("btn-close-my-leave");
   const myLeaveBackdrop = document.getElementById("my-leave-drawer-backdrop");
 
@@ -710,26 +714,25 @@ function initNavigationAndDrawers() {
   const closeSlackingBtn = document.getElementById("btn-close-slacking");
   const slackingBackdrop = document.getElementById("slacking-drawer-backdrop");
 
-  openNavBtn.addEventListener("click", () => {
-    closeProfilePopup();
-    const navDrawer = document.getElementById("nav-drawer");
-    if (navDrawer.classList.contains("is-open")) {
-      closeModalView("nav-drawer");
-    } else {
-      openModalView("nav-drawer", "nav-drawer-backdrop");
-    }
-  });
+  if (openNavBtn) {
+    openNavBtn.addEventListener("click", () => {
+      closeProfilePopup();
+      const navDrawer = document.getElementById("nav-drawer");
+      if (navDrawer && navDrawer.classList.contains("is-open")) {
+        closeModalView("nav-drawer");
+      } else {
+        openModalView("nav-drawer", "nav-drawer-backdrop");
+      }
+    });
+  }
 
-  closeNavBtn.addEventListener("click", () => closeModalView("nav-drawer"));
-  navBackdrop.addEventListener("click", () => closeModalView("nav-drawer"));
+  if (closeNavBtn) closeNavBtn.addEventListener("click", () => closeModalView("nav-drawer"));
+  if (navBackdrop) navBackdrop.addEventListener("click", () => closeModalView("nav-drawer"));
 
-  // 1) 사이드 메뉴 '연차 추가하기' 클릭
-  if (openMyLeaveBtn) openMyLeaveBtn.addEventListener("click", openMyLeaveDrawer);
-
-  // 2) 메인 화면 '이번 달 달력' 우측 상단 '+' 버튼 클릭
+  // 1) 메인 화면 '이번 달 달력' 우측 상단 '+' 버튼 클릭 -> 연차 관리 서랍 오픈
   if (mainAddLeaveBtn) mainAddLeaveBtn.addEventListener("click", openMyLeaveDrawer);
 
-  // 3) 🌟 메인 화면 '카운트다운' 우측 상단 '연필' 버튼 클릭 -> 개인정보 변경(근무 시간 설정) 팝업 오픈!
+  // 2) 메인 화면 '카운트다운' 우측 상단 '연필' 버튼 클릭 -> 개인정보 변경(근무 시간 설정) 팝업 오픈
   if (editWorkTimeBtn) {
     editWorkTimeBtn.addEventListener("click", () => {
       openProfileEditModalDirectly();
@@ -739,27 +742,33 @@ function initNavigationAndDrawers() {
   if (closeMyLeaveBtn) closeMyLeaveBtn.addEventListener("click", () => closeModalView("my-leave-drawer"));
   if (myLeaveBackdrop) myLeaveBackdrop.addEventListener("click", () => closeModalView("my-leave-drawer"));
 
-  openSimBtn.addEventListener("click", () => {
-    transitionModalView("nav-drawer", "simulation-drawer", "sim-drawer-backdrop", () => {
-      renderSimulatedSpace("none");
+  if (openSimBtn) {
+    openSimBtn.addEventListener("click", () => {
+      transitionModalView("nav-drawer", "simulation-drawer", "sim-drawer-backdrop", () => {
+        renderSimulatedSpace("none");
+      });
     });
-  });
-  closeSimBtn.addEventListener("click", () => closeModalView("simulation-drawer"));
-  simBackdrop.addEventListener("click", () => closeModalView("simulation-drawer"));
+  }
+  if (closeSimBtn) closeSimBtn.addEventListener("click", () => closeModalView("simulation-drawer"));
+  if (simBackdrop) simBackdrop.addEventListener("click", () => closeModalView("simulation-drawer"));
 
-  openLunchBtn.addEventListener("click", () => {
-    transitionModalView("nav-drawer", "lunch-drawer", "lunch-drawer-backdrop", () => {
-      checkAndApplyLunchMarquee();
+  if (openLunchBtn) {
+    openLunchBtn.addEventListener("click", () => {
+      transitionModalView("nav-drawer", "lunch-drawer", "lunch-drawer-backdrop", () => {
+        checkAndApplyLunchMarquee();
+      });
     });
-  });
-  closeLunchBtn.addEventListener("click", () => closeModalView("lunch-drawer"));
-  lunchBackdrop.addEventListener("click", () => closeModalView("lunch-drawer"));
+  }
+  if (closeLunchBtn) closeLunchBtn.addEventListener("click", () => closeModalView("lunch-drawer"));
+  if (lunchBackdrop) lunchBackdrop.addEventListener("click", () => closeModalView("lunch-drawer"));
 
-  openSlackingBtn.addEventListener("click", () => {
-    transitionModalView("nav-drawer", "slacking-drawer", "slacking-drawer-backdrop");
-  });
-  closeSlackingBtn.addEventListener("click", () => closeModalView("slacking-drawer"));
-  slackingBackdrop.addEventListener("click", () => closeModalView("slacking-drawer"));
+  if (openSlackingBtn) {
+    openSlackingBtn.addEventListener("click", () => {
+      transitionModalView("nav-drawer", "slacking-drawer", "slacking-drawer-backdrop");
+    });
+  }
+  if (closeSlackingBtn) closeSlackingBtn.addEventListener("click", () => closeModalView("slacking-drawer"));
+  if (slackingBackdrop) slackingBackdrop.addEventListener("click", () => closeModalView("slacking-drawer"));
 }
 
 // ==========================================
@@ -770,8 +779,8 @@ function initCalendarDetailModal() {
   const backdrop = document.getElementById("cal-modal-backdrop");
   const deleteBtn = document.getElementById("btn-delete-selected-leave");
 
-  closeBtn.addEventListener("click", () => closeModalView("cal-detail-modal"));
-  backdrop.addEventListener("click", () => closeModalView("cal-detail-modal"));
+  if (closeBtn) closeBtn.addEventListener("click", () => closeModalView("cal-detail-modal"));
+  if (backdrop) backdrop.addEventListener("click", () => closeModalView("cal-detail-modal"));
 
   if (deleteBtn) {
     deleteBtn.addEventListener("click", async () => {
@@ -799,23 +808,25 @@ function openCalendarDetailModal(cellDate, dateKey, isHoliday, isLeave, isToday,
 
   const todayKey = formatDateKey(new Date());
   const dayName = ['일', '월', '화', '수', '목', '금', '토'][cellDate.getDay()];
-  dateTextEl.innerText = `${cellDate.getFullYear()}년 ${cellDate.getMonth() + 1}월 ${cellDate.getDate()}일 (${dayName})`;
+  if (dateTextEl) dateTextEl.innerText = `${cellDate.getFullYear()}년 ${cellDate.getMonth() + 1}월 ${cellDate.getDate()}일 (${dayName})`;
 
   if (dateKey >= todayKey && weatherMap.has(dateKey)) {
     const w = weatherMap.get(dateKey);
-    weatherBox.style.display = "flex";
-    weatherInfoEl.innerText = `${w.icon} ${w.name} (최저 ${w.minTemp}°C / 최고 ${w.maxTemp}°C)`;
+    if (weatherBox) weatherBox.style.display = "flex";
+    if (weatherInfoEl) weatherInfoEl.innerText = `${w.icon} ${w.name} (최저 ${w.minTemp}°C / 최고 ${w.maxTemp}°C)`;
   } else {
-    weatherBox.style.display = "none";
+    if (weatherBox) weatherBox.style.display = "none";
   }
 
   if (userLeavesMap.has(dateKey)) {
     const myLeave = userLeavesMap.get(dateKey);
-    iconEl.innerText = "beach_access";
-    badgeEl.innerText = `내 연차 (${myLeave.type})`;
-    badgeEl.className = "modal-status-badge leave";
-    nameEl.innerText = myLeave.title;
-    descEl.innerText = myLeave.content ? `${myLeave.content} (구분: ${myLeave.type})` : `직접 등록한 ${myLeave.type} 일정입니다.`;
+    if (iconEl) iconEl.innerText = "beach_access";
+    if (badgeEl) {
+      badgeEl.innerText = `내 연차 (${myLeave.type})`;
+      badgeEl.className = "modal-status-badge leave";
+    }
+    if (nameEl) nameEl.innerText = myLeave.title;
+    if (descEl) descEl.innerText = myLeave.content ? `${myLeave.content} (구분: ${myLeave.type})` : `직접 등록한 ${myLeave.type} 일정입니다.`;
 
     if (myLeaveActionRow && deleteBtn) {
       myLeaveActionRow.style.display = "flex";
@@ -825,29 +836,37 @@ function openCalendarDetailModal(cellDate, dateKey, isHoliday, isLeave, isToday,
     if (myLeaveActionRow) myLeaveActionRow.style.display = "none";
 
     if (isHoliday) {
-      iconEl.innerText = "celebration";
-      badgeEl.innerText = "공휴일";
-      badgeEl.className = "modal-status-badge holiday";
-      nameEl.innerText = holidayMap.get(dateKey) || "공식 공휴일";
-      descEl.innerText = "국가에서 지정한 공식 법정 공휴일(빨간 날)입니다.";
+      if (iconEl) iconEl.innerText = "celebration";
+      if (badgeEl) {
+        badgeEl.innerText = "공휴일";
+        badgeEl.className = "modal-status-badge holiday";
+      }
+      if (nameEl) nameEl.innerText = holidayMap.get(dateKey) || "공식 공휴일";
+      if (descEl) descEl.innerText = "국가에서 지정한 공식 법정 공휴일(빨간 날)입니다.";
     } else if (isLeave) {
-      iconEl.innerText = "flight_takeoff";
-      badgeEl.innerText = "연차 추천";
-      badgeEl.className = "modal-status-badge leave";
-      nameEl.innerText = "징검다리 꿀연차 추천일";
-      descEl.innerText = "앞뒤 공휴일 및 주말과 연계하여 1일 연차 사용 시 가장 길게 쉴 수 있는 가성비 황금 구간입니다.";
+      if (iconEl) iconEl.innerText = "flight_takeoff";
+      if (badgeEl) {
+        badgeEl.innerText = "연차 추천";
+        badgeEl.className = "modal-status-badge leave";
+      }
+      if (nameEl) nameEl.innerText = "징검다리 꿀연차 추천일";
+      if (descEl) descEl.innerText = "앞뒤 공휴일 및 주말과 연계하여 1일 연차 사용 시 가장 길게 쉴 수 있는 가성비 황금 구간입니다.";
     } else if (cellDate.getDay() === 0 || cellDate.getDay() === 6) {
-      iconEl.innerText = "weekend";
-      badgeEl.innerText = "주말";
-      badgeEl.className = "modal-status-badge normal";
-      nameEl.innerText = cellDate.getDay() === 6 ? "토요일 주말" : "일요일 주말";
-      descEl.innerText = "정기 휴일인 주말입니다.";
+      if (iconEl) iconEl.innerText = "weekend";
+      if (badgeEl) {
+        badgeEl.innerText = "주말";
+        badgeEl.className = "modal-status-badge normal";
+      }
+      if (nameEl) nameEl.innerText = cellDate.getDay() === 6 ? "토요일 주말" : "일요일 주말";
+      if (descEl) descEl.innerText = "정기 휴일인 주말입니다.";
     } else {
-      iconEl.innerText = "work";
-      badgeEl.innerText = isToday ? "오늘 (근무일)" : "평일 근무일";
-      badgeEl.className = "modal-status-badge normal";
-      nameEl.innerText = isToday ? "오늘 (출근 및 근무)" : "일반 근무일";
-      descEl.innerText = "정상적인 업무가 진행되는 평일입니다.";
+      if (iconEl) iconEl.innerText = "work";
+      if (badgeEl) {
+        badgeEl.innerText = isToday ? "오늘 (근무일)" : "평일 근무일";
+        badgeEl.className = "modal-status-badge normal";
+      }
+      if (nameEl) nameEl.innerText = isToday ? "오늘 (출근 및 근무)" : "일반 근무일";
+      if (descEl) descEl.innerText = "정상적인 업무가 진행되는 평일입니다.";
     }
   }
 
@@ -1095,7 +1114,7 @@ function initAuthSystem() {
   }
 
   document.addEventListener("click", (e) => {
-    // 1) 🌟 개인정보 변경 버튼 터치 감지
+    // 1) 개인정보 변경 버튼 터치 감지
     const editProfileBtn = e.target.closest("#btn-popup-edit-profile");
     if (editProfileBtn) {
       e.preventDefault();
@@ -1789,13 +1808,15 @@ function initThemeManager() {
   const savedTheme = localStorage.getItem("app_theme") || "auto";
   applyTheme(savedTheme);
 
-  fabBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    themeMenu.classList.toggle("active");
-  });
+  if (fabBtn) {
+    fabBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (themeMenu) themeMenu.classList.toggle("active");
+    });
+  }
 
   document.addEventListener("click", () => {
-    themeMenu.classList.remove("active");
+    if (themeMenu) themeMenu.classList.remove("active");
   });
 
   themeOptions.forEach(opt => {
@@ -1803,7 +1824,7 @@ function initThemeManager() {
       const themeVal = opt.dataset.themeValue;
       localStorage.setItem("app_theme", themeVal);
       applyTheme(themeVal);
-      themeMenu.classList.remove("active");
+      if (themeMenu) themeMenu.classList.remove("active");
     });
   });
 
@@ -1813,12 +1834,14 @@ function initThemeManager() {
       opt.classList.toggle("selected", opt.dataset.themeValue === theme);
     });
 
-    if (theme === "light") {
-      fabIcon.innerText = "light_mode";
-    } else if (theme === "dark") {
-      fabIcon.innerText = "dark_mode";
-    } else {
-      fabIcon.innerText = "settings_brightness";
+    if (fabIcon) {
+      if (theme === "light") {
+        fabIcon.innerText = "light_mode";
+      } else if (theme === "dark") {
+        fabIcon.innerText = "dark_mode";
+      } else {
+        fabIcon.innerText = "settings_brightness";
+      }
     }
   }
 
@@ -1829,11 +1852,11 @@ function initThemeManager() {
     const scrollY = window.scrollY;
     if (!isScrolled && scrollY > 60) {
       isScrolled = true;
-      themeFab.classList.add("is-hidden");
-      themeMenu.classList.remove("active");
+      if (themeFab) themeFab.classList.add("is-hidden");
+      if (themeMenu) themeMenu.classList.remove("active");
     } else if (isScrolled && scrollY <= 20) {
       isScrolled = false;
-      themeFab.classList.remove("is-hidden");
+      if (themeFab) themeFab.classList.remove("is-hidden");
     }
   }, { passive: true });
 }
@@ -2512,10 +2535,12 @@ async function renderMainRealtimeSpace() {
     ensureWeatherForecast()
   ]);
 
-  document.getElementById("main-cal-month-year").innerText = `${currentRealYear}년 ${currentRealMonth + 1}월`;
+  safeSetInnerText("main-cal-month-year", `${currentRealYear}년 ${currentRealMonth + 1}월`);
   const container = document.getElementById("main-calendar-days");
-  container.innerHTML = "";
-  container.appendChild(createCalendarGridFragment(currentRealYear, currentRealMonth));
+  if (container) {
+    container.innerHTML = "";
+    container.appendChild(createCalendarGridFragment(currentRealYear, currentRealMonth));
+  }
 
   const lastDate = new Date(currentRealYear, currentRealMonth + 1, 0).getDate();
   let saturdays = 0, sundays = 0, weekdayHolidays = 0;
@@ -2537,38 +2562,38 @@ async function renderMainRealtimeSpace() {
   const workDays = lastDate - totalDaysOff;
   const workPercent = Math.round((workDays / lastDate) * 100);
 
-  document.getElementById("main-stats-title").innerText = `${currentRealYear}년 ${currentRealMonth + 1}월 휴일 현황`;
-  document.getElementById("main-stat-total-days").innerText = `${totalDaysOff}일`;
-  document.getElementById("main-stat-weekend-days").innerText = `${weekendTotal}일`;
-  document.getElementById("main-stat-weekend-detail").innerText = `토 ${saturdays}일 / 일 ${sundays}일`;
-  document.getElementById("main-stat-holiday-days").innerText = `${weekdayHolidays}일`;
-  document.getElementById("main-stat-work-days").innerText = `${workDays}일`;
-  document.getElementById("main-stat-work-percent").innerText = `근무 비율 ${workPercent}%`;
+  safeSetInnerText("main-stats-title", `${currentRealYear}년 ${currentRealMonth + 1}월 휴일 현황`);
+  safeSetInnerText("main-stat-total-days", `${totalDaysOff}일`);
+  safeSetInnerText("main-stat-weekend-days", `${weekendTotal}일`);
+  safeSetInnerText("main-stat-weekend-detail", `토 ${saturdays}일 / 일 ${sundays}일`);
+  safeSetInnerText("main-stat-holiday-days", `${weekdayHolidays}일`);
+  safeSetInnerText("main-stat-work-days", `${workDays}일`);
+  safeSetInnerText("main-stat-work-percent", `근무 비율 ${workPercent}%`);
 
   const { maxConsecutiveRest, candidates } = getMonthLeaveAnalysis(currentRealYear, currentRealMonth);
   const headlineEl = document.getElementById("main-insight-headline");
   const descEl = document.getElementById("main-insight-desc");
   const iconEl = document.getElementById("main-insight-icon");
-  document.getElementById("main-insight-title").innerText = `${currentRealYear}년 ${currentRealMonth + 1}월 휴일 브리핑`;
+  safeSetInnerText("main-insight-title", `${currentRealYear}년 ${currentRealMonth + 1}월 휴일 브리핑`);
 
   if (weekdayHolidays >= 3) {
-    headlineEl.innerText = "공휴일 및 연차가 풍성한 황금 달";
-    descEl.innerText = `평일 휴일/연차가 ${weekdayHolidays}일 포함되어 있습니다. 주말과 연계되어 장기 휴식을 갖기에 매우 유리합니다.`;
-    iconEl.innerText = "celebration";
+    if (headlineEl) headlineEl.innerText = "공휴일 및 연차가 풍성한 황금 달";
+    if (descEl) descEl.innerText = `평일 휴일/연차가 ${weekdayHolidays}일 포함되어 있습니다. 주말과 연계되어 장기 휴식을 갖기에 매우 유리합니다.`;
+    if (iconEl) iconEl.innerText = "celebration";
   } else if (weekdayHolidays >= 1) {
     if (candidates.length > 0 && maxConsecutiveRest > 0) {
-      headlineEl.innerText = "징검다리 휴일 연계 가능";
-      descEl.innerText = `평일 휴일(${weekdayHolidays}일)과 주말 사이 징검다리 평일에 연차 1일을 활용하면 최장 ${maxConsecutiveRest}일 연속 휴식이 가능합니다.`;
-      iconEl.innerText = "flight_takeoff";
+      if (headlineEl) headlineEl.innerText = "징검다리 휴일 연계 가능";
+      if (descEl) descEl.innerText = `평일 휴일(${weekdayHolidays}일)과 주말 사이 징검다리 평일에 연차 1일을 활용하면 최장 ${maxConsecutiveRest}일 연속 휴식이 가능합니다.`;
+      if (iconEl) iconEl.innerText = "flight_takeoff";
     } else {
-      headlineEl.innerText = "주중 공휴일/연차 포함";
-      descEl.innerText = `평일 쉬는 날이 ${weekdayHolidays}일 있어 주중에 숨을 돌릴 수 있는 달입니다.`;
-      iconEl.innerText = "spa";
+      if (headlineEl) headlineEl.innerText = "주중 공휴일/연차 포함";
+      if (descEl) descEl.innerText = `평일 쉬는 날이 ${weekdayHolidays}일 있어 주중에 숨을 돌릴 수 있는 달입니다.`;
+      if (iconEl) iconEl.innerText = "spa";
     }
   } else {
-    headlineEl.innerText = "평일 공휴일이 없는 달";
-    descEl.innerText = `이번 달은 평일 공식 공휴일이 없습니다. 주말 위주로 컨디션을 관리하거나 필요 시 개인 연차 사용을 고려해보세요.`;
-    iconEl.innerText = "battery_alert";
+    if (headlineEl) headlineEl.innerText = "평일 공휴일이 없는 달";
+    if (descEl) descEl.innerText = `이번 달은 평일 공식 공휴일이 없습니다. 주말 위주로 컨디션을 관리하거나 필요 시 개인 연차 사용을 고려해보세요.`;
+    if (iconEl) iconEl.innerText = "battery_alert";
   }
 
   const today = new Date();
@@ -2582,45 +2607,48 @@ async function renderMainRealtimeSpace() {
   });
 
   const upcoming = holidays.filter(h => h.diffDays >= 0).sort((a, b) => a.diffDays - b.diffDays).slice(0, 5);
-  if (upcoming.length === 0) {
-    holListEl.innerHTML = "<li class='md-list-item'>예정된 공휴일 일정이 없습니다.</li>";
-  } else {
-    holListEl.innerHTML = upcoming.map(h => {
-      const formattedDate = `${h.effectiveDate.getFullYear()}년 ${h.effectiveDate.getMonth() + 1}월 ${h.effectiveDate.getDate()}일`;
-      const dayName = ['일', '월', '화', '수', '목', '금', '토'][h.effectiveDate.getDay()];
-      const dDayText = h.diffDays === 0 ? "오늘 (D-Day)" : `D-${h.diffDays}`;
-      return `
-        <li class="md-list-item">
-          <div>
-            <strong style="font-size: 0.9375rem;">${h.name}</strong>
-            <span style="color: var(--md-sys-color-outline); font-size: 0.8125rem; margin-left: 8px;">${formattedDate} (${dayName})</span>
-          </div>
-          <span class="holiday-dday">${dDayText}</span>
-        </li>
-      `;
-    }).join("");
+  if (holListEl) {
+    if (upcoming.length === 0) {
+      holListEl.innerHTML = "<li class='md-list-item'>예정된 공휴일 일정이 없습니다.</li>";
+    } else {
+      holListEl.innerHTML = upcoming.map(h => {
+        const formattedDate = `${h.effectiveDate.getFullYear()}년 ${h.effectiveDate.getMonth() + 1}월 ${h.effectiveDate.getDate()}일`;
+        const dayName = ['일', '월', '화', '수', '목', '금', '토'][h.effectiveDate.getDay()];
+        const dDayText = h.diffDays === 0 ? "오늘 (D-Day)" : `D-${h.diffDays}`;
+        return `
+          <li class="md-list-item">
+            <div>
+              <strong style="font-size: 0.9375rem;">${h.name}</strong>
+              <span style="color: var(--md-sys-color-outline); font-size: 0.8125rem; margin-left: 8px;">${formattedDate} (${dayName})</span>
+            </div>
+            <span class="holiday-dday">${dDayText}</span>
+          </li>
+        `;
+      }).join("");
+    }
   }
 
   const mainRecs = calculateVacationsForBase(today).slice(0, 4);
   const vacListEl = document.getElementById("main-vacation-recommendations");
 
-  if (mainRecs.length === 0) {
-    vacListEl.innerHTML = `<div class="recommendation-item"><div class="item-content"><h3>추천 가능한 연차 일정이 없습니다.</h3><p>상단 메뉴에서 미래 연차를 탐색해보세요.</p></div></div>`;
-  } else {
-    vacListEl.innerHTML = mainRecs.map(rec => `
-      <div class="recommendation-item">
-        <div class="item-content">
-          <h3>${rec.title}</h3>
-          <p>권장: <strong>${rec.leave}</strong></p>
-          <p style="font-size: 0.75rem; margin-top: 2px;">${rec.benefit}</p>
+  if (vacListEl) {
+    if (mainRecs.length === 0) {
+      vacListEl.innerHTML = `<div class="recommendation-item"><div class="item-content"><h3>추천 가능한 연차 일정이 없습니다.</h3><p>상단 메뉴에서 미래 연차를 탐색해보세요.</p></div></div>`;
+    } else {
+      vacListEl.innerHTML = mainRecs.map(rec => `
+        <div class="recommendation-item">
+          <div class="item-content">
+            <h3>${rec.title}</h3>
+            <p>권장: <strong>${rec.leave}</strong></p>
+            <p style="font-size: 0.75rem; margin-top: 2px;">${rec.benefit}</p>
+          </div>
+          <div class="badge-benefit">${rec.badge}</div>
         </div>
-        <div class="badge-benefit">${rec.badge}</div>
-      </div>
-    `).join("");
+      `).join("");
+    }
   }
 
   renderTravelWidget(today, "main-travel-recommendations");
-
   checkAndApplyMarquees();
 }
 
@@ -2631,12 +2659,8 @@ async function renderSimulatedSpace(direction = "none") {
   await ensureHolidaysForYear(simViewYear);
 
   const dateTitleText = `${simViewYear}년 ${simViewMonth + 1}월`;
-  document.getElementById("sim-cal-month-year").innerText = dateTitleText;
-  
-  const bottomDateEl = document.getElementById("sim-bottom-month-year");
-  if (bottomDateEl) {
-    bottomDateEl.innerText = dateTitleText;
-  }
+  safeSetInnerText("sim-cal-month-year", dateTitleText);
+  safeSetInnerText("sim-bottom-month-year", dateTitleText);
 
   const isCurrentMonthView = (simViewYear === currentRealYear && simViewMonth === currentRealMonth);
   
@@ -2644,35 +2668,39 @@ async function renderSimulatedSpace(direction = "none") {
   if (bottomTodayBtn) bottomTodayBtn.classList.toggle("is-hidden", isCurrentMonthView);
 
   const viewport = document.getElementById("sim-calendar-viewport");
-  const activeLayer = viewport.querySelector(".calendar-grid-layer.active-layer") || 
-                      document.getElementById("sim-calendar-days-active");
+  if (viewport) {
+    const activeLayer = viewport.querySelector(".calendar-grid-layer.active-layer") || 
+                        document.getElementById("sim-calendar-days-active");
 
-  const newFragment = createCalendarGridFragment(simViewYear, simViewMonth);
+    const newFragment = createCalendarGridFragment(simViewYear, simViewMonth);
 
-  if (direction === "none" || !activeLayer) {
-    activeLayer.innerHTML = "";
-    activeLayer.appendChild(newFragment);
-  } else if (!isSimCalendarSliding) {
-    isSimCalendarSliding = true;
-    const newLayer = document.createElement("div");
-    newLayer.className = "calendar-grid-layer";
-    newLayer.appendChild(newFragment);
-    viewport.appendChild(newLayer);
+    if (direction === "none" || !activeLayer) {
+      if (activeLayer) {
+        activeLayer.innerHTML = "";
+        activeLayer.appendChild(newFragment);
+      }
+    } else if (!isSimCalendarSliding) {
+      isSimCalendarSliding = true;
+      const newLayer = document.createElement("div");
+      newLayer.className = "calendar-grid-layer";
+      newLayer.appendChild(newFragment);
+      viewport.appendChild(newLayer);
 
-    if (direction === "next") {
-      activeLayer.className = "calendar-grid-layer slide-up-exit";
-      newLayer.className = "calendar-grid-layer slide-up-enter";
-    } else if (direction === "prev") {
-      activeLayer.className = "calendar-grid-layer slide-down-exit";
-      newLayer.className = "calendar-grid-layer slide-down-enter";
+      if (direction === "next") {
+        activeLayer.className = "calendar-grid-layer slide-up-exit";
+        newLayer.className = "calendar-grid-layer slide-up-enter";
+      } else if (direction === "prev") {
+        activeLayer.className = "calendar-grid-layer slide-down-exit";
+        newLayer.className = "calendar-grid-layer slide-down-enter";
+      }
+
+      setTimeout(() => {
+        activeLayer.remove();
+        newLayer.className = "calendar-grid-layer active-layer";
+        isSimCalendarSliding = false;
+        checkAndApplyMarquees();
+      }, 330);
     }
-
-    setTimeout(() => {
-      activeLayer.remove();
-      newLayer.className = "calendar-grid-layer active-layer";
-      isSimCalendarSliding = false;
-      checkAndApplyMarquees();
-    }, 330);
   }
 
   const lastDate = new Date(simViewYear, simViewMonth + 1, 0).getDate();
@@ -2695,44 +2723,43 @@ async function renderSimulatedSpace(direction = "none") {
   const workDays = lastDate - totalDaysOff;
   const workPercent = Math.round((workDays / lastDate) * 100);
 
-  document.getElementById("sim-stats-title").innerText = `${simViewYear}년 ${simViewMonth + 1}월 휴일 현황`;
-  document.getElementById("sim-stat-total-days").innerText = `${totalDaysOff}일`;
-  document.getElementById("sim-stat-weekend-days").innerText = `${weekendTotal}일`;
-  document.getElementById("sim-stat-weekend-detail").innerText = `토 ${saturdays}일 / 일 ${sundays}일`;
-  document.getElementById("sim-stat-holiday-days").innerText = `${weekdayHolidays}일`;
-  document.getElementById("sim-stat-work-days").innerText = `${workDays}일`;
-  document.getElementById("sim-stat-work-percent").innerText = `근무 비율 ${workPercent}%`;
+  safeSetInnerText("sim-stats-title", `${simViewYear}년 ${simViewMonth + 1}월 휴일 현황`);
+  safeSetInnerText("sim-stat-total-days", `${totalDaysOff}일`);
+  safeSetInnerText("sim-stat-weekend-days", `${weekendTotal}일`);
+  safeSetInnerText("sim-stat-weekend-detail", `토 ${saturdays}일 / 일 ${sundays}일`);
+  safeSetInnerText("sim-stat-holiday-days", `${weekdayHolidays}일`);
+  safeSetInnerText("sim-stat-work-days", `${workDays}일`);
+  safeSetInnerText("sim-stat-work-percent", `근무 비율 ${workPercent}%`);
 
   const { maxConsecutiveRest, candidates } = getMonthLeaveAnalysis(simViewYear, simViewMonth);
   const headlineEl = document.getElementById("sim-insight-headline");
   const descEl = document.getElementById("sim-insight-desc");
   const iconEl = document.getElementById("sim-insight-icon");
-  document.getElementById("sim-insight-title").innerText = `${simViewYear}년 ${simViewMonth + 1}월 휴일 브리핑`;
+  safeSetInnerText("sim-insight-title", `${simViewYear}년 ${simViewMonth + 1}월 휴일 브리핑`);
 
   if (weekdayHolidays >= 3) {
-    headlineEl.innerText = "공휴일 및 연차가 풍성한 황금 달";
-    descEl.innerText = `평일 휴일/연차가 ${weekdayHolidays}일 포함되어 있습니다. 장기 휴식을 계획하기에 아주 좋습니다.`;
-    iconEl.innerText = "celebration";
+    if (headlineEl) headlineEl.innerText = "공휴일 및 연차가 풍성한 황금 달";
+    if (descEl) descEl.innerText = `평일 휴일/연차가 ${weekdayHolidays}일 포함되어 있습니다. 장기 휴식을 계획하기에 아주 좋습니다.`;
+    if (iconEl) iconEl.innerText = "celebration";
   } else if (weekdayHolidays >= 1) {
     if (candidates.length > 0 && maxConsecutiveRest > 0) {
-      headlineEl.innerText = "징검다리 휴일 연계 가능";
-      descEl.innerText = `평일 휴일(${weekdayHolidays}일)과 주말 사이 징검다리 평일에 연차 1일을 활용하면 최장 ${maxConsecutiveRest}일 연속 휴식이 가능합니다.`;
-      iconEl.innerText = "flight_takeoff";
+      if (headlineEl) headlineEl.innerText = "징검다리 휴일 연계 가능";
+      if (descEl) descEl.innerText = `평일 휴일(${weekdayHolidays}일)과 주말 사이 징검다리 평일에 연차 1일을 활용하면 최장 ${maxConsecutiveRest}일 연속 휴식이 가능합니다.`;
+      if (iconEl) iconEl.innerText = "flight_takeoff";
     } else {
-      headlineEl.innerText = "주중 공휴일/연차 포함";
-      descEl.innerText = `평일 쉬는 날이 ${weekdayHolidays}일 있어 주중에 하루 쉴 수 있습니다.`;
-      iconEl.innerText = "spa";
+      if (headlineEl) headlineEl.innerText = "주중 공휴일/연차 포함";
+      if (descEl) descEl.innerText = `평일 쉬는 날이 ${weekdayHolidays}일 있어 주중에 하루 쉴 수 있습니다.`;
+      if (iconEl) iconEl.innerText = "spa";
     }
   } else {
-    headlineEl.innerText = "평일 공휴일이 없는 달";
-    descEl.innerText = `해당 월은 평일 공식 공휴일이 없습니다. 연속 휴식이 필요하다면 개인 연차 일정을 사전에 계획해보세요.`;
-    iconEl.innerText = "battery_alert";
+    if (headlineEl) headlineEl.innerText = "평일 공휴일이 없는 달";
+    if (descEl) descEl.innerText = `해당 월은 평일 공식 공휴일이 없습니다. 연속 휴식이 필요하다면 개인 연차 일정을 사전에 계획해보세요.`;
+    if (iconEl) iconEl.innerText = "battery_alert";
   }
 
   const simBaseDate = new Date(simViewYear, simViewMonth, 1);
-  
   const simHolListEl = document.getElementById("sim-holiday-list");
-  document.getElementById("sim-holiday-desc").innerText = `${simViewYear}년 ${simViewMonth + 1}월 이후 예정된 휴일`;
+  safeSetInnerText("sim-holiday-desc", `${simViewYear}년 ${simViewMonth + 1}월 이후 예정된 휴일`);
   
   const holidays = Array.from(holidayMap.entries()).map(([dateStr, name]) => {
     const [y, m, d] = dateStr.split("-").map(Number);
@@ -2742,45 +2769,48 @@ async function renderSimulatedSpace(direction = "none") {
   });
 
   const upcoming = holidays.filter(h => h.diffDays >= 0).sort((a, b) => a.diffDays - b.diffDays).slice(0, 5);
-  if (upcoming.length === 0) {
-    simHolListEl.innerHTML = "<li class='md-list-item'>예정된 공휴일 일정이 없습니다.</li>";
-  } else {
-    simHolListEl.innerHTML = upcoming.map(h => {
-      const formattedDate = `${h.effectiveDate.getFullYear()}년 ${h.effectiveDate.getMonth() + 1}월 ${h.effectiveDate.getDate()}일`;
-      const dayName = ['일', '월', '화', '수', '목', '금', '토'][h.effectiveDate.getDay()];
-      return `
-        <li class="md-list-item">
-          <div>
-            <strong style="font-size: 0.9375rem;">${h.name}</strong>
-            <span style="color: var(--md-sys-color-outline); font-size: 0.8125rem; margin-left: 8px;">${formattedDate} (${dayName})</span>
-          </div>
-          <span class="holiday-dday">${simViewYear === currentRealYear && simViewMonth === currentRealMonth ? (h.diffDays === 0 ? "D-Day" : `D-${h.diffDays}`) : `${h.effectiveDate.getMonth() + 1}월`}</span>
-        </li>
-      `;
-    }).join("");
+  if (simHolListEl) {
+    if (upcoming.length === 0) {
+      simHolListEl.innerHTML = "<li class='md-list-item'>예정된 공휴일 일정이 없습니다.</li>";
+    } else {
+      simHolListEl.innerHTML = upcoming.map(h => {
+        const formattedDate = `${h.effectiveDate.getFullYear()}년 ${h.effectiveDate.getMonth() + 1}월 ${h.effectiveDate.getDate()}일`;
+        const dayName = ['일', '월', '화', '수', '목', '금', '토'][h.effectiveDate.getDay()];
+        return `
+          <li class="md-list-item">
+            <div>
+              <strong style="font-size: 0.9375rem;">${h.name}</strong>
+              <span style="color: var(--md-sys-color-outline); font-size: 0.8125rem; margin-left: 8px;">${formattedDate} (${dayName})</span>
+            </div>
+            <span class="holiday-dday">${simViewYear === currentRealYear && simViewMonth === currentRealMonth ? (h.diffDays === 0 ? "D-Day" : `D-${h.diffDays}`) : `${h.effectiveDate.getMonth() + 1}월`}</span>
+          </li>
+        `;
+      }).join("");
+    }
   }
 
   const simRecs = calculateVacationsForBase(simBaseDate).slice(0, 4);
   const simVacListEl = document.getElementById("sim-vacation-recommendations");
-  document.getElementById("sim-vacation-desc").innerText = `${simViewYear}년 ${simViewMonth + 1}월부터 6개월간의 황금 루트`;
+  safeSetInnerText("sim-vacation-desc", `${simViewYear}년 ${simViewMonth + 1}월부터 6개월간의 황금 루트`);
 
-  if (simRecs.length === 0) {
-    simVacListEl.innerHTML = `<div class="recommendation-item"><div class="item-content"><h3>추천 가능한 연차 일정이 없습니다.</h3><p>다른 달로 이동하여 일정을 탐색해보세요.</p></div></div>`;
-  } else {
-    simVacListEl.innerHTML = simRecs.map(rec => `
-      <div class="recommendation-item">
-        <div class="item-content">
-          <h3>${rec.title}</h3>
-          <p>권장: <strong>${rec.leave}</strong></p>
-          <p style="font-size: 0.75rem; margin-top: 2px;">${rec.benefit}</p>
+  if (simVacListEl) {
+    if (simRecs.length === 0) {
+      simVacListEl.innerHTML = `<div class="recommendation-item"><div class="item-content"><h3>추천 가능한 연차 일정이 없습니다.</h3><p>다른 달로 이동하여 일정을 탐색해보세요.</p></div></div>`;
+    } else {
+      simVacListEl.innerHTML = simRecs.map(rec => `
+        <div class="recommendation-item">
+          <div class="item-content">
+            <h3>${rec.title}</h3>
+            <p>권장: <strong>${rec.leave}</strong></p>
+            <p style="font-size: 0.75rem; margin-top: 2px;">${rec.benefit}</p>
+          </div>
+          <div class="badge-benefit">${rec.badge}</div>
         </div>
-        <div class="badge-benefit">${rec.badge}</div>
-      </div>
-    `).join("");
+      `).join("");
+    }
   }
 
   renderTravelWidget(simBaseDate, "sim-travel-recommendations", "sim-travel-desc");
-
   checkAndApplyMarquees();
 }
 
@@ -2815,9 +2845,13 @@ function setupSimCalendarControls() {
     await renderSimulatedSpace(isMovingForward ? "next" : "prev");
   };
 
-  document.getElementById("sim-bottom-prev").addEventListener("click", handlePrev);
-  document.getElementById("sim-bottom-next").addEventListener("click", handleNext);
-  document.getElementById("sim-bottom-btn-today").addEventListener("click", handleToday);
+  const prevBtn = document.getElementById("sim-bottom-prev");
+  const nextBtn = document.getElementById("sim-bottom-next");
+  const todayBtn = document.getElementById("sim-bottom-btn-today");
+
+  if (prevBtn) prevBtn.addEventListener("click", handlePrev);
+  if (nextBtn) nextBtn.addEventListener("click", handleNext);
+  if (todayBtn) todayBtn.addEventListener("click", handleToday);
 }
 
 // ==========================================
@@ -2946,48 +2980,58 @@ function setupLunchEngine() {
     });
   });
 
-  spinBtn.addEventListener("click", () => {
-    const filtered = currentLunchCategory === "all" 
-      ? lunchDatabase 
-      : lunchDatabase.filter(item => item.cat === currentLunchCategory);
+  if (spinBtn) {
+    spinBtn.addEventListener("click", () => {
+      const filtered = currentLunchCategory === "all" 
+        ? lunchDatabase 
+        : lunchDatabase.filter(item => item.cat === currentLunchCategory);
 
-    if (filtered.length === 0) return;
+      if (filtered.length === 0) return;
 
-    if (displayBox) {
-      displayBox.classList.remove("highlight");
-    }
+      if (displayBox) {
+        displayBox.classList.remove("highlight");
+      }
 
-    iconEl.classList.add("spinning");
-    nameEl.innerHTML = `<span class="lunch-name-text">룰렛 돌아가는 중...</span>`;
-    checkAndApplyLunchMarquee();
-    descEl.innerText = "오늘의 최고 메뉴를 고르는 중입니다!";
-    spinBtn.disabled = true;
-
-    let counter = 0;
-    const interval = setInterval(() => {
-      const randomTemp = filtered[Math.floor(Math.random() * filtered.length)];
-      iconEl.innerText = randomTemp.icon;
-      nameEl.innerHTML = `<span class="lunch-name-text">${randomTemp.name}</span>`;
-      counter++;
-
-      if (counter > 14) {
-        clearInterval(interval);
-        const finalPick = filtered[Math.floor(Math.random() * filtered.length)];
-        iconEl.innerText = finalPick.icon;
-        nameEl.innerHTML = `<span class="lunch-name-text">${finalPick.name}</span>`;
-        descEl.innerText = finalPick.desc;
-        iconEl.classList.remove("spinning");
-        spinBtn.disabled = false;
-
-        if (displayBox) {
-          displayBox.classList.remove("highlight");
-          void displayBox.offsetWidth;
-          displayBox.classList.add("highlight");
-        }
+      if (iconEl) iconEl.classList.add("spinning");
+      if (nameEl) {
+        nameEl.innerHTML = `<span class="lunch-name-text">룰렛 돌아가는 중...</span>`;
         checkAndApplyLunchMarquee();
       }
-    }, 80);
-  });
+      if (descEl) descEl.innerText = "오늘의 최고 메뉴를 고르는 중입니다!";
+      spinBtn.disabled = true;
+
+      let counter = 0;
+      const interval = setInterval(() => {
+        const randomTemp = filtered[Math.floor(Math.random() * filtered.length)];
+        if (iconEl) iconEl.innerText = randomTemp.icon;
+        if (nameEl) {
+          nameEl.innerHTML = `<span class="lunch-name-text">${randomTemp.name}</span>`;
+        }
+        counter++;
+
+        if (counter > 14) {
+          clearInterval(interval);
+          const finalPick = filtered[Math.floor(Math.random() * filtered.length)];
+          if (iconEl) {
+            iconEl.innerText = finalPick.icon;
+            iconEl.classList.remove("spinning");
+          }
+          if (nameEl) {
+            nameEl.innerHTML = `<span class="lunch-name-text">${finalPick.name}</span>`;
+          }
+          if (descEl) descEl.innerText = finalPick.desc;
+          spinBtn.disabled = false;
+
+          if (displayBox) {
+            displayBox.classList.remove("highlight");
+            void displayBox.offsetWidth;
+            displayBox.classList.add("highlight");
+          }
+          checkAndApplyLunchMarquee();
+        }
+      }, 80);
+    });
+  }
 }
 
 // ==========================================
@@ -3052,12 +3096,12 @@ function setupSlackingEngine() {
     typeBtns.forEach(btn => btn.classList.toggle("active", btn.dataset.type === type));
 
     if (type === "annual") {
-      groupAnnual.style.display = "flex";
-      groupHourly.style.display = "none";
+      if (groupAnnual) groupAnnual.style.display = "flex";
+      if (groupHourly) groupHourly.style.display = "none";
       updateConvertedHint();
     } else {
-      groupAnnual.style.display = "none";
-      groupHourly.style.display = "flex";
+      if (groupAnnual) groupAnnual.style.display = "none";
+      if (groupHourly) groupHourly.style.display = "flex";
     }
   };
 
@@ -3106,37 +3150,39 @@ function setupSlackingEngine() {
     if (topSlackAmount) topSlackAmount.innerText = amountFormatted;
   };
 
-  toggleBtn.addEventListener("click", () => {
-    if (!isSlackTimerRunning) {
-      isSlackTimerRunning = true;
-      toggleBtn.classList.add("running");
-      iconEl.innerText = "stop";
-      textEl.innerText = "루팡 종료";
-      cheerEl.innerText = cheers[Math.floor(Math.random() * cheers.length)];
+  if (toggleBtn) {
+    toggleBtn.addEventListener("click", () => {
+      if (!isSlackTimerRunning) {
+        isSlackTimerRunning = true;
+        toggleBtn.classList.add("running");
+        if (iconEl) iconEl.innerText = "stop";
+        if (textEl) textEl.innerText = "루팡 종료";
+        if (cheerEl) cheerEl.innerText = cheers[Math.floor(Math.random() * cheers.length)];
 
-      if (topSlackIndicator) {
-        topSlackIndicator.classList.remove("is-hidden");
-        setTimeout(checkAndApplyTitleMarquee, 50);
+        if (topSlackIndicator) {
+          topSlackIndicator.classList.remove("is-hidden");
+          setTimeout(checkAndApplyTitleMarquee, 50);
+        }
+
+        slackTimerInterval = setInterval(() => {
+          slackSeconds++;
+          updateDisplay();
+        }, 1000);
+      } else {
+        isSlackTimerRunning = false;
+        clearInterval(slackTimerInterval);
+        toggleBtn.classList.remove("running");
+        if (iconEl) iconEl.innerText = "play_arrow";
+        if (textEl) textEl.innerText = "루팡 재개";
+        if (cheerEl) cheerEl.innerText = "수고하셨습니다! 소중한 멘탈 충전 완료 ✨";
+
+        if (topSlackIndicator) {
+          topSlackIndicator.classList.add("is-hidden");
+          setTimeout(checkAndApplyTitleMarquee, 50);
+        }
       }
-
-      slackTimerInterval = setInterval(() => {
-        slackSeconds++;
-        updateDisplay();
-      }, 1000);
-    } else {
-      isSlackTimerRunning = false;
-      clearInterval(slackTimerInterval);
-      toggleBtn.classList.remove("running");
-      iconEl.innerText = "play_arrow";
-      textEl.innerText = "루팡 재개";
-      cheerEl.innerText = "수고하셨습니다! 소중한 멘탈 충전 완료 ✨";
-
-      if (topSlackIndicator) {
-        topSlackIndicator.classList.add("is-hidden");
-        setTimeout(checkAndApplyTitleMarquee, 50);
-      }
-    }
-  });
+    });
+  }
 
   if (topSlackIndicator) {
     topSlackIndicator.addEventListener("click", () => {
