@@ -122,7 +122,7 @@
           </button>
         </div>
 
-        <!-- 위젯 1: 실시간 쉬는 날 카운트다운 (🌟 헤더 우측 연필 버튼 포함) -->
+        <!-- 위젯 1: 실시간 쉬는 날 카운트다운 (헤더 우측 연필 버튼 포함) -->
         <section class="md-card hero-card dashboard-widget" data-widget-id="countdown" id="widget-countdown">
           <div class="card-header">
             <div>
@@ -360,19 +360,9 @@
     </div>
     
     <nav class="nav-menu-list">
-      <!-- 1. 연차 추가하기 -->
-      <button type="button" class="nav-menu-item feature-item" id="menu-open-my-leaves">
-        <span class="material-symbols-outlined nav-item-icon" style="color: #8b5cf6;">calendar_add_on</span>
-        <div class="nav-item-text">
-          <span class="nav-item-title">연차 추가하기</span>
-          <span class="nav-item-desc">달력 터치로 내 실제 연차/반차/공가 등록</span>
-        </div>
-        <span class="material-symbols-outlined nav-item-arrow">chevron_right</span>
-      </button>
-
-      <!-- 2. 미래 연차 시뮬레이터 -->
-      <button type="button" class="nav-menu-item primary-action" id="menu-open-simulator">
-        <span class="material-symbols-outlined nav-item-icon">edit_calendar</span>
+      <!-- 1. 미래 연차 시뮬레이터 (🌟 feature-item 형태로 통일하여 과도한 파란 배경 제거) -->
+      <button type="button" class="nav-menu-item feature-item" id="menu-open-simulator">
+        <span class="material-symbols-outlined nav-item-icon" style="color: var(--md-sys-color-primary);">edit_calendar</span>
         <div class="nav-item-text">
           <span class="nav-item-title">미래 연차 시뮬레이터</span>
           <span class="nav-item-desc">미래 달력을 넘기며 연차 황금루트 탐색</span>
@@ -380,7 +370,7 @@
         <span class="material-symbols-outlined nav-item-arrow">chevron_right</span>
       </button>
 
-      <!-- 3. 점심메뉴 추천 -->
+      <!-- 2. 점심메뉴 추천 -->
       <button type="button" class="nav-menu-item feature-item" id="menu-open-lunch">
         <span class="material-symbols-outlined nav-item-icon" style="color: #ea580c;">restaurant</span>
         <div class="nav-item-text">
@@ -390,7 +380,7 @@
         <span class="material-symbols-outlined nav-item-arrow">chevron_right</span>
       </button>
 
-      <!-- 4. 루팡하는 방법 -->
+      <!-- 3. 루팡하는 방법 -->
       <button type="button" class="nav-menu-item feature-item" id="menu-open-slacking">
         <span class="material-symbols-outlined nav-item-icon" style="color: #0284c7;">coffee</span>
         <div class="nav-item-text">
@@ -662,7 +652,7 @@
               <div class="stat-content">
                 <span class="stat-label">주말 (토/일)</span>
                 <span class="stat-value" id="sim-stat-weekend-days">0일</span>
-                <span class="stat-sub" id="main-stat-weekend-detail">토 0일 / 일 0일</span>
+                <span class="stat-sub" id="sim-stat-weekend-detail">토 0일 / 일 0일</span>
               </div>
               <span class="material-symbols-outlined stat-icon">weekend</span>
             </div>
