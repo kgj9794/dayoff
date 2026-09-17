@@ -379,6 +379,10 @@ function initGlobalHistoryAndEscListener() {
 
   window.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
+      if (isEditingWidgets) {
+        exitWidgetEditMode();
+        return;
+      }
       closeProfilePopup();
       if (modalHistoryStack.length > 0) {
         const topModal = modalHistoryStack[modalHistoryStack.length - 1];
@@ -395,8 +399,11 @@ function initGlobalHistoryAndEscListener() {
 }
 
 // ==========================================
-// 4. 위젯 순서 관리 & 대시보드 렌더링
+// 4. 위젯 순서 변경 엔진
 // ==========================================
+let isEditingWidgets = false;
+let selectedWidget = null;
+
 function getSavedWidgetOrder() {
   try {
     const saved = localStorage.getItem("app_widget_order");
@@ -420,13 +427,8 @@ function saveWidgetOrder(order) {
 function applyWidgetOrderToDOM(order) {
   const colPrimary = document.getElementById("col-primary");
   const colSecondary = document.getElementById("col-secondary");
-  const topBar = document.querySelector(".widget-order-top-bar");
 
   if (!colPrimary || !colSecondary) return;
-
-  if (topBar && colPrimary.contains(topBar)) {
-    colPrimary.prepend(topBar);
-  }
 
   order.forEach((widgetId, idx) => {
     const widgetEl = document.getElementById(`widget-${widgetId}`);
@@ -442,93 +444,223 @@ function applyWidgetOrderToDOM(order) {
   checkAndApplyMarquees();
 }
 
-let tempWidgetOrder = [];
+function getCurrentDOMWidgetOrder() {
+  const colPrimary = document.getElementById("col-primary");
+  const colSecondary = document.getElementById("col-secondary");
+  const widgetsCol1 = colPrimary ? Array.from(colPrimary.querySelectorAll(".dashboard-widget")) : [];
+  const widgetsCol2 = colSecondary ? Array.from(colSecondary.querySelectorAll(".dashboard-widget")) : [];
+  
+  const currentWidgets = [...widgetsCol1, ...widgetsCol2];
+  const order = currentWidgets.map(w => w.dataset.widgetId).filter(Boolean);
 
-function renderWidgetOrderModalList() {
-  const listEl = document.getElementById("widget-order-list");
-  if (!listEl) return;
-
-  listEl.innerHTML = tempWidgetOrder.map((widgetId, idx) => {
-    const meta = WIDGET_META[widgetId] || { name: widgetId };
-    const isFirst = idx === 0;
-    const isLast = idx === tempWidgetOrder.length - 1;
-
-    return `
-      <div class="widget-order-item" data-index="${idx}">
-        <div class="widget-order-item-left">
-          <span class="widget-order-index">${idx + 1}</span>
-          <span class="widget-order-name">${meta.name}</span>
-        </div>
-        <div class="widget-order-btns">
-          <button type="button" class="btn-order-move btn-move-up" data-idx="${idx}" ${isFirst ? 'disabled' : ''} title="위로 이동">
-            <span class="material-symbols-outlined icon-small">arrow_upward</span>
-          </button>
-          <button type="button" class="btn-order-move btn-move-down" data-idx="${idx}" ${isLast ? 'disabled' : ''} title="아래로 이동">
-            <span class="material-symbols-outlined icon-small">arrow_downward</span>
-          </button>
-        </div>
-      </div>
-    `;
-  }).join("");
-
-  listEl.querySelectorAll(".btn-move-up").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const idx = Number(btn.dataset.idx);
-      if (idx > 0) {
-        const temp = tempWidgetOrder[idx];
-        tempWidgetOrder[idx] = tempWidgetOrder[idx - 1];
-        tempWidgetOrder[idx - 1] = temp;
-        renderWidgetOrderModalList();
-      }
-    });
+  DEFAULT_WIDGET_ORDER.forEach(id => {
+    if (!order.includes(id)) order.push(id);
   });
 
-  listEl.querySelectorAll(".btn-move-down").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const idx = Number(btn.dataset.idx);
-      if (idx < tempWidgetOrder.length - 1) {
-        const temp = tempWidgetOrder[idx];
-        tempWidgetOrder[idx] = tempWidgetOrder[idx + 1];
-        tempWidgetOrder[idx + 1] = temp;
-        renderWidgetOrderModalList();
+  return order;
+}
+
+function enterWidgetEditMode() {
+  if (isEditingWidgets) return;
+  isEditingWidgets = true;
+  document.body.classList.add("is-editing-widgets");
+
+  const doneBtn = document.getElementById("btn-done-widget-reorder");
+  if (doneBtn) doneBtn.classList.remove("is-hidden");
+
+  if (navigator.vibrate) {
+    try { navigator.vibrate(50); } catch(e) {}
+  }
+  showToast("순서를 바꿀 위젯을 터치해 선택하세요.", "touch_app");
+}
+
+function exitWidgetEditMode() {
+  if (!isEditingWidgets) return;
+  isEditingWidgets = false;
+  document.body.classList.remove("is-editing-widgets");
+
+  const doneBtn = document.getElementById("btn-done-widget-reorder");
+  if (doneBtn) doneBtn.classList.add("is-hidden");
+
+  clearInsertSlots();
+  if (selectedWidget) {
+    selectedWidget.classList.remove("is-selected");
+    selectedWidget = null;
+  }
+
+  const newOrder = getCurrentDOMWidgetOrder();
+  saveWidgetOrder(newOrder);
+
+  showToast("위젯 순서가 저장되었습니다.", "check_circle");
+}
+
+function clearInsertSlots() {
+  document.querySelectorAll(".widget-insert-slot").forEach(s => s.remove());
+}
+
+function createSlotElement(insertCallback) {
+  const slot = document.createElement("div");
+  slot.className = "widget-insert-slot";
+  slot.innerHTML = `
+    <span class="material-symbols-outlined">add_circle</span>
+    <span>여기로 이동</span>
+  `;
+
+  slot.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!selectedWidget) return;
+
+    insertCallback();
+    clearInsertSlots();
+
+    selectedWidget.classList.remove("is-selected");
+    selectedWidget = null;
+
+    const newOrder = getCurrentDOMWidgetOrder();
+    saveWidgetOrder(newOrder);
+
+    if (navigator.vibrate) {
+      try { navigator.vibrate(35); } catch(err) {}
+    }
+    showToast("위젯 위치가 이동되었습니다.", "check_circle");
+  });
+
+  return slot;
+}
+
+function renderInsertSlots(targetWidget) {
+  clearInsertSlots();
+  if (!targetWidget) return;
+
+  const cols = [
+    document.getElementById("col-primary"),
+    document.getElementById("col-secondary")
+  ].filter(Boolean);
+
+  cols.forEach(col => {
+    const widgets = Array.from(col.querySelectorAll(".dashboard-widget"));
+
+    if (widgets.length === 0) {
+      const slot = createSlotElement(() => col.appendChild(targetWidget));
+      col.appendChild(slot);
+      return;
+    }
+
+    widgets.forEach((w, idx) => {
+      const prevWidget = idx > 0 ? widgets[idx - 1] : null;
+      const isRedundantBefore = (w === targetWidget) || (prevWidget === targetWidget);
+
+      if (!isRedundantBefore) {
+        const slotBefore = createSlotElement(() => col.insertBefore(targetWidget, w));
+        col.insertBefore(slotBefore, w);
+      }
+
+      if (idx === widgets.length - 1 && w !== targetWidget) {
+        const slotAfter = createSlotElement(() => col.appendChild(targetWidget));
+        col.appendChild(slotAfter);
       }
     });
   });
 }
 
-function initWidgetOrderManager() {
-  const openBtn = document.getElementById("btn-open-widget-order");
-  const closeBtn = document.getElementById("btn-close-widget-order");
-  const backdrop = document.getElementById("widget-order-modal-backdrop");
-  const saveBtn = document.getElementById("btn-save-widget-order");
-  const resetBtn = document.getElementById("btn-reset-widget-order");
-
-  if (openBtn) {
-    openBtn.addEventListener("click", () => {
-      tempWidgetOrder = getSavedWidgetOrder();
-      renderWidgetOrderModalList();
-      openModalView("widget-order-modal", "widget-order-modal-backdrop");
-    });
+function ensureWidgetResetBar() {
+  let resetBar = document.getElementById("widget-reset-bar");
+  if (!resetBar) {
+    const grid = document.getElementById("main-dashboard-grid");
+    if (grid) {
+      resetBar = document.createElement("div");
+      resetBar.className = "widget-reset-bar";
+      resetBar.id = "widget-reset-bar";
+      resetBar.innerHTML = `
+        <button type="button" class="btn-reset-widgets-jiggle" id="btn-reset-widgets-jiggle" title="위젯 기본 순서로 초기화">
+          <span class="material-symbols-outlined">restart_alt</span>
+          <span>기본 순서로 초기화</span>
+        </button>
+      `;
+      grid.prepend(resetBar);
+    }
   }
 
-  if (closeBtn) closeBtn.addEventListener("click", () => closeModalView("widget-order-modal"));
-  if (backdrop) backdrop.addEventListener("click", () => closeModalView("widget-order-modal"));
-
-  if (saveBtn) {
-    saveBtn.addEventListener("click", () => {
-      saveWidgetOrder(tempWidgetOrder);
-      closeModalView("widget-order-modal");
-    });
-  }
-
+  const resetBtn = document.getElementById("btn-reset-widgets-jiggle");
   if (resetBtn) {
-    resetBtn.addEventListener("click", () => {
-      tempWidgetOrder = [...DEFAULT_WIDGET_ORDER];
-      renderWidgetOrderModalList();
+    resetBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      clearInsertSlots();
+      if (selectedWidget) {
+        selectedWidget.classList.remove("is-selected");
+        selectedWidget = null;
+      }
+      saveWidgetOrder([...DEFAULT_WIDGET_ORDER]);
+      if (navigator.vibrate) {
+        try { navigator.vibrate(40); } catch(err) {}
+      }
+      showToast("위젯 순서가 기본 설정으로 초기화되었습니다.", "restart_alt");
+    });
+  }
+}
+
+function initWidgetOrderManager() {
+  ensureWidgetResetBar();
+  applyWidgetOrderToDOM(getSavedWidgetOrder());
+
+  const doneBtn = document.getElementById("btn-done-widget-reorder");
+  if (doneBtn) {
+    doneBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      exitWidgetEditMode();
     });
   }
 
-  applyWidgetOrderToDOM(getSavedWidgetOrder());
+  document.addEventListener("click", (e) => {
+    if (isEditingWidgets && 
+        !e.target.closest(".dashboard-widget") && 
+        !e.target.closest("#btn-done-widget-reorder") &&
+        !e.target.closest(".widget-reset-bar") &&
+        !e.target.closest(".widget-insert-slot") &&
+        !e.target.closest("#nav-drawer")) {
+      exitWidgetEditMode();
+    }
+  });
+
+  const widgets = document.querySelectorAll(".dashboard-widget");
+
+  widgets.forEach(widget => {
+    widget.addEventListener("contextmenu", (e) => {
+      if (isEditingWidgets) e.preventDefault();
+    });
+
+    widget.addEventListener("click", (e) => {
+      if (!isEditingWidgets) return;
+
+      e.preventDefault();
+      e.stopPropagation();
+
+      const widgetMeta = WIDGET_META[widget.dataset.widgetId] || { name: "위젯" };
+
+      if (selectedWidget === widget) {
+        widget.classList.remove("is-selected");
+        selectedWidget = null;
+        clearInsertSlots();
+        showToast("선택이 해제되었습니다.", "close");
+        return;
+      }
+
+      if (selectedWidget) {
+        selectedWidget.classList.remove("is-selected");
+      }
+
+      selectedWidget = widget;
+      widget.classList.add("is-selected");
+      renderInsertSlots(selectedWidget);
+
+      if (navigator.vibrate) {
+        try { navigator.vibrate(25); } catch(err) {}
+      }
+      showToast(`'${widgetMeta.name}' 선택됨. 이동할 위치의 [+ 여기로 이동]을 누르세요.`, "open_with");
+    });
+  });
 }
 
 // ==========================================
@@ -554,7 +686,6 @@ function getOffWorkTime() {
   };
 }
 
-// 🌟 카운트다운 위젯 내 출퇴근 시간 텍스트 배지 실시간 갱신
 function updateWorkTimeDisplay() {
   const textEl = document.getElementById("countdown-work-time-text");
   if (textEl) {
@@ -564,7 +695,6 @@ function updateWorkTimeDisplay() {
   }
 }
 
-// 🌟 로그인 사용자의 출퇴근 시간 설정을 구글 시트 DB로 비동기 저장
 async function syncWorkTimeToServer() {
   const user = getCurrentUser();
   if (!user) return;
@@ -587,7 +717,6 @@ async function syncWorkTimeToServer() {
   }
 }
 
-// 🌟 개인정보 변경 모달 즉시 열기 (로그인 검증 및 기본값 채우기)
 function openProfileEditModalDirectly() {
   const user = getCurrentUser();
   if (!user) {
@@ -612,7 +741,6 @@ function openProfileEditModalDirectly() {
   openModalView("profile-edit-modal", "profile-edit-modal-backdrop");
 }
 
-// 🌟 프로필 > 개인정보 변경 모달 제어 엔진
 function initProfileEditModal() {
   const form = document.getElementById("profile-edit-form");
   const closeBtn = document.getElementById("btn-close-profile-edit");
@@ -697,8 +825,8 @@ function initNavigationAndDrawers() {
   const closeNavBtn = document.getElementById("btn-close-nav-menu");
   const navBackdrop = document.getElementById("nav-drawer-backdrop");
 
-  const mainAddLeaveBtn = document.getElementById("btn-main-add-leave"); // 메인 화면 달력의 '+' 버튼
-  const editWorkTimeBtn = document.getElementById("btn-edit-work-time"); // 카운트다운 연필 버튼
+  const mainAddLeaveBtn = document.getElementById("btn-main-add-leave");
+  const editWorkTimeBtn = document.getElementById("btn-edit-work-time");
   const closeMyLeaveBtn = document.getElementById("btn-close-my-leave");
   const myLeaveBackdrop = document.getElementById("my-leave-drawer-backdrop");
 
@@ -713,6 +841,8 @@ function initNavigationAndDrawers() {
   const openSlackingBtn = document.getElementById("menu-open-slacking");
   const closeSlackingBtn = document.getElementById("btn-close-slacking");
   const slackingBackdrop = document.getElementById("slacking-drawer-backdrop");
+
+  const openWidgetReorderBtn = document.getElementById("menu-open-widget-reorder");
 
   if (openNavBtn) {
     openNavBtn.addEventListener("click", () => {
@@ -729,10 +859,17 @@ function initNavigationAndDrawers() {
   if (closeNavBtn) closeNavBtn.addEventListener("click", () => closeModalView("nav-drawer"));
   if (navBackdrop) navBackdrop.addEventListener("click", () => closeModalView("nav-drawer"));
 
-  // 1) 메인 화면 '이번 달 달력' 우측 상단 '+' 버튼 클릭 -> 연차 관리 서랍 오픈
+  if (openWidgetReorderBtn) {
+    openWidgetReorderBtn.addEventListener("click", () => {
+      closeModalView("nav-drawer");
+      setTimeout(() => {
+        enterWidgetEditMode();
+      }, 250);
+    });
+  }
+
   if (mainAddLeaveBtn) mainAddLeaveBtn.addEventListener("click", openMyLeaveDrawer);
 
-  // 2) 메인 화면 '카운트다운' 우측 상단 '연필' 버튼 클릭 -> 개인정보 변경(근무 시간 설정) 팝업 오픈
   if (editWorkTimeBtn) {
     editWorkTimeBtn.addEventListener("click", () => {
       openProfileEditModalDirectly();
@@ -772,22 +909,59 @@ function initNavigationAndDrawers() {
 }
 
 // ==========================================
-// 7. 달력 상세 팝업 모달
+// 7. 달력 상세 팝업 모달 (🌟 수정, 삭제 & 연차 추가 버튼 연동)
 // ==========================================
 function initCalendarDetailModal() {
   const closeBtn = document.getElementById("btn-close-modal");
   const backdrop = document.getElementById("cal-modal-backdrop");
+  const editBtn = document.getElementById("btn-edit-selected-leave");
   const deleteBtn = document.getElementById("btn-delete-selected-leave");
+  const addBtn = document.getElementById("btn-add-selected-leave");
 
   if (closeBtn) closeBtn.addEventListener("click", () => closeModalView("cal-detail-modal"));
   if (backdrop) backdrop.addEventListener("click", () => closeModalView("cal-detail-modal"));
 
+  // 🌟 미등록 날짜에서 '연차 등록하기' 클릭 시 바로 등록 모달 오픈
+  if (addBtn) {
+    addBtn.addEventListener("click", () => {
+      const targetDateKey = addBtn.dataset.leaveDate;
+      if (!targetDateKey) return;
+
+      closeModalView("cal-detail-modal");
+
+      const parts = targetDateKey.split("-").map(Number);
+      const cellDate = new Date(parts[0], parts[1] - 1, parts[2]);
+
+      setTimeout(() => {
+        openLeaveRegisterModal(cellDate, targetDateKey);
+      }, 150);
+    });
+  }
+
+  // 🌟 메인 달력 상세 팝업에서 '연차 수정하기' 클릭 시 바로 수정 모달 오픈
+  if (editBtn) {
+    editBtn.addEventListener("click", () => {
+      const targetDateKey = editBtn.dataset.leaveDate;
+      if (!targetDateKey) return;
+
+      closeModalView("cal-detail-modal");
+
+      const parts = targetDateKey.split("-").map(Number);
+      const cellDate = new Date(parts[0], parts[1] - 1, parts[2]);
+
+      setTimeout(() => {
+        openLeaveRegisterModal(cellDate, targetDateKey);
+      }, 150);
+    });
+  }
+
+  // 🌟 메인 달력 상세 팝업에서 '연차 삭제하기' 클릭
   if (deleteBtn) {
     deleteBtn.addEventListener("click", async () => {
       const leaveId = deleteBtn.dataset.leaveId;
       if (!leaveId) return;
 
-      if (confirm("이 연차 일정을 삭제(취소)하시겠습니까?")) {
+      if (confirm("이 연차 일정을 삭제하시겠습니까?")) {
         await executeDeleteUserLeave(leaveId);
         closeModalView("cal-detail-modal");
       }
@@ -804,7 +978,10 @@ function openCalendarDetailModal(cellDate, dateKey, isHoliday, isLeave, isToday,
   const weatherBox = document.getElementById("modal-weather-box");
   const weatherInfoEl = document.getElementById("modal-info-weather");
   const myLeaveActionRow = document.getElementById("modal-my-leave-action-row");
+  const addLeaveActionRow = document.getElementById("modal-add-leave-action-row");
+  const editBtn = document.getElementById("btn-edit-selected-leave");
   const deleteBtn = document.getElementById("btn-delete-selected-leave");
+  const addBtn = document.getElementById("btn-add-selected-leave");
 
   const todayKey = formatDateKey(new Date());
   const dayName = ['일', '월', '화', '수', '목', '금', '토'][cellDate.getDay()];
@@ -828,12 +1005,22 @@ function openCalendarDetailModal(cellDate, dateKey, isHoliday, isLeave, isToday,
     if (nameEl) nameEl.innerText = myLeave.title;
     if (descEl) descEl.innerText = myLeave.content ? `${myLeave.content} (구분: ${myLeave.type})` : `직접 등록한 ${myLeave.type} 일정입니다.`;
 
-    if (myLeaveActionRow && deleteBtn) {
+    // 등록된 연차가 있을 때: 수정/삭제 버튼 노출, 추가 버튼 숨김
+    if (myLeaveActionRow) {
       myLeaveActionRow.style.display = "flex";
-      deleteBtn.dataset.leaveId = myLeave.id;
+      if (editBtn) editBtn.dataset.leaveDate = dateKey;
+      if (deleteBtn) deleteBtn.dataset.leaveId = myLeave.id;
+    }
+    if (addLeaveActionRow) {
+      addLeaveActionRow.style.display = "none";
     }
   } else {
+    // 등록된 연차가 없을 때: 수정/삭제 버튼 숨김, 연차 등록 버튼 노출
     if (myLeaveActionRow) myLeaveActionRow.style.display = "none";
+    if (addLeaveActionRow) {
+      addLeaveActionRow.style.display = "flex";
+      if (addBtn) addBtn.dataset.leaveDate = dateKey;
+    }
 
     if (isHoliday) {
       if (iconEl) iconEl.innerText = "celebration";
@@ -975,7 +1162,7 @@ function checkSessionExpiration() {
       userLeavesMap.clear();
       userLeavesList = [];
       closeProfilePopup();
-      alert("로그인 후 24시간이 경과하여 보안을 위해 자동으로 로그아웃되었습니다.");
+      alert("세션이 만료되었습니다..");
       updateAuthUI();
       refreshAllCalendars();
       return true;
@@ -1114,7 +1301,6 @@ function initAuthSystem() {
   }
 
   document.addEventListener("click", (e) => {
-    // 1) 개인정보 변경 버튼 터치 감지
     const editProfileBtn = e.target.closest("#btn-popup-edit-profile");
     if (editProfileBtn) {
       e.preventDefault();
@@ -1124,7 +1310,6 @@ function initAuthSystem() {
       return;
     }
 
-    // 2) 비밀번호 변경 버튼 터치 감지
     const changePwBtn = e.target.closest("#btn-popup-change-pw");
     if (changePwBtn) {
       e.preventDefault();
@@ -1136,7 +1321,6 @@ function initAuthSystem() {
       return;
     }
 
-    // 3) 로그아웃 버튼 터치 감지
     const logoutBtn = e.target.closest("#btn-popup-logout");
     if (logoutBtn) {
       e.preventDefault();
@@ -1148,7 +1332,6 @@ function initAuthSystem() {
       return;
     }
 
-    // 4) 프로필 팝업 바깥 터치 시 닫기
     const popup = document.getElementById("profile-popup");
     const backdrop = document.getElementById("profile-popup-backdrop");
     if (popup && popup.classList.contains("is-open")) {
@@ -1209,7 +1392,6 @@ function initAuthSystem() {
     });
   }
 
-  // 로그인 제출
   if (loginForm) {
     loginForm.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -1238,7 +1420,6 @@ function initAuthSystem() {
           localStorage.setItem("app_user_login_time", Date.now().toString());
           localStorage.removeItem("app_is_guest");
 
-          // 사용자별 출퇴근 시간 DB에서 동기화
           if (result.user.startWorkTime) {
             localStorage.setItem("app_start_work_time", result.user.startWorkTime);
           }
@@ -1268,7 +1449,6 @@ function initAuthSystem() {
     });
   }
 
-  // 회원가입 제출
   if (signupForm) {
     signupForm.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -1352,7 +1532,6 @@ function handleLogout(isSilent = false) {
   }
 }
 
-// 비밀번호 변경 폼 처리
 function initPasswordChangeForm() {
   const form = document.getElementById("pw-change-form");
   const closeBtn = document.getElementById("btn-close-pw-change");
@@ -1439,7 +1618,7 @@ function initPasswordChangeForm() {
 }
 
 // ==========================================
-// 10. 내 연차 관리 엔진 (로드/추가/삭제 및 캘린더 동기화)
+// 10. 내 연차 관리 엔진 (로드/추가/수정/삭제 및 캘린더 동기화)
 // ==========================================
 async function loadUserLeaves(userId) {
   if (!userId) return;
@@ -1517,6 +1696,7 @@ function renderMyLeaveCalendar(direction = "none") {
   }
 }
 
+// 🌟 등록된 연차 리스트 렌더링 (수정 버튼 & 삭제 버튼 그룹화)
 function renderMyLeaveRegisteredList() {
   const listEl = document.getElementById("my-leave-registered-list");
   const countDescEl = document.getElementById("my-leave-count-desc");
@@ -1566,13 +1746,31 @@ function renderMyLeaveRegisteredList() {
           <strong class="my-leave-title">${item.title}</strong>
           ${item.content ? `<p class="my-leave-desc">${item.content}</p>` : ''}
         </div>
-        <button type="button" class="btn-delete-leave" data-leave-id="${item.id}" title="연차 삭제">
-          <span class="material-symbols-outlined" style="font-size: 18px;">delete</span>
-        </button>
+        <div class="my-leave-actions">
+          <button type="button" class="btn-edit-leave" data-leave-date="${cleanDate}" title="연차 수정">
+            <span class="material-symbols-outlined" style="font-size: 18px;">edit</span>
+          </button>
+          <button type="button" class="btn-delete-leave" data-leave-id="${item.id}" title="연차 삭제">
+            <span class="material-symbols-outlined" style="font-size: 18px;">delete</span>
+          </button>
+        </div>
       </div>
     `;
   }).join("");
 
+  // 🌟 연차 수정 버튼 클릭 이벤트 연동
+  listEl.querySelectorAll(".btn-edit-leave").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const dateStr = btn.dataset.leaveDate;
+      if (!dateStr) return;
+
+      const parts = dateStr.split("-").map(Number);
+      const cellDate = new Date(parts[0], parts[1] - 1, parts[2]);
+      openLeaveRegisterModal(cellDate, dateStr);
+    });
+  });
+
+  // 연차 삭제 버튼 클릭 이벤트 연동
   listEl.querySelectorAll(".btn-delete-leave").forEach(btn => {
     btn.addEventListener("click", async () => {
       const leaveId = btn.dataset.leaveId;
@@ -1634,7 +1832,6 @@ function openLeaveRegisterModal(cellDate, dateKey) {
   const submitBtn = document.getElementById("btn-leave-reg-submit");
   const submitBtnText = document.getElementById("leave-reg-btn-text");
   const submitBtnIcon = document.getElementById("leave-reg-btn-icon");
-  const deleteBtn = document.getElementById("btn-leave-reg-delete");
 
   const dayName = ['일', '월', '화', '수', '목', '금', '토'][cellDate.getDay()];
   if (dateInput) dateInput.value = cleanDateKey;
@@ -1651,11 +1848,6 @@ function openLeaveRegisterModal(cellDate, dateKey) {
     if (modalIcon) modalIcon.innerText = "edit_calendar";
     if (submitBtnText) submitBtnText.innerText = "연차 수정하기";
     if (submitBtnIcon) submitBtnIcon.innerText = "edit";
-
-    if (deleteBtn) {
-      deleteBtn.style.display = "inline-flex";
-      deleteBtn.dataset.leaveId = existing.id;
-    }
   } else {
     if (leaveIdInput) leaveIdInput.value = "";
     if (typeSelect) typeSelect.value = "연차";
@@ -1666,11 +1858,6 @@ function openLeaveRegisterModal(cellDate, dateKey) {
     if (modalIcon) modalIcon.innerText = "calendar_add_on";
     if (submitBtnText) submitBtnText.innerText = "연차 등록하기";
     if (submitBtnIcon) submitBtnIcon.innerText = "check_circle";
-
-    if (deleteBtn) {
-      deleteBtn.style.display = "none";
-      deleteBtn.dataset.leaveId = "";
-    }
   }
 
   openModalView("leave-reg-modal", "leave-reg-modal-backdrop");
@@ -1682,7 +1869,6 @@ function initLeaveRegisterForm() {
   const backdrop = document.getElementById("leave-reg-modal-backdrop");
   const submitBtn = document.getElementById("btn-leave-reg-submit");
   const btnText = document.getElementById("leave-reg-btn-text");
-  const deleteBtn = document.getElementById("btn-leave-reg-delete");
 
   const prevBtn = document.getElementById("my-leave-cal-prev");
   const nextBtn = document.getElementById("my-leave-cal-next");
@@ -1713,20 +1899,6 @@ function initLeaveRegisterForm() {
 
   if (closeBtn) closeBtn.addEventListener("click", () => closeModalView("leave-reg-modal"));
   if (backdrop) backdrop.addEventListener("click", () => closeModalView("leave-reg-modal"));
-
-  if (deleteBtn) {
-    deleteBtn.addEventListener("click", async () => {
-      const leaveId = deleteBtn.dataset.leaveId;
-      if (!leaveId) return;
-
-      if (confirm("정말 이 연차 일정을 삭제하시겠습니까?")) {
-        deleteBtn.disabled = true;
-        await executeDeleteUserLeave(leaveId);
-        deleteBtn.disabled = false;
-        closeModalView("leave-reg-modal");
-      }
-    });
-  }
 
   if (form) {
     form.addEventListener("submit", async (e) => {
@@ -2337,7 +2509,7 @@ function calculateVacationsForBase(baseDay) {
               benefit: `총 ${blockLength + 1}일 연속 휴식 (${formatDateMD(blockStart)} ~ ${formatDateMD(dayAfter)})`,
               badge: `연차 1일 = ${blockLength + 1}일 휴식`,
               totalRest: blockLength + 1,
-              startDate: blockStart,
+              startDate: dayBefore,
               endDate: dayAfter
             });
           }
