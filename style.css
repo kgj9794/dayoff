@@ -424,6 +424,37 @@ body.is-loading {
   position: relative;
 }
 
+/* 위젯 순서 편집 완료 버튼 */
+.top-bar-done-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 14px;
+  border-radius: var(--md-shape-corner-full);
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  border: 1.5px solid var(--md-sys-color-primary);
+  font-size: 0.8125rem;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: var(--md-elevation-2);
+  animation: feedbackDropBounce 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  transition: transform 0.15s ease, background-color 0.2s;
+}
+
+.top-bar-done-btn:hover {
+  transform: scale(1.04);
+}
+
+.top-bar-done-btn.is-hidden {
+  display: none !important;
+}
+
+.top-bar-done-btn .material-symbols-outlined {
+  font-size: 18px;
+}
+
 /* 👤 로그인/게스트 버튼 */
 .top-bar-user-btn {
   display: inline-flex;
@@ -455,24 +486,22 @@ body.is-loading {
   white-space: nowrap;
 }
 
-/* 🌟 상단 피드백 버튼: 게스트 버튼과 완벽히 동일한 규격 (패딩, 테두리, 아이콘 18px)
-      등장 시 아래로 뿅(바운스 낙하), 사라질 때 위로 쏙! */
+/* 상단 피드백 버튼 */
 .top-bar-feedback-btn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 12px; /* 게스트 버튼과 100% 동일 */
+  padding: 6px 12px;
   border-radius: var(--md-shape-corner-full);
   background-color: var(--md-sys-color-primary-container);
   color: var(--md-sys-color-on-primary-container);
-  border: 1.5px solid var(--card-border-color); /* 게스트 버튼과 100% 동일 */
+  border: 1.5px solid var(--card-border-color);
   font-size: 0.8125rem;
   font-weight: 800;
   cursor: pointer;
   flex-shrink: 0;
   white-space: nowrap;
 
-  /* 정상 표시 상태 */
   max-width: 130px;
   opacity: 1;
   transform: translateY(0) scale(1);
@@ -480,7 +509,6 @@ body.is-loading {
   pointer-events: auto;
   visibility: visible;
 
-  /* 🌟 등장 애니메이션: 위에서 아래로 뿅! 통통 튀며 안착 */
   transition: 
     transform 0.36s cubic-bezier(0.34, 1.56, 0.64, 1),
     opacity 0.22s ease,
@@ -498,7 +526,6 @@ body.is-loading {
   transform: translateY(-1px) scale(1.03);
 }
 
-/* 🌟 숨김 상태: 찌그러짐 없이 위쪽 천장으로 쏙! 빨려 올라가며 사라짐 */
 .top-bar-feedback-btn.is-hidden {
   opacity: 0 !important;
   transform: translateY(-34px) scale(0.82) !important;
@@ -506,11 +533,10 @@ body.is-loading {
   padding-left: 0 !important;
   padding-right: 0 !important;
   border-color: transparent !important;
-  margin-left: -8px !important; /* flex gap 상쇄 */
+  margin-left: -8px !important;
   pointer-events: none !important;
   visibility: hidden;
 
-  /* 🌟 퇴장 애니메이션: 위로 먼저 빠르게 쏙 올라간 뒤 공간 정리 */
   transition: 
     transform 0.24s cubic-bezier(0.4, 0, 0.2, 1),
     opacity 0.18s ease-in,
@@ -522,7 +548,7 @@ body.is-loading {
 }
 
 .top-bar-feedback-btn .material-symbols-outlined {
-  font-size: 18px; /* 게스트 버튼의 아이콘(18px)과 동일하게 조정 */
+  font-size: 18px;
   flex-shrink: 0;
 }
 
@@ -775,42 +801,6 @@ body.is-loading {
   text-transform: uppercase;
 }
 
-.widget-order-top-bar {
-  display: flex;
-  width: 100%;
-  margin-bottom: -6px;
-}
-
-.btn-widget-reorder-main {
-  width: 100%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 10px 16px;
-  border-radius: var(--md-shape-corner-medium);
-  background-color: var(--md-sys-color-primary-container);
-  color: var(--md-sys-color-on-primary-container);
-  border: 1px solid var(--card-border-color);
-  font-size: 0.875rem;
-  font-weight: 800;
-  cursor: pointer;
-  box-shadow: var(--md-elevation-1);
-  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
-}
-
-.btn-widget-reorder-main:hover {
-  background-color: var(--md-sys-color-primary);
-  color: var(--md-sys-color-on-primary);
-  border-color: var(--md-sys-color-primary);
-  transform: translateY(-1px);
-  box-shadow: var(--md-elevation-2);
-}
-
-.btn-widget-reorder-main .material-symbols-outlined {
-  font-size: 20px;
-}
-
 .md-button {
   display: inline-flex;
   align-items: center;
@@ -863,7 +853,7 @@ body.is-loading {
 }
 
 /* ==========================================
-   5. 클린 텍스트 플립다운 시계 (Safari 호환 완화)
+   5. 클린 텍스트 플립다운 시계
    ========================================== */
 .countdown-display {
   display: flex;
@@ -1019,7 +1009,7 @@ body.is-loading {
 }
 
 /* ==========================================
-   6. 캘린더 그리드, 팁 배너
+   6. 캘린더 그리드, 팁 배너 & 네비게이션 버튼
    ========================================== */
 .cal-nav-bar {
   display: flex;
@@ -1041,8 +1031,37 @@ body.is-loading {
 
 .cal-nav-buttons {
   display: flex;
+  align-items: center;
   gap: 6px;
-  margin-top: 4px;
+}
+
+/* 🌟 이전/다음 달 버튼 스타일 복구 및 표준화 */
+.cal-nav-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--md-shape-corner-full);
+  border: 1.5px solid var(--card-border-color);
+  background-color: var(--md-sys-color-surface-container-high);
+  color: var(--md-sys-color-on-surface);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  box-shadow: var(--md-elevation-1);
+  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.cal-nav-btn:hover {
+  background-color: var(--md-sys-color-primary-container);
+  border-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary-container);
+  transform: translateY(-1px) scale(1.05);
+}
+
+.cal-nav-btn .material-symbols-outlined {
+  font-size: 20px;
 }
 
 /* 메인 화면 캘린더(+) 액션 버튼 */
@@ -1531,6 +1550,43 @@ body.is-loading {
   color: var(--md-sys-color-outline);
 }
 
+/* 🌟 내 연차 목록 우측 수정 & 삭제 버튼 그룹 */
+.my-leave-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.btn-edit-leave {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--md-shape-corner-small);
+  border: 1px solid var(--card-border-color);
+  background: transparent;
+  color: #8b5cf6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.btn-edit-leave:hover {
+  background-color: #f3e8ff;
+  border-color: #8b5cf6;
+}
+
+[data-theme="dark"] .btn-edit-leave {
+  color: #c084fc;
+}
+
+[data-theme="dark"] .btn-edit-leave:hover {
+  background-color: #3b0764;
+  border-color: #a855f7;
+}
+
 .btn-delete-leave {
   width: 34px;
   height: 34px;
@@ -1791,15 +1847,6 @@ body.is-loading {
   background-color: var(--md-sys-color-surface-container-high);
   border-color: var(--md-sys-color-primary);
   transform: translateX(2px);
-}
-
-.nav-menu-item.primary-action {
-  background-color: var(--md-sys-color-primary-container);
-  border-color: rgba(0, 95, 176, 0.3);
-}
-.nav-menu-item.primary-action .nav-item-icon,
-.nav-menu-item.primary-action .nav-item-arrow {
-  color: var(--md-sys-color-primary);
 }
 
 .nav-item-icon { font-size: 24px; color: var(--md-sys-color-outline); }
@@ -2459,96 +2506,140 @@ body.is-loading {
 }
 
 /* ==========================================
-   12. 메인 위젯 순서 설정 모달
+   12. 🌟 위젯 순서 변경 (터치 선택 & 이동 슬롯 시스템)
    ========================================== */
-.widget-order-modal {
-  max-width: 440px;
+
+/* 텍스트/이미지 복사 돋보기 팝업 원천 차단 */
+.dashboard-widget,
+.dashboard-widget * {
+  -webkit-touch-callout: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
 }
 
-.widget-order-guide {
-  font-size: 0.8125rem;
-  color: var(--md-sys-color-outline);
-  margin-bottom: 12px;
-}
-
-.widget-order-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  max-height: 380px;
-  overflow-y: auto;
-  padding: 2px;
-}
-
-.widget-order-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 12px;
-  background-color: var(--md-sys-color-surface-container-high);
-  border: 1.5px solid var(--card-border-color);
-  border-radius: var(--md-shape-corner-medium);
-  transition: transform 0.2s ease, border-color 0.2s ease;
-}
-
-.widget-order-item-left {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.widget-order-index {
-  font-size: 0.75rem;
-  font-weight: 900;
-  color: var(--md-sys-color-outline);
-  width: 20px;
-  text-align: center;
-}
-
-.widget-order-name {
-  font-size: 0.875rem;
-  font-weight: 800;
-  color: var(--md-sys-color-on-surface);
-}
-
-.widget-order-btns {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.btn-order-move {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  border: 1px solid var(--card-border-color);
-  background-color: var(--md-sys-color-surface);
-  color: var(--md-sys-color-on-surface);
-  display: flex;
-  align-items: center;
+/* 편집 모드 진입 시 최상단 '기본 순서로 초기화' 바 */
+.widget-reset-bar {
+  display: none;
+  width: 100%;
   justify-content: center;
-  cursor: pointer;
-  transition: all 0.15s ease;
+  align-items: center;
+  margin-bottom: -4px;
+  animation: feedbackDropBounce 0.32s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
-.btn-order-move:hover:not(:disabled) {
-  background-color: var(--md-sys-color-primary-container);
-  color: var(--md-sys-color-on-primary-container);
+body.is-editing-widgets .widget-reset-bar {
+  display: flex;
+}
+
+.btn-reset-widgets-jiggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  border-radius: var(--md-shape-corner-full);
+  background-color: var(--md-sys-color-surface);
+  border: 1.5px solid var(--card-border-color);
+  color: var(--md-sys-color-outline);
+  font-size: 0.8125rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: var(--md-elevation-1);
+  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.btn-reset-widgets-jiggle:hover {
+  background-color: var(--md-sys-color-surface-container-high);
+  color: var(--md-sys-color-primary);
+  border-color: var(--md-sys-color-primary);
+  transform: translateY(-1px);
+}
+
+.btn-reset-widgets-jiggle .material-symbols-outlined {
+  font-size: 18px;
+}
+
+/* 편집 모드 상태의 위젯들 (터치 선택 가능) */
+body.is-editing-widgets .dashboard-widget {
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+body.is-editing-widgets .dashboard-widget:hover {
   border-color: var(--md-sys-color-primary);
 }
 
-.btn-order-move:disabled {
-  opacity: 0.35;
-  cursor: not-allowed;
+/* 🌟 선택된 위젯 강조 (이동 대상) */
+body.is-editing-widgets .dashboard-widget.is-selected {
+  border-color: var(--md-sys-color-primary) !important;
+  box-shadow: 0 0 0 3px rgba(0, 95, 176, 0.3), var(--md-elevation-3) !important;
+  transform: scale(1.02);
+  background-color: var(--md-sys-color-surface-container-high);
 }
 
-.widget-order-actions {
+/* 선택 상태 배지 표시 */
+body.is-editing-widgets .dashboard-widget.is-selected::before {
+  content: "선택됨 (이동할 위치를 누르세요)";
+  position: absolute;
+  top: -12px;
+  left: 16px;
+  background: var(--md-sys-color-primary);
+  color: #ffffff;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: var(--md-shape-corner-full);
+  box-shadow: var(--md-elevation-2);
+  z-index: 10;
+  pointer-events: none;
+  animation: feedbackDropBounce 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+/* 🌟 사이사이 배치되는 '여기로 이동' 슬롯 버튼 */
+.widget-insert-slot {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-top: 16px;
-  padding-top: 12px;
-  border-top: 1.5px solid var(--card-border-color);
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 16px;
+  border-radius: var(--md-shape-corner-medium);
+  border: 2px dashed var(--md-sys-color-primary);
+  background-color: rgba(0, 95, 176, 0.08);
+  color: var(--md-sys-color-primary);
+  font-size: 0.875rem;
+  font-weight: 800;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  box-sizing: border-box;
+  transition: background-color 0.2s ease, transform 0.15s ease, border-color 0.2s ease;
+  animation: slotSlideDown 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.widget-insert-slot:hover,
+.widget-insert-slot:active {
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  transform: scale(1.02);
+}
+
+.widget-insert-slot .material-symbols-outlined {
+  font-size: 20px;
+}
+
+@keyframes slotSlideDown {
+  0% {
+    opacity: 0;
+    transform: scaleY(0.7);
+  }
+  100% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
 }
 
 /* ==========================================
@@ -2709,23 +2800,54 @@ body.is-loading {
   display: block;
 }
 
-/* Safari/iOS input[type="time"] 전용 크로스 브라우징 보정 */
-input[type="time"].fb-select {
+/* Safari/Chrome 공통 출퇴근 시간 시계 아이콘 래퍼 */
+.time-picker-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+}
+
+.time-picker-input {
+  width: 100% !important;
+  padding-right: 40px !important;
+  cursor: pointer;
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
-  display: block;
-  width: 100% !important;
-  max-width: 100% !important;
-  min-width: 0 !important;
   box-sizing: border-box !important;
 }
 
-input[type="time"].fb-select::-webkit-date-and-time-value {
+.time-picker-input::-webkit-date-and-time-value {
   text-align: left;
   min-height: 1.25em;
   display: flex;
   align-items: center;
+}
+
+.time-picker-input::-webkit-calendar-picker-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.time-picker-icon {
+  position: absolute;
+  right: 12px;
+  font-size: 20px;
+  color: var(--md-sys-color-primary);
+  pointer-events: none;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .fb-select:focus, .fb-textarea:focus {
@@ -2918,7 +3040,11 @@ input[type="time"].fb-select::-webkit-date-and-time-value {
     max-width: 55px;
   }
   
-  /* 모바일에서도 게스트 버튼과 100% 동일 규격 */
+  .top-bar-done-btn {
+    padding: 5px 10px;
+    font-size: 0.75rem;
+  }
+
   .top-bar-feedback-btn { 
     padding: 5px 8px; 
     font-size: 0.75rem; 
@@ -2994,6 +3120,9 @@ input[type="time"].fb-select::-webkit-date-and-time-value {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 24px;
     align-items: start;
+  }
+  .widget-reset-bar {
+    grid-column: 1 / -1;
   }
   .calendar-viewport { min-height: 380px; }
   .cal-cell { min-height: 72px; padding: 6px 8px; }
