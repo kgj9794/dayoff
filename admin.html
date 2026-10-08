@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>피드백 관리자 센터 - 주말 언제와?</title>
+  <title>통합 관리자 센터 - 주말 언제와?</title>
   <link rel="icon" type="image/png" href="/day-off.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -47,6 +47,7 @@
 
       --md-elevation-1: 0 1px 3px 0 rgba(15, 23, 42, 0.06), 0 1px 2px -1px rgba(15, 23, 42, 0.06);
       --md-elevation-2: 0 4px 6px -1px rgba(15, 23, 42, 0.06), 0 2px 4px -2px rgba(15, 23, 42, 0.06);
+      --md-elevation-3: 0 10px 15px -3px rgba(15, 23, 42, 0.12), 0 4px 6px -4px rgba(15, 23, 42, 0.12);
     }
 
     * {
@@ -83,9 +84,6 @@
       gap: 12px;
     }
 
-    /* ==========================================
-       2. 마퀴 (Marquee) 텍스트 롤링
-       ========================================== */
     .marquee-box {
       width: 100%;
       max-width: 100%;
@@ -113,17 +111,11 @@
     }
 
     @keyframes autoMarqueeScroll {
-      0%, 20% {
-        transform: translateX(0);
-      }
-      80%, 100% {
-        transform: translateX(var(--marquee-dist, -24px));
-      }
+      0%, 20% { transform: translateX(0); }
+      80%, 100% { transform: translateX(var(--marquee-dist, -24px)); }
     }
 
-    /* ==========================================
-       3. 상단 탑 앱 바
-       ========================================== */
+    /* 탑 앱 바 */
     .top-app-bar {
       width: 100%;
       background-color: var(--md-sys-color-surface);
@@ -209,26 +201,20 @@
       color: var(--md-sys-color-on-secondary-container);
       border-color: var(--md-sys-color-outline-variant);
     }
-    .md-btn-tonal:hover {
-      background-color: #c5d7f2;
-    }
+    .md-btn-tonal:hover { background-color: #c5d7f2; }
 
     .md-btn-error {
       background-color: var(--md-sys-color-error-container);
       color: var(--md-sys-color-error);
       border-color: rgba(186, 26, 26, 0.2);
     }
-    .md-btn-error:hover {
-      background-color: #ffc9c2;
-    }
+    .md-btn-error:hover { background-color: #ffc9c2; }
 
     .md-btn-filled {
       background-color: var(--md-sys-color-primary);
       color: var(--md-sys-color-on-primary);
     }
-    .md-btn-filled:hover {
-      background-color: #00497d;
-    }
+    .md-btn-filled:hover { background-color: #00497d; }
 
     .sync-status-pill {
       display: inline-flex;
@@ -243,19 +229,11 @@
       opacity: 0;
       transition: opacity 0.25s ease;
     }
-    .sync-status-pill.active {
-      opacity: 1;
-    }
-    .spin-icon {
-      animation: spin 1s linear infinite;
-    }
-    @keyframes spin {
-      100% { transform: rotate(360deg); }
-    }
+    .sync-status-pill.active { opacity: 1; }
+    .spin-icon { animation: spin 1s linear infinite; }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
 
-    /* ==========================================
-       4. 로그인 인증 카드
-       ========================================== */
+    /* 로그인 뷰 */
     .auth-container {
       width: 100%;
       min-height: calc(100vh - 120px);
@@ -291,23 +269,10 @@
     }
     .auth-icon-circle .material-symbols-outlined { font-size: 24px; }
 
-    .auth-header h2 {
-      font-size: 1.2rem;
-      font-weight: 900;
-      color: var(--md-sys-color-on-surface);
-    }
-    .auth-header p {
-      font-size: 0.75rem;
-      color: var(--md-sys-color-on-surface-variant);
-      margin-top: 4px;
-    }
+    .auth-header h2 { font-size: 1.2rem; font-weight: 900; color: var(--md-sys-color-on-surface); }
+    .auth-header p { font-size: 0.75rem; color: var(--md-sys-color-on-surface-variant); margin-top: 4px; }
 
-    .auth-input-group {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      text-align: left;
-    }
+    .auth-input-group { display: flex; flex-direction: column; gap: 12px; text-align: left; }
 
     .m3-text-field {
       width: 100%;
@@ -320,14 +285,41 @@
       outline: none;
       transition: border-color 0.2s ease;
     }
-    .m3-text-field:focus {
-      border-color: var(--md-sys-color-primary);
-      background-color: var(--md-sys-color-surface);
+    .m3-text-field:focus { border-color: var(--md-sys-color-primary); background-color: var(--md-sys-color-surface); }
+
+    /* 탭 메뉴 */
+    .admin-tab-nav {
+      display: flex;
+      gap: 8px;
+      border-bottom: 2px solid var(--md-sys-color-outline-variant);
+      padding-bottom: 2px;
+      margin-bottom: 4px;
     }
 
-    /* ==========================================
-       5. KPI 요약 카드 그리드
-       ========================================== */
+    .tab-item-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 18px;
+      border: none;
+      background: transparent;
+      font-size: 0.9375rem;
+      font-weight: 800;
+      color: var(--md-sys-color-on-surface-variant);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s ease;
+      margin-bottom: -2px;
+    }
+
+    .tab-item-btn:hover { color: var(--md-sys-color-primary); }
+
+    .tab-item-btn.active {
+      color: var(--md-sys-color-primary);
+      border-bottom-color: var(--md-sys-color-primary);
+    }
+
+    /* KPI 그리드 */
     .kpi-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -348,29 +340,9 @@
       gap: 8px;
     }
 
-    .kpi-info {
-      display: flex;
-      flex-direction: column;
-      min-width: 0;
-      flex: 1;
-      overflow: hidden;
-    }
-
-    .kpi-label {
-      font-size: 0.6875rem;
-      font-weight: 700;
-      color: var(--md-sys-color-on-surface-variant);
-      white-space: nowrap;
-      overflow: hidden;
-    }
-
-    .kpi-value {
-      font-size: 1.25rem;
-      font-weight: 900;
-      color: var(--md-sys-color-on-surface);
-      line-height: 1.1;
-      margin-top: 2px;
-    }
+    .kpi-info { display: flex; flex-direction: column; min-width: 0; flex: 1; overflow: hidden; }
+    .kpi-label { font-size: 0.6875rem; font-weight: 700; color: var(--md-sys-color-on-surface-variant); white-space: nowrap; overflow: hidden; }
+    .kpi-value { font-size: 1.25rem; font-weight: 900; color: var(--md-sys-color-on-surface); line-height: 1.1; margin-top: 2px; }
 
     .kpi-icon-box {
       width: 32px;
@@ -385,10 +357,9 @@
     .kpi-icon-box.bug { background-color: #fee2e2; color: #b91c1c; }
     .kpi-icon-box.improve { background-color: #fef3c7; color: #d97706; }
     .kpi-icon-box.idea { background-color: #e0e7ff; color: #4338ca; }
+    .kpi-icon-box.user { background-color: #f3e8ff; color: #7e22ce; }
 
-    /* ==========================================
-       6. 검색 & 필터 바
-       ========================================== */
+    /* 필터 및 검색 바 */
     .filter-search-bar {
       display: flex;
       justify-content: space-between;
@@ -411,9 +382,7 @@
       scrollbar-width: none;
       padding: 2px 0;
     }
-    .filter-chips-group::-webkit-scrollbar {
-      display: none;
-    }
+    .filter-chips-group::-webkit-scrollbar { display: none; }
 
     .filter-chip {
       display: inline-flex;
@@ -432,16 +401,8 @@
       flex-shrink: 0;
     }
 
-    .filter-chip:hover {
-      border-color: var(--md-sys-color-primary);
-      color: var(--md-sys-color-on-surface);
-    }
-
-    .filter-chip.active {
-      background-color: var(--md-sys-color-primary-container);
-      color: var(--md-sys-color-on-primary-container);
-      border-color: var(--md-sys-color-primary);
-    }
+    .filter-chip:hover { border-color: var(--md-sys-color-primary); color: var(--md-sys-color-on-surface); }
+    .filter-chip.active { background-color: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container); border-color: var(--md-sys-color-primary); }
 
     .search-box {
       display: flex;
@@ -454,26 +415,11 @@
       width: 220px;
       flex-shrink: 0;
     }
-    .search-box:focus-within {
-      border-color: var(--md-sys-color-primary);
-      background-color: var(--md-sys-color-surface);
-    }
-    .search-box input {
-      border: none;
-      background: transparent;
-      outline: none;
-      font-size: 0.75rem;
-      color: var(--md-sys-color-on-surface);
-      width: 100%;
-    }
-    .search-box .material-symbols-outlined {
-      color: var(--md-sys-color-outline);
-      font-size: 16px;
-    }
+    .search-box:focus-within { border-color: var(--md-sys-color-primary); background-color: var(--md-sys-color-surface); }
+    .search-box input { border: none; background: transparent; outline: none; font-size: 0.75rem; color: var(--md-sys-color-on-surface); width: 100%; }
+    .search-box .material-symbols-outlined { color: var(--md-sys-color-outline); font-size: 16px; }
 
-    /* ==========================================
-       7. PC 데이터 테이블 뷰 (>768px)
-       ========================================== */
+    /* 테이블 */
     .table-container-card {
       background-color: var(--md-sys-color-surface-container);
       border: 1.5px solid var(--md-sys-color-outline-variant);
@@ -483,46 +429,16 @@
       display: block;
     }
 
-    table.m3-table {
-      width: 100%;
-      border-collapse: collapse;
-      text-align: left;
-    }
-
-    table.m3-table th,
-    table.m3-table td {
-      padding: 12px 14px;
-      border-bottom: 1px solid var(--md-sys-color-surface-container-highest);
-      vertical-align: top;
-    }
-
-    table.m3-table th {
-      background-color: var(--md-sys-color-surface-container-high);
-      font-size: 0.75rem;
-      font-weight: 800;
-      color: var(--md-sys-color-on-surface-variant);
-      border-bottom: 1.5px solid var(--md-sys-color-outline-variant);
-      white-space: nowrap;
-    }
-
-    table.m3-table tr:last-child td {
-      border-bottom: none;
-    }
-
-    table.m3-table tr:hover td {
-      background-color: var(--md-sys-color-surface-dim);
-    }
+    table.m3-table { width: 100%; border-collapse: collapse; text-align: left; }
+    table.m3-table th, table.m3-table td { padding: 12px 14px; border-bottom: 1px solid var(--md-sys-color-surface-container-highest); vertical-align: middle; }
+    table.m3-table th { background-color: var(--md-sys-color-surface-container-high); font-size: 0.75rem; font-weight: 800; color: var(--md-sys-color-on-surface-variant); border-bottom: 1.5px solid var(--md-sys-color-outline-variant); white-space: nowrap; }
+    table.m3-table tr:last-child td { border-bottom: none; }
+    table.m3-table tr:hover td { background-color: var(--md-sys-color-surface-dim); }
 
     .col-no { width: 50px; text-align: center; font-weight: 800; color: var(--md-sys-color-on-surface-variant); font-size: 0.8125rem; }
     .col-date { width: 160px; font-size: 0.75rem; color: var(--md-sys-color-on-surface-variant); font-variant-numeric: tabular-nums; white-space: nowrap; }
     .col-cat { width: 130px; }
-    .col-content {
-      font-size: 0.875rem;
-      color: var(--md-sys-color-on-surface);
-      white-space: pre-wrap;
-      word-break: break-word;
-      line-height: 1.5;
-    }
+    .col-content { font-size: 0.875rem; color: var(--md-sys-color-on-surface); white-space: pre-wrap; word-break: break-word; line-height: 1.5; }
 
     .cat-badge {
       display: inline-flex;
@@ -539,15 +455,60 @@
     .badge-idea { background-color: #e0e7ff; color: #4338ca; border: 1px solid #c7d2fe; }
     .badge-etc { background-color: var(--md-sys-color-surface-container-highest); color: var(--md-sys-color-on-surface-variant); }
 
-    /* ==========================================
-       8. 모바일 카드 리스트 뷰 (<=768px)
-       ========================================== */
-    .mobile-cards-view {
-      display: none;
-      flex-direction: column;
-      gap: 10px;
-      width: 100%;
+    /* 비밀번호 숨김/보임 UI */
+    .pw-display-box {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: monospace;
+      font-size: 0.875rem;
+      font-weight: 700;
+      background-color: var(--md-sys-color-surface-container-high);
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid var(--md-sys-color-outline-variant);
     }
+
+    .btn-toggle-pw {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--md-sys-color-outline);
+      display: inline-flex;
+      align-items: center;
+      padding: 0;
+    }
+    .btn-toggle-pw:hover { color: var(--md-sys-color-primary); }
+
+    /* 액션 버튼 그룹 */
+    .user-action-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-table-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      padding: 4px 8px;
+      border-radius: var(--md-shape-corner-s);
+      font-size: 0.75rem;
+      font-weight: 800;
+      border: 1px solid var(--md-sys-color-outline-variant);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      background-color: var(--md-sys-color-surface);
+    }
+
+    .btn-table-action.edit { color: var(--md-sys-color-primary); }
+    .btn-table-action.edit:hover { background-color: var(--md-sys-color-primary-container); border-color: var(--md-sys-color-primary); }
+
+    .btn-table-action.delete { color: var(--md-sys-color-error); }
+    .btn-table-action.delete:hover { background-color: var(--md-sys-color-error-container); border-color: var(--md-sys-color-error); }
+
+    /* 모바일 카드 뷰 */
+    .mobile-cards-view { display: none; flex-direction: column; gap: 10px; width: 100%; }
 
     .mobile-feedback-card {
       background-color: var(--md-sys-color-surface-container);
@@ -560,93 +521,59 @@
       gap: 8px;
     }
 
-    .mobile-card-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px dashed var(--md-sys-color-outline-variant);
-      padding-bottom: 8px;
-    }
+    .mobile-card-header { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px dashed var(--md-sys-color-outline-variant); padding-bottom: 8px; }
+    .mobile-card-header-left { display: flex; align-items: center; gap: 6px; }
+    .mobile-card-num { font-size: 0.75rem; font-weight: 900; color: var(--md-sys-color-primary); background-color: var(--md-sys-color-primary-container); padding: 1px 6px; border-radius: var(--md-shape-corner-s); }
+    .mobile-card-date { font-size: 0.6875rem; color: var(--md-sys-color-on-surface-variant); font-variant-numeric: tabular-nums; }
+    .mobile-card-body { font-size: 0.875rem; color: var(--md-sys-color-on-surface); line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
 
-    .mobile-card-header-left {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .mobile-card-num {
-      font-size: 0.75rem;
-      font-weight: 900;
-      color: var(--md-sys-color-primary);
-      background-color: var(--md-sys-color-primary-container);
-      padding: 1px 6px;
-      border-radius: var(--md-shape-corner-s);
-    }
-
-    .mobile-card-date {
-      font-size: 0.6875rem;
-      color: var(--md-sys-color-on-surface-variant);
-      font-variant-numeric: tabular-nums;
-    }
-
-    .mobile-card-body {
-      font-size: 0.875rem;
-      color: var(--md-sys-color-on-surface);
-      line-height: 1.5;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-
-    .empty-state {
-      padding: 40px 16px;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      color: var(--md-sys-color-on-surface-variant);
-    }
+    .empty-state { padding: 40px 16px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--md-sys-color-on-surface-variant); }
     .empty-state .material-symbols-outlined { font-size: 40px; color: var(--md-sys-color-outline); }
     .empty-state p { font-size: 0.875rem; font-weight: 600; }
 
-    /* ==========================================
-       9. 반응형 미디어 쿼리
-       ========================================== */
+    /* 모달 팝업 */
+    .admin-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      z-index: 1500;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .admin-modal-backdrop.is-open { display: flex; }
+
+    .admin-modal-card {
+      width: 90%;
+      max-width: 380px;
+      background-color: var(--md-sys-color-surface);
+      border-radius: var(--md-shape-corner-l);
+      border: 1.5px solid var(--md-sys-color-outline-variant);
+      box-shadow: var(--md-elevation-3);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .admin-modal-title { font-size: 1.05rem; font-weight: 900; color: var(--md-sys-color-on-surface); }
+
     @media (max-width: 768px) {
       body { padding-bottom: 30px; }
       .top-app-bar { padding: 8px 12px; margin-bottom: 10px; }
       .container { padding: 0 10px; gap: 10px; }
-      
-      .brand-section {
-        flex: 1 1 0%;
-        min-width: 0;
-      }
-      .brand-text h1.marquee-text {
-        font-size: 0.95rem;
-      }
+      .brand-section { flex: 1 1 0%; min-width: 0; }
+      .brand-text h1.marquee-text { font-size: 0.95rem; }
+      .top-actions .btn-text { display: none; }
+      .top-actions .md-btn { padding: 6px 8px; }
 
-      .top-actions .btn-text {
-        display: none;
-      }
-      .top-actions .md-btn {
-        padding: 6px 8px;
-      }
-
-      .kpi-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 8px;
-      }
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
       .kpi-card { padding: 8px 10px; }
       .kpi-value { font-size: 1.15rem; }
       .kpi-icon-box { width: 28px; height: 28px; }
-      .kpi-icon-box .material-symbols-outlined { font-size: 16px; }
       
-      .filter-search-bar {
-        flex-direction: column;
-        align-items: stretch;
-        padding: 8px 10px;
-        gap: 8px;
-      }
+      .filter-search-bar { flex-direction: column; align-items: stretch; padding: 8px 10px; gap: 8px; }
       .search-box { width: 100%; }
 
       .table-container-card { display: none !important; }
@@ -656,15 +583,15 @@
 </head>
 <body>
 
-  <!-- 1. M3 슬림 탑 앱 바 (타이틀 마퀴 적용) -->
+  <!-- 1. 탑 앱 바 -->
   <header class="top-app-bar">
     <div class="top-app-bar-inner">
       <div class="brand-section">
         <div class="brand-logo-badge">
-          <span class="material-symbols-outlined">dashboard</span>
+          <span class="material-symbols-outlined">admin_panel_settings</span>
         </div>
         <div class="brand-text marquee-box" id="brand-title-box">
-          <h1 class="marquee-text" id="brand-title-text">피드백 관리 센터</h1>
+          <h1 class="marquee-text" id="brand-title-text">통합 관리자 센터</h1>
         </div>
       </div>
 
@@ -673,7 +600,7 @@
           <span class="material-symbols-outlined spin-icon" style="font-size: 12px;">sync</span>
           <span>동기화 중...</span>
         </span>
-        <button type="button" class="md-btn md-btn-tonal" id="btn-refresh" onclick="fetchFeedbacks(false)">
+        <button type="button" class="md-btn md-btn-tonal" id="btn-refresh" onclick="refreshCurrentTab()">
           <span class="material-symbols-outlined">refresh</span>
           <span class="btn-text">새로고침</span>
         </button>
@@ -686,141 +613,194 @@
   </header>
 
   <main class="container">
-    <!-- 2. 비밀번호 인증 뷰 -->
+    <!-- 2. 로그인 인증 뷰 -->
     <div class="auth-container" id="auth-view">
       <div class="auth-card">
         <div class="auth-icon-circle">
-          <span class="material-symbols-outlined">admin_panel_settings</span>
+          <span class="material-symbols-outlined">shield_person</span>
         </div>
         <div class="auth-header">
           <h2>관리자 인증</h2>
-          <p>피드백 시스템 조회를 위해 비밀번호를 입력해주세요.</p>
+          <p>통합 데이터 조회를 위해 비밀번호를 입력해주세요.</p>
         </div>
         <form onsubmit="handleLogin(event)" class="auth-input-group">
           <input type="password" id="admin-pw" class="m3-text-field" placeholder="비밀번호를 입력하세요" required autofocus />
           <button type="submit" id="login-btn" class="md-btn md-btn-filled" style="padding: 10px; font-size: 0.875rem;">
-            <span>인증 및 데이터 조회</span>
+            <span>인증 및 시스템 접속</span>
           </button>
         </form>
       </div>
     </div>
 
-    <!-- 3. 메인 대시보드 뷰 -->
+    <!-- 3. 메인 관리자 대시보드 뷰 -->
     <div id="dashboard-view" style="display: none; flex-direction: column; gap: 12px;">
       
-      <!-- KPI 요약 카드 그리드 -->
-      <section class="kpi-grid">
-        <div class="kpi-card">
-          <div class="kpi-info">
-            <span class="kpi-label marquee-box">
-              <span class="marquee-text">전체 피드백</span>
-            </span>
-            <span class="kpi-value" id="kpi-total">0</span>
+      <!-- 탭 네비게이션 -->
+      <nav class="admin-tab-nav">
+        <button type="button" class="tab-item-btn active" id="tab-btn-feedbacks" onclick="switchTab('feedbacks')">
+          <span class="material-symbols-outlined">chat</span>
+          <span>피드백 관리</span>
+        </button>
+        <button type="button" class="tab-item-btn" id="tab-btn-users" onclick="switchTab('users')">
+          <span class="material-symbols-outlined">group</span>
+          <span>회원 계정 관리</span>
+        </button>
+      </nav>
+
+      <!-- SECTION 1: 피드백 관리 영역 -->
+      <div id="section-feedbacks" style="display: flex; flex-direction: column; gap: 12px;">
+        <!-- KPI 요약 카드 그리드 -->
+        <section class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-info">
+              <span class="kpi-label marquee-box"><span class="marquee-text">전체 피드백</span></span>
+              <span class="kpi-value" id="kpi-total">0</span>
+            </div>
+            <div class="kpi-icon-box total"><span class="material-symbols-outlined">mark_chat_unread</span></div>
           </div>
-          <div class="kpi-icon-box total">
-            <span class="material-symbols-outlined">mark_chat_unread</span>
+
+          <div class="kpi-card">
+            <div class="kpi-info">
+              <span class="kpi-label marquee-box"><span class="marquee-text">개선사항 요청</span></span>
+              <span class="kpi-value" id="kpi-improve">0</span>
+            </div>
+            <div class="kpi-icon-box improve"><span class="material-symbols-outlined">tune</span></div>
           </div>
+
+          <div class="kpi-card">
+            <div class="kpi-info">
+              <span class="kpi-label marquee-box"><span class="marquee-text">오류 신고</span></span>
+              <span class="kpi-value" id="kpi-bug">0</span>
+            </div>
+            <div class="kpi-icon-box bug"><span class="material-symbols-outlined">bug_report</span></div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-info">
+              <span class="kpi-label marquee-box"><span class="marquee-text">신기능 아이디어</span></span>
+              <span class="kpi-value" id="kpi-idea">0</span>
+            </div>
+            <div class="kpi-icon-box idea"><span class="material-symbols-outlined">lightbulb</span></div>
+          </div>
+        </section>
+
+        <!-- 필터 & 검색 바 -->
+        <section class="filter-search-bar">
+          <div class="filter-chips-group">
+            <button type="button" class="filter-chip active" data-filter="all"><span>전체보기</span></button>
+            <button type="button" class="filter-chip" data-filter="개선사항 요청"><span class="material-symbols-outlined" style="font-size: 14px;">tune</span><span>개선요청</span></button>
+            <button type="button" class="filter-chip" data-filter="오류신고"><span class="material-symbols-outlined" style="font-size: 14px;">bug_report</span><span>오류신고</span></button>
+            <button type="button" class="filter-chip" data-filter="신기능 아이디어"><span class="material-symbols-outlined" style="font-size: 14px;">lightbulb</span><span>신기능</span></button>
+          </div>
+
+          <div class="search-box">
+            <span class="material-symbols-outlined">search</span>
+            <input type="text" id="fb-search-input" placeholder="피드백 내용 검색..." />
+          </div>
+        </section>
+
+        <!-- PC 전용 피드백 테이블 -->
+        <div class="table-container-card">
+          <table class="m3-table">
+            <thead>
+              <tr>
+                <th class="col-no">No.</th>
+                <th class="col-date">접수 일시</th>
+                <th class="col-cat">카테고리</th>
+                <th>피드백 상세 내용</th>
+              </tr>
+            </thead>
+            <tbody id="desktop-fb-table-body"></tbody>
+          </table>
         </div>
 
-        <div class="kpi-card">
-          <div class="kpi-info">
-            <span class="kpi-label marquee-box">
-              <span class="marquee-text">개선사항 요청</span>
-            </span>
-            <span class="kpi-value" id="kpi-improve">0</span>
-          </div>
-          <div class="kpi-icon-box improve">
-            <span class="material-symbols-outlined">tune</span>
-          </div>
-        </div>
-
-        <div class="kpi-card">
-          <div class="kpi-info">
-            <span class="kpi-label marquee-box">
-              <span class="marquee-text">오류 신고</span>
-            </span>
-            <span class="kpi-value" id="kpi-bug">0</span>
-          </div>
-          <div class="kpi-icon-box bug">
-            <span class="material-symbols-outlined">bug_report</span>
-          </div>
-        </div>
-
-        <div class="kpi-card">
-          <div class="kpi-info">
-            <span class="kpi-label marquee-box">
-              <span class="marquee-text">신기능 아이디어</span>
-            </span>
-            <span class="kpi-value" id="kpi-idea">0</span>
-          </div>
-          <div class="kpi-icon-box idea">
-            <span class="material-symbols-outlined">lightbulb</span>
-          </div>
-        </div>
-      </section>
-
-      <!-- 필터 & 검색 바 -->
-      <section class="filter-search-bar">
-        <div class="filter-chips-group">
-          <button type="button" class="filter-chip active" data-filter="all">
-            <span>전체보기</span>
-          </button>
-          <button type="button" class="filter-chip" data-filter="개선사항 요청">
-            <span class="material-symbols-outlined" style="font-size: 14px;">tune</span>
-            <span>개선요청</span>
-          </button>
-          <button type="button" class="filter-chip" data-filter="오류신고">
-            <span class="material-symbols-outlined" style="font-size: 14px;">bug_report</span>
-            <span>오류신고</span>
-          </button>
-          <button type="button" class="filter-chip" data-filter="신기능 아이디어">
-            <span class="material-symbols-outlined" style="font-size: 14px;">lightbulb</span>
-            <span>신기능</span>
-          </button>
-        </div>
-
-        <div class="search-box">
-          <span class="material-symbols-outlined">search</span>
-          <input type="text" id="search-input" placeholder="내용 검색..." />
-        </div>
-      </section>
-
-      <!-- 🖥️ PC 전용 M3 데이터 테이블 뷰 -->
-      <div class="table-container-card">
-        <table class="m3-table">
-          <thead>
-            <tr>
-              <th class="col-no">No.</th>
-              <th class="col-date">접수 일시</th>
-              <th class="col-cat">카테고리</th>
-              <th>피드백 상세 내용</th>
-            </tr>
-          </thead>
-          <tbody id="desktop-table-body">
-            <!-- 렌더링 영역 -->
-          </tbody>
-        </table>
+        <!-- 모바일 전용 피드백 카드 리스트 -->
+        <div class="mobile-cards-view" id="mobile-fb-cards-container"></div>
       </div>
 
-      <!-- 📱 모바일 전용 M3 카드 리스트 뷰 -->
-      <div class="mobile-cards-view" id="mobile-cards-container">
-        <!-- 렌더링 영역 -->
+      <!-- SECTION 2: 회원 계정 관리 영역 -->
+      <div id="section-users" style="display: none; flex-direction: column; gap: 12px;">
+        <!-- KPI 요약 카드 그리드 -->
+        <section class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-info">
+              <span class="kpi-label marquee-box"><span class="marquee-text">가입 회원 수</span></span>
+              <span class="kpi-value" id="kpi-user-total">0명</span>
+            </div>
+            <div class="kpi-icon-box user"><span class="material-symbols-outlined">group</span></div>
+          </div>
+        </section>
+
+        <!-- 회원 검색 바 -->
+        <section class="filter-search-bar">
+          <div style="font-size: 0.8125rem; font-weight: 800; color: var(--md-sys-color-on-surface-variant);">
+            <span>등록된 사용자 계정 정보</span>
+          </div>
+
+          <div class="search-box">
+            <span class="material-symbols-outlined">search</span>
+            <input type="text" id="user-search-input" placeholder="아이디/이름 검색..." />
+          </div>
+        </section>
+
+        <!-- PC 전용 회원 테이블 -->
+        <div class="table-container-card">
+          <table class="m3-table">
+            <thead>
+              <tr>
+                <th class="col-no">No.</th>
+                <th>아이디</th>
+                <th>비밀번호</th>
+                <th>이름</th>
+                <th class="col-date">가입일시</th>
+                <th class="col-date">최근 로그인</th>
+                <th style="width: 140px; text-align: center;">계정 관리</th>
+              </tr>
+            </thead>
+            <tbody id="desktop-user-table-body"></tbody>
+          </table>
+        </div>
+
+        <!-- 모바일 전용 회원 카드 리스트 -->
+        <div class="mobile-cards-view" id="mobile-user-cards-container"></div>
       </div>
 
     </div>
   </main>
 
+  <!-- 관리자 전용 회원 비밀번호 변경 모달 -->
+  <div class="admin-modal-backdrop" id="user-pw-modal-backdrop">
+    <div class="admin-modal-card">
+      <h3 class="admin-modal-title" id="pw-modal-user-id">비밀번호 변경</h3>
+      <form onsubmit="executeAdminChangePassword(event)" style="display: flex; flex-direction: column; gap: 12px;">
+        <input type="hidden" id="modal-target-user-id" value="" />
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <label for="modal-new-pw" style="font-size: 0.75rem; font-weight: 700; color: var(--md-sys-color-outline);">새 비밀번호</label>
+          <input type="text" id="modal-new-pw" class="m3-text-field" placeholder="변경할 비밀번호 입력" required />
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 6px;">
+          <button type="button" class="md-btn md-btn-tonal" onclick="closePwModal()">취소</button>
+          <button type="submit" id="modal-pw-submit-btn" class="md-btn md-btn-filled">비밀번호 수정</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script>
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxyLX-M_XVv8_9TiIEZ9mmHaKyGz4XHE_bcwyMGWnms5fs6G-gfW6nwghUoxpFB1cL58g/exec';
     const STORAGE_KEY = 'admin_session_pass';
-    const CACHE_DATA_KEY = 'admin_cached_feedbacks';
 
     let currentPassword = '';
-    let allFeedbacks = [];
-    let activeFilter = 'all';
-    let searchQuery = '';
+    let currentTab = 'feedbacks'; // 'feedbacks' | 'users'
 
-    // 🌟 가로 폭을 벗어나는 텍스트 감지 후 자동 Marquee 애니메이션 적용 (헤더 타이틀 포함)
+    let allFeedbacks = [];
+    let activeFbFilter = 'all';
+    let fbSearchQuery = '';
+
+    let allUsers = [];
+    let userSearchQuery = '';
+    let visiblePasswords = new Set(); // 비밀번호가 표시된 회원 아이디 집합
+
     function checkAndApplyMarquees() {
       const marqueeBoxes = document.querySelectorAll('.marquee-box');
       marqueeBoxes.forEach(box => {
@@ -869,6 +849,29 @@
       return `<span class="cat-badge badge-etc">${escapeHtml(cat || '기타')}</span>`;
     }
 
+    function switchTab(tabName) {
+      currentTab = tabName;
+      document.getElementById('tab-btn-feedbacks').classList.toggle('active', tabName === 'feedbacks');
+      document.getElementById('tab-btn-users').classList.toggle('active', tabName === 'users');
+
+      document.getElementById('section-feedbacks').style.display = tabName === 'feedbacks' ? 'flex' : 'none';
+      document.getElementById('section-users').style.display = tabName === 'users' ? 'flex' : 'none';
+
+      if (tabName === 'feedbacks') {
+        fetchFeedbacks();
+      } else {
+        fetchUsers();
+      }
+    }
+
+    function refreshCurrentTab() {
+      if (currentTab === 'feedbacks') {
+        fetchFeedbacks();
+      } else {
+        fetchUsers();
+      }
+    }
+
     function handleLogin(e) {
       e.preventDefault();
       currentPassword = document.getElementById('admin-pw').value.trim();
@@ -876,11 +879,11 @@
     }
 
     function handleLogout() {
-      if (confirm('로그아웃 하시겠습니까? 다음 접속 시 비밀번호를 다시 입력해야 합니다.')) {
+      if (confirm('로그아웃 하시겠습니까?')) {
         localStorage.removeItem(STORAGE_KEY);
-        localStorage.removeItem(CACHE_DATA_KEY);
         currentPassword = '';
         allFeedbacks = [];
+        allUsers = [];
         document.getElementById('admin-pw').value = '';
         document.getElementById('dashboard-view').style.display = 'none';
         document.getElementById('top-actions-box').style.display = 'none';
@@ -888,6 +891,9 @@
       }
     }
 
+    // ==========================================
+    // API 1. 피드백 목록 가져오기
+    // ==========================================
     async function fetchFeedbacks(isManualLogin = false) {
       const syncStatus = document.getElementById('sync-status');
       const loginBtn = document.getElementById('login-btn');
@@ -910,41 +916,67 @@
 
         if (result.status === 'success') {
           localStorage.setItem(STORAGE_KEY, currentPassword);
-          localStorage.setItem(CACHE_DATA_KEY, JSON.stringify(result.data));
-
           allFeedbacks = result.data || [];
+
           document.getElementById('auth-view').style.display = 'none';
           document.getElementById('dashboard-view').style.display = 'flex';
           document.getElementById('top-actions-box').style.display = 'flex';
 
-          updateKpis();
-          renderViews();
+          updateFeedbackKpis();
+          renderFeedbackViews();
           checkAndApplyMarquees();
         } else {
           localStorage.removeItem(STORAGE_KEY);
-          localStorage.removeItem(CACHE_DATA_KEY);
           document.getElementById('dashboard-view').style.display = 'none';
           document.getElementById('top-actions-box').style.display = 'none';
           document.getElementById('auth-view').style.display = 'flex';
-          alert(result.message || '인증에 실패했습니다. 비밀번호를 다시 확인하세요.');
+          alert(result.message || '인증에 실패했습니다. 비밀번호를 확인해주세요.');
         }
       } catch (err) {
-        console.error('관리자 조회 오류:', err);
-        if (isManualLogin) {
-          alert('데이터를 가져오는 중 네트워크 오류가 발생했습니다.');
-        }
+        console.error('피드백 조회 오류:', err);
+        if (isManualLogin) alert('네트워크 오류가 발생했습니다.');
       } finally {
         if (syncStatus) syncStatus.classList.remove('active');
-        if (loginBtn) loginBtn.innerText = '인증 및 데이터 조회';
+        if (loginBtn) loginBtn.innerText = '인증 및 시스템 접속';
         if (refreshBtn) refreshBtn.style.opacity = '1';
       }
     }
 
-    function updateKpis() {
-      let bugCount = 0;
-      let improveCount = 0;
-      let ideaCount = 0;
+    // ==========================================
+    // API 2. 회원 계정 목록 가져오기
+    // ==========================================
+    async function fetchUsers() {
+      const syncStatus = document.getElementById('sync-status');
+      if (syncStatus) syncStatus.classList.add('active');
 
+      try {
+        const response = await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify({
+            action: 'getAdminUsers',
+            password: currentPassword
+          })
+        });
+
+        const result = await response.json();
+
+        if (result.status === 'success') {
+          allUsers = result.data || [];
+          document.getElementById('kpi-user-total').innerText = `${allUsers.length}명`;
+          renderUserViews();
+          checkAndApplyMarquees();
+        } else {
+          alert('회원 목록을 가져오지 못했습니다: ' + result.message);
+        }
+      } catch (err) {
+        console.error('회원 목록 조회 오류:', err);
+      } finally {
+        if (syncStatus) syncStatus.classList.remove('active');
+      }
+    }
+
+    function updateFeedbackKpis() {
+      let bugCount = 0, improveCount = 0, ideaCount = 0;
       allFeedbacks.forEach(item => {
         const cat = String(item.category || '').trim();
         if (cat === '오류신고') bugCount++;
@@ -958,63 +990,244 @@
       document.getElementById('kpi-idea').innerText = ideaCount;
     }
 
-    function renderViews() {
-      const desktopTbody = document.getElementById('desktop-table-body');
-      const mobileContainer = document.getElementById('mobile-cards-container');
+    function renderFeedbackViews() {
+      const desktopTbody = document.getElementById('desktop-fb-table-body');
+      const mobileContainer = document.getElementById('mobile-fb-cards-container');
 
       const filtered = allFeedbacks.filter(item => {
-        const matchCategory = (activeFilter === 'all') || (item.category === activeFilter);
-        const matchSearch = !searchQuery || 
-          String(item.content || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-          String(item.id || '').toLowerCase().includes(searchQuery.toLowerCase());
+        const matchCategory = (activeFbFilter === 'all') || (item.category === activeFbFilter);
+        const matchSearch = !fbSearchQuery || 
+          String(item.content || '').toLowerCase().includes(fbSearchQuery.toLowerCase()) ||
+          String(item.id || '').toLowerCase().includes(fbSearchQuery.toLowerCase());
         return matchCategory && matchSearch;
       });
 
       if (filtered.length === 0) {
-        const emptyHtml = `
-          <div class="empty-state">
-            <span class="material-symbols-outlined">inbox</span>
-            <p>조건에 일치하는 피드백 내역이 없습니다.</p>
-          </div>
-        `;
+        const emptyHtml = `<div class="empty-state"><span class="material-symbols-outlined">inbox</span><p>조건에 일치하는 피드백 내역이 없습니다.</p></div>`;
         desktopTbody.innerHTML = `<tr><td colspan="4">${emptyHtml}</td></tr>`;
         mobileContainer.innerHTML = emptyHtml;
         return;
       }
 
-      desktopTbody.innerHTML = filtered.map((item, index) => {
-        const formattedDate = formatDateTime(item.createdAt);
-        const badgeHtml = getCategoryBadge(item.category);
-        const rowNo = index + 1;
+      desktopTbody.innerHTML = filtered.map((item, index) => `
+        <tr>
+          <td class="col-no">${index + 1}</td>
+          <td class="col-date">${formatDateTime(item.createdAt)}</td>
+          <td class="col-cat">${getCategoryBadge(item.category)}</td>
+          <td class="col-content">${escapeHtml(item.content || '')}</td>
+        </tr>
+      `).join('');
+
+      mobileContainer.innerHTML = filtered.map((item, index) => `
+        <div class="mobile-feedback-card">
+          <div class="mobile-card-header">
+            <div class="mobile-card-header-left">
+              <span class="mobile-card-num">#${index + 1}</span>
+              ${getCategoryBadge(item.category)}
+            </div>
+            <span class="mobile-card-date">${formatDateTime(item.createdAt)}</span>
+          </div>
+          <div class="mobile-card-body">${escapeHtml(item.content || '')}</div>
+        </div>
+      `).join('');
+    }
+
+    function togglePasswordVisibility(userId) {
+      if (visiblePasswords.has(userId)) {
+        visiblePasswords.delete(userId);
+      } else {
+        visiblePasswords.add(userId);
+      }
+      renderUserViews();
+    }
+
+    function renderUserViews() {
+      const desktopTbody = document.getElementById('desktop-user-table-body');
+      const mobileContainer = document.getElementById('mobile-user-cards-container');
+
+      const filtered = allUsers.filter(user => {
+        if (!userSearchQuery) return true;
+        const q = userSearchQuery.toLowerCase();
+        return String(user.userId || '').toLowerCase().includes(q) ||
+               String(user.name || '').toLowerCase().includes(q);
+      });
+
+      if (filtered.length === 0) {
+        const emptyHtml = `<div class="empty-state"><span class="material-symbols-outlined">person_off</span><p>등록된 회원 정보가 없거나 검색 결과가 없습니다.</p></div>`;
+        desktopTbody.innerHTML = `<tr><td colspan="7">${emptyHtml}</td></tr>`;
+        mobileContainer.innerHTML = emptyHtml;
+        return;
+      }
+
+      desktopTbody.innerHTML = filtered.map((user, index) => {
+        const isVisible = visiblePasswords.has(user.userId);
+        const pwDisplay = isVisible ? escapeHtml(user.password) : '••••••••';
+        const eyeIcon = isVisible ? 'visibility_off' : 'visibility';
 
         return `
           <tr>
-            <td class="col-no">${rowNo}</td>
-            <td class="col-date">${formattedDate}</td>
-            <td class="col-cat">${badgeHtml}</td>
-            <td class="col-content">${escapeHtml(item.content || '')}</td>
+            <td class="col-no">${index + 1}</td>
+            <td style="font-weight: 800; color: var(--md-sys-color-primary);">${escapeHtml(user.userId)}</td>
+            <td>
+              <div class="pw-display-box">
+                <span>${pwDisplay}</span>
+                <button type="button" class="btn-toggle-pw" onclick="togglePasswordVisibility('${escapeHtml(user.userId)}')">
+                  <span class="material-symbols-outlined" style="font-size: 16px;">${eyeIcon}</span>
+                </button>
+              </div>
+            </td>
+            <td style="font-weight: 700;">${escapeHtml(user.name)}</td>
+            <td class="col-date">${formatDateTime(user.createdAt)}</td>
+            <td class="col-date">${formatDateTime(user.lastLogin)}</td>
+            <td>
+              <div class="user-action-group">
+                <button type="button" class="btn-table-action edit" onclick="openPwModal('${escapeHtml(user.userId)}')">
+                  <span class="material-symbols-outlined" style="font-size: 15px;">lock_reset</span>
+                  <span>수정</span>
+                </button>
+                <button type="button" class="btn-table-action delete" onclick="deleteUser('${escapeHtml(user.userId)}')">
+                  <span class="material-symbols-outlined" style="font-size: 15px;">delete</span>
+                  <span>삭제</span>
+                </button>
+              </div>
+            </td>
           </tr>
         `;
       }).join('');
 
-      mobileContainer.innerHTML = filtered.map((item, index) => {
-        const formattedDate = formatDateTime(item.createdAt);
-        const badgeHtml = getCategoryBadge(item.category);
-        const rowNo = index + 1;
+      mobileContainer.innerHTML = filtered.map((user, index) => {
+        const isVisible = visiblePasswords.has(user.userId);
+        const pwDisplay = isVisible ? escapeHtml(user.password) : '••••••••';
+        const eyeIcon = isVisible ? 'visibility_off' : 'visibility';
 
         return `
           <div class="mobile-feedback-card">
             <div class="mobile-card-header">
               <div class="mobile-card-header-left">
-                <span class="mobile-card-num">#${rowNo}</span>
-                ${badgeHtml}
+                <span class="mobile-card-num">#${index + 1}</span>
+                <strong style="color: var(--md-sys-color-primary); font-size: 0.9375rem;">${escapeHtml(user.userId)} (${escapeHtml(user.name)})</strong>
               </div>
-              <span class="mobile-card-date">${formattedDate}</span>
+              <span class="mobile-card-date">가입: ${formatDateTime(user.createdAt).split(' ')[0]}</span>
             </div>
-            <div class="mobile-card-body">${escapeHtml(item.content || '')}</div>
+            <div class="mobile-card-body" style="display: flex; flex-direction: column; gap: 8px;">
+              <div style="display: flex; align-items: center; justify-content: space-between;">
+                <span style="font-size: 0.75rem; color: var(--md-sys-color-outline);">비밀번호</span>
+                <div class="pw-display-box">
+                  <span>${pwDisplay}</span>
+                  <button type="button" class="btn-toggle-pw" onclick="togglePasswordVisibility('${escapeHtml(user.userId)}')">
+                    <span class="material-symbols-outlined" style="font-size: 16px;">${eyeIcon}</span>
+                  </button>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; justify-content: space-between;">
+                <span style="font-size: 0.75rem; color: var(--md-sys-color-outline);">최근 로그인</span>
+                <span style="font-size: 0.75rem; font-weight: 700;">${formatDateTime(user.lastLogin)}</span>
+              </div>
+              <div style="display: flex; justify-content: flex-end; gap: 6px; margin-top: 4px;">
+                <button type="button" class="btn-table-action edit" onclick="openPwModal('${escapeHtml(user.userId)}')">
+                  <span class="material-symbols-outlined" style="font-size: 15px;">lock_reset</span>
+                  <span>비밀번호 수정</span>
+                </button>
+                <button type="button" class="btn-table-action delete" onclick="deleteUser('${escapeHtml(user.userId)}')">
+                  <span class="material-symbols-outlined" style="font-size: 15px;">delete</span>
+                  <span>계정 삭제</span>
+                </button>
+              </div>
+            </div>
           </div>
         `;
       }).join('');
+    }
+
+    // ==========================================
+    // API 3. 관리자 회원 비밀번호 변경
+    // ==========================================
+    function openPwModal(userId) {
+      document.getElementById('modal-target-user-id').value = userId;
+      document.getElementById('pw-modal-user-id').innerText = `'${userId}' 비밀번호 변경`;
+      document.getElementById('modal-new-pw').value = '';
+      document.getElementById('user-pw-modal-backdrop').classList.add('is-open');
+    }
+
+    function closePwModal() {
+      document.getElementById('user-pw-modal-backdrop').classList.remove('is-open');
+    }
+
+    async function executeAdminChangePassword(e) {
+      e.preventDefault();
+      const targetUserId = document.getElementById('modal-target-user-id').value;
+      const newPassword = document.getElementById('modal-new-pw').value.trim();
+      const submitBtn = document.getElementById('modal-pw-submit-btn');
+
+      if (!targetUserId || !newPassword) return;
+
+      submitBtn.disabled = true;
+      submitBtn.innerText = '수정 중...';
+
+      try {
+        const response = await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify({
+            action: 'adminChangeUserPassword',
+            password: currentPassword,
+            targetUserId: targetUserId,
+            newPassword: newPassword
+          })
+        });
+
+        const result = await response.json();
+
+        if (result.status === 'success') {
+          alert(result.message || '비밀번호가 성공적으로 변경되었습니다.');
+          closePwModal();
+          fetchUsers();
+        } else {
+          alert('비밀번호 변경 실패: ' + result.message);
+        }
+      } catch (err) {
+        console.error('비밀번호 변경 오류:', err);
+        alert('네트워크 오류가 발생했습니다.');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerText = '비밀번호 수정';
+      }
+    }
+
+    // ==========================================
+    // API 4. 관리자 회원 계정 삭제
+    // ==========================================
+    async function deleteUser(userId) {
+      if (!confirm(`정말로 '${userId}' 회원을 삭제하시겠습니까?\n이 작업은 복구할 수 없으며 관련 연차 정보도 함께 삭제됩니다.`)) {
+        return;
+      }
+
+      const syncStatus = document.getElementById('sync-status');
+      if (syncStatus) syncStatus.classList.add('active');
+
+      try {
+        const response = await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify({
+            action: 'adminDeleteUser',
+            password: currentPassword,
+            targetUserId: userId
+          })
+        });
+
+        const result = await response.json();
+
+        if (result.status === 'success') {
+          alert(result.message || '회원 계정이 삭제되었습니다.');
+          fetchUsers();
+        } else {
+          alert('삭제 실패: ' + result.message);
+        }
+      } catch (err) {
+        console.error('회원 삭제 오류:', err);
+        alert('네트워크 오류가 발생했습니다.');
+      } finally {
+        if (syncStatus) syncStatus.classList.remove('active');
+      }
     }
 
     function setupFilterAndSearch() {
@@ -1023,16 +1236,26 @@
         chip.addEventListener('click', () => {
           chips.forEach(c => c.classList.remove('active'));
           chip.classList.add('active');
-          activeFilter = chip.dataset.filter;
-          renderViews();
+          activeFbFilter = chip.dataset.filter;
+          renderFeedbackViews();
         });
       });
 
-      const searchInput = document.getElementById('search-input');
-      searchInput.addEventListener('input', (e) => {
-        searchQuery = e.target.value.trim();
-        renderViews();
-      });
+      const fbSearchInput = document.getElementById('fb-search-input');
+      if (fbSearchInput) {
+        fbSearchInput.addEventListener('input', (e) => {
+          fbSearchQuery = e.target.value.trim();
+          renderFeedbackViews();
+        });
+      }
+
+      const userSearchInput = document.getElementById('user-search-input');
+      if (userSearchInput) {
+        userSearchInput.addEventListener('input', (e) => {
+          userSearchQuery = e.target.value.trim();
+          renderUserViews();
+        });
+      }
 
       let resizeTimer = null;
       window.addEventListener('resize', () => {
@@ -1048,16 +1271,6 @@
         document.getElementById('auth-view').style.display = 'none';
         document.getElementById('dashboard-view').style.display = 'flex';
         document.getElementById('top-actions-box').style.display = 'flex';
-
-        const cachedFeedbacks = localStorage.getItem(CACHE_DATA_KEY);
-        if (cachedFeedbacks) {
-          try {
-            allFeedbacks = JSON.parse(cachedFeedbacks);
-            updateKpis();
-            renderViews();
-          } catch (e) {}
-        }
-
         fetchFeedbacks(false);
       }
     })();
